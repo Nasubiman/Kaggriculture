@@ -7,8 +7,12 @@ SERVER_REPO ?= /home/nakamura_y/agriculture/Kaggriculture
 SERVER_DATA ?= /media/deepstation/storage/nakamura_y/kaggriculture
 SERVER_REFERENCE ?= $(SERVER_DATA)/datasets/reference/score800_reference.txt
 SERVER_RESULTS ?= server-results
+HYBRID_RUN ?= $(SERVER_DATA)/runs/hybrid_ppo_manual
+HYBRID_ITERATIONS ?= 20
+HYBRID_GAMES ?= 32
+HYBRID_WORKERS ?= 16
 
-.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head server-check server-update-code server-evaluate server-head-to-head server-push-replays server-push-datasets server-pull-results
+.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-push-replays server-push-datasets server-pull-results
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -46,6 +50,9 @@ head-to-head:
 server-check:
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; printf "repo=%s\n" "$$PWD"; .venv/bin/python --version; git status --short; nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader; df -h "$(SERVER_DATA)"'
 
+server-gpu-check:
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; .venv/bin/python -c "import torch; print({\"torch\": torch.__version__, \"cuda\": torch.version.cuda, \"available\": torch.cuda.is_available(), \"devices\": [torch.cuda.get_device_name(i) for i in range(torch.cuda.device_count())]})"'
+
 server-update-code:
 	test -z "$$(git status --porcelain)"
 	git push $(SERVER_HOST):$(SERVER_REPO) HEAD:main
@@ -55,6 +62,9 @@ server-evaluate:
 
 server-head-to-head:
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(SERVER_DATA)/runs/manual"; .venv/bin/python scripts/head_to_head.py --reference "$(SERVER_REFERENCE)" --seeds 7101 7102 7103 7104 7105 --output "$(SERVER_DATA)/runs/manual/cow_vs_score800.json"'
+
+server-hybrid-train:
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(HYBRID_RUN)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 CUDA_VISIBLE_DEVICES=0 .venv/bin/python training/train_hybrid_ppo.py --output-dir "$(HYBRID_RUN)" --iterations "$(HYBRID_ITERATIONS)" --games-per-iteration "$(HYBRID_GAMES)" --workers "$(HYBRID_WORKERS)" --score800-reference "$(SERVER_REFERENCE)" --device cuda'
 
 server-push-replays:
 	test -d replays

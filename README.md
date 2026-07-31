@@ -81,3 +81,27 @@ make server-pull-results
 `make server-update-code` requires a clean local working tree and pushes the
 current commit directly over SSH. The compute server does not need GitHub
 credentials.
+
+## Hybrid PPO prototype
+
+The project includes an Orbit Wars-style hybrid reinforcement-learning
+prototype. A neural policy makes one masked semantic decision per in-game day,
+while `main.py` remains responsible for movement and other low-level legal
+actions. Training uses PPO, a scripted/checkpoint opponent league, and PFSP-like
+opponent sampling.
+
+The compute server uses PyTorch 2.6.0 with CUDA 12.4:
+
+```bash
+make server-gpu-check
+make server-hybrid-train
+```
+
+GPU dependencies are pinned in `requirements-gpu.txt`. Checkpoints and metrics
+are written below the selected server run directory and are not committed.
+Use `training/evaluate_hybrid_policy.py` for fixed-seed, both-seat Arena
+evaluation. A learned checkpoint must beat the current `main.py` in held-out
+Arena games before it is considered for submission.
+
+See `reports/hybrid_ppo_gpu_prototype.md` for the architecture, first training
+runs, and current limitations.
