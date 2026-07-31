@@ -127,13 +127,24 @@ class ProfileAgent:
         day = int(obs.get("day", 0))
         if not self.applied and day >= self.decision_day:
             self.features = state_features(obs)
+            # main.py has its own day-8 learned default. Resolve that first,
+            # then disable the hook so this explicit counterfactual profile is
+            # the final decision rather than being silently overwritten.
+            learned_profile = getattr(
+                self.module, "_apply_learned_macro_profile", None
+            )
+            if learned_profile is not None:
+                learned_profile(obs)
+                self.module._apply_learned_macro_profile = lambda _obs: None
             for name, value in self.profile.items():
                 setattr(self.module, name, value)
             self.applied = True
         return self.module.agent(obs)
 
 
-def play(task: tuple[str, int, int, int, str, str]) -> dict[str, Any]:
+def play(
+    task: tuple[str, int, int, int, str, str, bool]
+) -> dict[str, Any]:
     (
         profile_name,
         seed,
@@ -141,6 +152,7 @@ def play(task: tuple[str, int, int, int, str, str]) -> dict[str, Any]:
         decision_day,
         agent_path,
         incumbent_path,
+        fast_runner,
     ) = task
     os.environ.setdefault("OMP_NUM_THREADS", "1")
     os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
@@ -164,13 +176,18 @@ def play(task: tuple[str, int, int, int, str, str]) -> dict[str, Any]:
         if seat == 0
         else [incumbent_module.agent, candidate_function]
     )
-    env = make(
-        "kaggriculture",
-        configuration={"episodeSteps": 720, "seed": seed},
-        debug=False,
-    )
-    env.run(agents)
-    final = env.steps[-1]
+    if fast_runner:
+        from fast_kaggriculture import run_fast_episode
+
+        final = run_fast_episode(agents, seed=seed)
+    else:
+        env = make(
+            "kaggriculture",
+            configuration={"episodeSteps": 720, "seed": seed},
+            debug=False,
+        )
+        env.run(agents)
+        final = env.steps[-1]
     reward = float(final[seat].reward)
     opponent_reward = float(final[1 - seat].reward)
     return {
@@ -200,6 +217,12 @@ def main() -> None:
     parser.add_argument("--seeds", type=int, default=40)
     parser.add_argument("--workers", type=int, default=16)
     parser.add_argument(
+        "--fast-runner",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Use the official interpreter without generic runner overhead.",
+    )
+    parser.add_argument(
         "--profiles", nargs="+", choices=sorted(PROFILES), default=list(PROFILES)
     )
     parser.add_argument("--output", type=Path, required=True)
@@ -218,6 +241,7 @@ def main() -> None:
             args.decision_day,
             str(args.agent.resolve()),
             str(incumbent_agent),
+            args.fast_runner,
         )
         for profile in args.profiles
         for seed in seed_values
@@ -250,6 +274,7 @@ def main() -> None:
         "agent": str(args.agent.resolve()),
         "incumbent_agent": str(incumbent_agent),
         "decision_day": args.decision_day,
+        "fast_runner": args.fast_runner,
         "seeds": seed_values,
         "profiles": {name: PROFILES[name] for name in args.profiles},
         "summary": dict(

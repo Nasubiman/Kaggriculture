@@ -11,12 +11,17 @@ The first short experiments did **not** beat the tuned deterministic
 `main.py`. No learned checkpoint was promoted and `main.py` was left unchanged.
 This is the intended safety behavior of the Arena gate.
 
+The rollout system was subsequently optimized with persistent workers, a
+parity-tested direct-interpreter training runner, and cached scripted target
+layouts. Steady server throughput increased from about 2.0 to 30.0
+games/second. See `reports/server_training_speedup_20260731.md`.
+
 ## Compute environment
 
 - Host: `kag-server`
 - GPUs: 2 × NVIDIA GeForce RTX 2080 Ti, 11 GB each
 - Training GPU: device 0
-- Rollout workers: up to 16 CPU processes
+- Rollout workers: 20 CPU processes
 - Python: 3.12.13
 - PyTorch: 2.6.0+cu124
 - CUDA runtime: 12.4

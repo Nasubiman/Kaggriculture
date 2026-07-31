@@ -9,10 +9,13 @@ SERVER_REFERENCE ?= $(SERVER_DATA)/datasets/reference/score800_reference.txt
 SERVER_RESULTS ?= server-results
 HYBRID_RUN ?= $(SERVER_DATA)/runs/hybrid_ppo_manual
 HYBRID_ITERATIONS ?= 20
-HYBRID_GAMES ?= 32
-HYBRID_WORKERS ?= 16
+HYBRID_GAMES ?= 60
+HYBRID_WORKERS ?= 20
+CF_DATA ?= $(SERVER_DATA)/datasets/counterfactual/full_manual.json
+CF_RUN ?= $(SERVER_DATA)/runs/counterfactual_value_manual
+CF_SEEDS ?= 100
 
-.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-push-replays server-push-datasets server-pull-results
+.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -65,6 +68,15 @@ server-head-to-head:
 
 server-hybrid-train:
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(HYBRID_RUN)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 CUDA_VISIBLE_DEVICES=0 .venv/bin/python training/train_hybrid_ppo.py --output-dir "$(HYBRID_RUN)" --iterations "$(HYBRID_ITERATIONS)" --games-per-iteration "$(HYBRID_GAMES)" --workers "$(HYBRID_WORKERS)" --score800-reference "$(SERVER_REFERENCE)" --device cuda'
+
+server-counterfactual-generate:
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$$(dirname "$(CF_DATA)")"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python training/generate_macro_counterfactuals.py --agent main.py --incumbent-agent main.py --decision-day 8 --seed-start 1100000 --seeds "$(CF_SEEDS)" --workers 20 --fast-runner --output "$(CF_DATA)"'
+
+server-counterfactual-train:
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(CF_RUN)"; CUDA_VISIBLE_DEVICES=0 .venv/bin/python training/train_counterfactual_value.py --input "$(CF_DATA)" --output-dir "$(CF_RUN)" --epochs 1000 --patience 150 --hidden-size 256 --hidden-layers 3 --batch-size 128 --device cuda'
+
+server-counterfactual-evaluate:
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python training/evaluate_counterfactual_value.py --checkpoint "$(CF_RUN)/best.pt" --agent main.py --opponent main.py --seed-start 1200000 --seeds 200 --workers 20 --fast-runner --output "$(CF_RUN)/arena_heldout.json"'
 
 server-push-replays:
 	test -d replays

@@ -29,6 +29,7 @@ from hybrid_policy import (
     masked_logits,
     save_checkpoint,
 )
+from fast_kaggriculture import run_fast_episode
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -102,13 +103,16 @@ def rollout_task(task: dict[str, Any]) -> dict[str, Any]:
         else [opponent, candidate_function]
     )
     try:
-        env = make(
-            "kaggriculture",
-            configuration={"episodeSteps": 720, "seed": seed},
-            debug=False,
-        )
-        env.run(agents)
-        final = env.steps[-1]
+        if bool(task.get("fast_runner", False)):
+            final = run_fast_episode(agents, seed=seed)
+        else:
+            env = make(
+                "kaggriculture",
+                configuration={"episodeSteps": 720, "seed": seed},
+                debug=False,
+            )
+            env.run(agents)
+            final = env.steps[-1]
         reward = float(final[seat].reward)
         opponent_reward = float(final[1 - seat].reward)
         trajectory = candidate.finalized_trajectory(
@@ -345,6 +349,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=20260731)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--resume", type=Path)
+    parser.add_argument(
+        "--fast-rollouts",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help=(
+            "Use the official interpreter directly for trusted training "
+            "agents; Arena evaluation continues to use the full runner."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -394,6 +407,10 @@ def main() -> None:
     rng = random.Random(args.seed)
     context = mp.get_context("spawn")
     workers = max(1, min(args.workers, os.cpu_count() or args.workers))
+    # Worker startup imports torch and kaggle-environments in every process.
+    # Keeping one pool for the complete run avoids paying that cost on every
+    # PPO update and also lets each worker reuse its checkpoint model cache.
+    pool = context.Pool(workers)
 
     for update in range(start_update + 1, start_update + args.iterations + 1):
         current_checkpoint = checkpoint_dir / f"update_{update - 1:04d}.pt"
@@ -463,18 +480,21 @@ def main() -> None:
                 "seat": index % 2,
                 "shaping_coefficient": shaping,
                 "keep_logit_penalty": 0.0,
+                "fast_runner": args.fast_rollouts,
             }
             for index, opponent in enumerate(chosen)
         ]
         started = time.monotonic()
-        with context.Pool(workers) as pool:
-            games = list(pool.imap_unordered(rollout_task, tasks, chunksize=1))
+        rollout_started = time.monotonic()
+        games = list(pool.imap_unordered(rollout_task, tasks, chunksize=1))
+        rollout_seconds = time.monotonic() - rollout_started
         errors = [game for game in games if game["error"] is not None]
         if errors:
             raise RuntimeError(f"Rollout errors: {errors[:2]}")
         trajectories = [game["trajectory"] for game in games if game["trajectory"]]
         if device.type == "cuda":
             torch.cuda.reset_peak_memory_stats(device)
+        training_started = time.monotonic()
         model.train()
         training = train_batch(
             model,
@@ -491,6 +511,7 @@ def main() -> None:
             teacher_coefficient=args.teacher_coefficient,
         )
         model.eval()
+        training_seconds = time.monotonic() - training_started
         gpu_peak_memory_mb = (
             torch.cuda.max_memory_allocated(device) / (1024 * 1024)
             if device.type == "cuda"
@@ -506,6 +527,11 @@ def main() -> None:
         record = {
             "update": update,
             "elapsed_seconds": elapsed,
+            "rollout_seconds": rollout_seconds,
+            "training_seconds": training_seconds,
+            "games_per_second": (
+                summary["valid_games"] / max(rollout_seconds, 1e-9)
+            ),
             "shaping_coefficient": shaping,
             "opponent_weights": {
                 opponent["name"]: weight
@@ -538,6 +564,9 @@ def main() -> None:
         )
         print(
             f"update={update} elapsed={elapsed:.1f}s "
+            f"rollout={rollout_seconds:.1f}s "
+            f"train={training_seconds:.3f}s "
+            f"games_per_sec={record['games_per_second']:.2f} "
             f"games={summary['valid_games']} wins={summary['wins']} "
             f"win_rate={summary['win_rate']:.3f} "
             f"reward={summary['mean_reward']:.1f} "
@@ -549,6 +578,8 @@ def main() -> None:
             flush=True,
         )
 
+    pool.close()
+    pool.join()
     final_checkpoint = checkpoint_dir / f"update_{start_update + args.iterations:04d}.pt"
     (output_dir / "final_checkpoint.txt").write_text(
         str(final_checkpoint) + "\n", encoding="utf-8"

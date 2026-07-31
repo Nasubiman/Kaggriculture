@@ -114,3 +114,16 @@ Arena games before it is considered for submission.
 
 See `reports/hybrid_ppo_gpu_prototype.md` for the architecture, first training
 runs, and current limitations.
+
+Training rollouts now use persistent workers and a parity-tested fast
+interpreter path. On `kag-server`, the measured steady throughput is about
+30.0 games/second, versus 2.0 before optimization. See
+[`reports/server_training_speedup_20260731.md`](reports/server_training_speedup_20260731.md)
+for benchmarks, fidelity checks, and the recommended 20-worker/60-game setup.
+
+The first GPU counterfactual value-learning trial generated 4,600 profile
+games and produced a held-out selector with a 60.25% direct win rate against
+the current `main.py`. See
+[`reports/counterfactual_gpu_value_trial_20260731.md`](reports/counterfactual_gpu_value_trial_20260731.md)
+for the corrected profile semantics, standard-runner parity check, and the
+remaining promotion gates.

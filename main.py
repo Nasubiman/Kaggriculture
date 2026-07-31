@@ -1,5 +1,7 @@
 """Cow Crown v1: cow-centered agent derived from leaders' public replays."""
 
+from functools import lru_cache
+
 
 _BASE_CROP_RULES = {
     "WHEAT": (10, 2, 4, 24, False),
@@ -343,18 +345,20 @@ def _distance(source, target):
     )
 
 
+@lru_cache(maxsize=None)
 def _top_half_cells(board_size):
     half = board_size // 2
-    return [
+    return tuple(
         (x, y)
         for y in range(half)
         for x in range(board_size)
-    ]
+    )
 
 
-def _cow_targets(board_size):
+@lru_cache(maxsize=None)
+def _cow_targets_for(board_size, cow_target, sheep_target):
     shed_tiles = crop_agent._shed_access_tiles(board_size)
-    sheep = set(_sheep_targets(board_size))
+    sheep = set(_sheep_targets_for(board_size, sheep_target))
     cells = [
         position
         for position in _top_half_cells(board_size)
@@ -370,10 +374,17 @@ def _cow_targets(board_size):
             position[0],
         )
     )
-    return cells[:COW_TARGET]
+    return tuple(cells[:cow_target])
 
 
-def _sheep_targets(board_size):
+def _cow_targets(board_size):
+    return _cow_targets_for(
+        board_size, COW_TARGET, SHEEP_TARGET
+    )
+
+
+@lru_cache(maxsize=None)
+def _sheep_targets_for(board_size, sheep_target):
     half = board_size // 2
     preferred = [
         (half - 1, half - 1),
@@ -381,16 +392,27 @@ def _sheep_targets(board_size):
         (half - 2, 1),
         (half - 1, 0),
     ]
-    return [
+    return tuple(
         position
         for position in preferred
         if 0 <= position[0] < board_size
         and 0 <= position[1] < board_size
-    ][:SHEEP_TARGET]
+    )[:sheep_target]
 
 
-def _wheat_targets(board_size):
-    cows = set(_cow_targets(board_size))
+def _sheep_targets(board_size):
+    return _sheep_targets_for(board_size, SHEEP_TARGET)
+
+
+@lru_cache(maxsize=None)
+def _wheat_targets_for(
+    board_size, cow_target, sheep_target, wheat_tiles
+):
+    cows = set(
+        _cow_targets_for(
+            board_size, cow_target, sheep_target
+        )
+    )
     shed_tiles = crop_agent._shed_access_tiles(board_size)
     cells = [
         position
@@ -407,7 +429,16 @@ def _wheat_targets(board_size):
             position[0],
         )
     )
-    return cells[:WHEAT_TILES]
+    return tuple(cells[:wheat_tiles])
+
+
+def _wheat_targets(board_size):
+    return _wheat_targets_for(
+        board_size,
+        COW_TARGET,
+        SHEEP_TARGET,
+        WHEAT_TILES,
+    )
 
 
 def _tile(farm, position):
@@ -769,30 +800,36 @@ def _opening_actions(obs, farm, private):
 
 
 def _choose_task(position, tasks, reserved):
-    candidates = [
-        (
+    # This is called for every unit on almost every hour.  Keeping only the
+    # current minimum avoids allocating and then scanning a large candidate
+    # list while preserving Python's exact tuple ordering semantics.
+    selected = None
+    source_x, source_y = position
+    for priority, target, action, reservation in tasks:
+        if reservation in reserved:
+            continue
+        candidate = (
             priority,
-            _distance(position, target),
+            abs(source_x - target[0]) + abs(source_y - target[1]),
             target[1],
             target[0],
             target,
             action,
             reservation,
         )
-        for priority, target, action, reservation in tasks
-        if reservation not in reserved
-    ]
-    return min(candidates) if candidates else None
+        if selected is None or candidate < selected:
+            selected = candidate
+    return selected
 
 
-def _cow_actions(obs, farm, private):
+def _cow_actions(obs, farm, private, animals=None):
     board_size = len(farm["tiles"])
     positions = [farm["farmer"], *farm.get("hands", [])]
     cow_targets = _cow_targets(board_size)
     sheep_targets = _sheep_targets(board_size)
     wheat_targets = _wheat_targets(board_size)
-    cows = _cow_state(farm)
-    animals = _animal_state(farm)
+    if animals is None:
+        animals = _animal_state(farm)
     empty_cow_pastures = _available_pastures(
         farm, cow_targets
     )
@@ -824,6 +861,63 @@ def _cow_actions(obs, farm, private):
     seed_budget = int(
         (private.get("seeds", {}) or {}).get("WHEAT", 0)
     )
+
+    animal_service_tasks = []
+    for target, animal in animals.items():
+        if not animal.get("cared_today", False):
+            animal_service_tasks.append(
+                (3, target, ["CARE"], ("CARE", target))
+            )
+        if animal.get("fertilizer_available", False):
+            animal_service_tasks.append(
+                (
+                    4,
+                    target,
+                    ["COLLECT_FERTILIZER"],
+                    ("FERTILIZER", target),
+                )
+            )
+        if int(animal.get("yield_units", 0)) > 0:
+            animal_service_tasks.append(
+                (
+                    5,
+                    target,
+                    ["HARVEST"],
+                    ("ANIMAL_PRODUCT", target),
+                )
+            )
+
+    field_tasks = []
+    for target, action in setup_tasks:
+        field_tasks.append(
+            (
+                0 if action[0] == "HARVEST" else 2,
+                target,
+                action,
+                ("FIELD", target),
+            )
+        )
+    for target, action in sheep_setup_tasks:
+        field_tasks.append(
+            (
+                0 if action[0] == "HARVEST" else 2,
+                target,
+                action,
+                ("FIELD", target),
+            )
+        )
+    for priority, target, action in cash_crop_tasks:
+        field_tasks.append(
+            (priority, target, action, ("FIELD", target))
+        )
+    wheat_nonplant_tasks = []
+    wheat_plant_tasks = []
+    for target, action in wheat_tasks:
+        task = (8, target, action, ("FIELD", target))
+        if action[0] == "PLANT":
+            wheat_plant_tasks.append(task)
+        else:
+            wheat_nonplant_tasks.append(task)
 
     for unit_index, position_value in enumerate(positions):
         position = tuple(position_value)
@@ -865,15 +959,14 @@ def _cow_actions(obs, farm, private):
                         )
                     )
 
-        unfed_animals = [
-            target
-            for target, animal in animals.items()
-            if not animal.get("fed_today", False)
+        has_unfed_animal = any(
+            not animal.get("fed_today", False)
             and ("FEED", target) not in reserved
-        ]
+            for target, animal in animals.items()
+        )
         if (
             carried_wheat <= 0
-            and unfed_animals
+            and has_unfed_animal
             and wheat_shed > 0
         ):
             target = crop_agent._nearest_shed_tile(
@@ -889,34 +982,7 @@ def _cow_actions(obs, farm, private):
                 )
             )
 
-        for target, animal in animals.items():
-            if not animal.get("cared_today", False):
-                tasks.append(
-                    (
-                        3,
-                        target,
-                        ["CARE"],
-                        ("CARE", target),
-                    )
-                )
-            if animal.get("fertilizer_available", False):
-                tasks.append(
-                    (
-                        4,
-                        target,
-                        ["COLLECT_FERTILIZER"],
-                        ("FERTILIZER", target),
-                    )
-                )
-            if int(animal.get("yield_units", 0)) > 0:
-                tasks.append(
-                    (
-                        5,
-                        target,
-                        ["HARVEST"],
-                        ("ANIMAL_PRODUCT", target),
-                    )
-                )
+        tasks.extend(animal_service_tasks)
 
         if (
             carried_cows <= 0
@@ -951,46 +1017,10 @@ def _cow_actions(obs, farm, private):
                 )
             )
 
-        for target, action in setup_tasks:
-            tasks.append(
-                (
-                    0 if action[0] == "HARVEST" else 2,
-                    target,
-                    action,
-                    ("FIELD", target),
-                )
-            )
-        for target, action in sheep_setup_tasks:
-            tasks.append(
-                (
-                    0 if action[0] == "HARVEST" else 2,
-                    target,
-                    action,
-                    ("FIELD", target),
-                )
-            )
-        for priority, target, action in cash_crop_tasks:
-            tasks.append(
-                (
-                    priority,
-                    target,
-                    action,
-                    ("FIELD", target),
-                )
-            )
-        for target, action in wheat_tasks:
-            if (
-                action[0] != "PLANT"
-                or seed_budget > 0
-            ):
-                tasks.append(
-                    (
-                        8,
-                        target,
-                        action,
-                        ("FIELD", target),
-                    )
-                )
+        tasks.extend(field_tasks)
+        tasks.extend(wheat_nonplant_tasks)
+        if seed_budget > 0:
+            tasks.extend(wheat_plant_tasks)
 
         selected = _choose_task(
             position, tasks, reserved
@@ -1120,7 +1150,7 @@ def _opening_market_actions(obs, farm, private):
     return orders
 
 
-def _cow_market_actions(obs, farm, private):
+def _cow_market_actions(obs, farm, private, animals=None):
     day = int(obs.get("day", 0))
     hour = int(obs.get("hour", 0))
     shed = private.get("shed", {}) or {}
@@ -1150,8 +1180,36 @@ def _cow_market_actions(obs, farm, private):
         orders.append(["BUY_LAND"])
         money -= 1000
 
-    cows_owned = _owned_cows(farm, private)
-    sheep_owned = _owned_animal(farm, private, "SHEEP")
+    if animals is None:
+        cows_owned = _owned_cows(farm, private)
+        sheep_owned = _owned_animal(farm, private, "SHEEP")
+    else:
+        shed_counts = private.get("shed", {}) or {}
+        inventories = private.get("inventories", []) or []
+        deployed_cows = 0
+        deployed_sheep = 0
+        for animal in animals.values():
+            kind = animal.get("animal")
+            if kind == "COW":
+                deployed_cows += 1
+            elif kind == "SHEEP":
+                deployed_sheep += 1
+        cows_owned = (
+            deployed_cows
+            + int(shed_counts.get("COW", 0))
+            + sum(
+                int((inventory or {}).get("COW", 0))
+                for inventory in inventories
+            )
+        )
+        sheep_owned = (
+            deployed_sheep
+            + int(shed_counts.get("SHEEP", 0))
+            + sum(
+                int((inventory or {}).get("SHEEP", 0))
+                for inventory in inventories
+            )
+        )
     wheat_carried = sum(
         int((inventory or {}).get("WHEAT", 0))
         for inventory in (
@@ -1332,11 +1390,12 @@ def agent(obs):
             "market": market,
         }
 
-    actions = _cow_actions(obs, farm, private)
+    animals = _animal_state(farm)
+    actions = _cow_actions(obs, farm, private, animals)
     return {
         "farmer": actions[0] if actions else ["PASS"],
         "hands": actions[1:],
         "market": _cow_market_actions(
-            obs, farm, private
+            obs, farm, private, animals
         ),
     }
