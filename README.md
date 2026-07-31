@@ -24,17 +24,21 @@ make history-analyze
 Replay JSON files are stored under `replays/` and ignored by Git. The generated
 strategy summary is written to `reports/public_history_summary.md`.
 
-## Baseline
+## Current agent
 
-`main.py` is the directly-submittable Pulse Breaker v2 agent. It:
+`main.py` is the directly-submittable Cow Crown v1 agent. It:
 
-- uses a deterministic 25-tile diversified crop plan;
-- hires seven workers and expands northeast on day 11;
-- prioritizes the core farm before expansion tasks;
-- harvests six-unit melons from age 10;
-- sells melon batches before a clipped-sale opponent can reach the best prices;
-- adds fifteen wheat plots after expansion;
-- harvests, returns, drops, and sells remaining production on day 30.
+- starts with two central sheep to create an early wool income stream;
+- preserves and harvests the opening crop cycle before conversion;
+- begins the cow transition on zero-indexed day 11;
+- expands northeast and builds twenty cow pastures near the shed;
+- hires twelve workers for daily feed, care, fertilizer, and harvest routing;
+- maintains a wheat buffer through market purchases and two wheat plots;
+- rehires workers on day 30 to harvest, return, drop, and sell final output.
+
+The previous crop-only strategy is archived as
+`agents/pulse_breaker_v2.py`, and the original baseline as
+`agents/baseline_v1.py`.
 
 Run the fixed-seed, both-seat evaluation:
 
@@ -48,5 +52,8 @@ Submit after reviewing the generated evaluation:
 ```bash
 .venv/bin/kaggle competitions submit kaggriculture \
   -f main.py \
-  -m "history-informed baseline v1"
+  -m "Cow Crown v1: public-replay cow strategy"
 ```
+
+See `reports/cow_strategy_implementation.md` for the replay evidence,
+parameter search, and held-out results.

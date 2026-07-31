@@ -1,0 +1,114 @@
+{
+  "games": [
+    {
+      "seed": 7101,
+      "seat": 0,
+      "reward": 114532.0,
+      "opponent_reward": 33690.0,
+      "margin": 80842.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE"
+    },
+    {
+      "seed": 7101,
+      "seat": 1,
+      "reward": 96256.0,
+      "opponent_reward": 35442.0,
+      "margin": 60814.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE"
+    },
+    {
+      "seed": 7102,
+      "seat": 0,
+      "reward": 116613.0,
+      "opponent_reward": 35296.0,
+      "margin": 81317.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE"
+    },
+    {
+      "seed": 7102,
+      "seat": 1,
+      "reward": 112268.0,
+      "opponent_reward": 35202.0,
+      "margin": 77066.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE"
+    },
+    {
+      "seed": 7103,
+      "seat": 0,
+      "reward": 98905.0,
+      "opponent_reward": 35011.0,
+      "margin": 63894.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE"
+    },
+    {
+      "seed": 7103,
+      "seat": 1,
+      "reward": 98920.0,
+      "opponent_reward": 34755.0,
+      "margin": 64165.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE"
+    },
+    {
+      "seed": 7104,
+      "seat": 0,
+      "reward": 109193.0,
+      "opponent_reward": 34964.0,
+      "margin": 74229.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE"
+    },
+    {
+      "seed": 7104,
+      "seat": 1,
+      "reward": 109247.0,
+      "opponent_reward": 33919.0,
+      "margin": 75328.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE"
+    },
+    {
+      "seed": 7105,
+      "seat": 0,
+      "reward": 108020.0,
+      "opponent_reward": 33677.0,
+      "margin": 74343.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE"
+    },
+    {
+      "seed": 7105,
+      "seat": 1,
+      "reward": 106509.0,
+      "opponent_reward": 33891.0,
+      "margin": 72618.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE"
+    }
+  ],
+  "summary": {
+    "games": 10,
+    "wins": 10,
+    "ties": 0,
+    "win_rate": 1.0,
+    "mean_reward": 107046.3,
+    "mean_opponent_reward": 34584.7,
+    "mean_margin": 72461.6,
+    "all_done": true
+  }
+}
