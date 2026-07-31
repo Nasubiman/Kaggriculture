@@ -46,7 +46,9 @@ class ProfileValueNet(nn.Module):
     @staticmethod
     def _initialize(module: nn.Module) -> None:
         if isinstance(module, nn.Linear):
-            nn.init.orthogonal_(module.weight)
+            # Orthogonal initialization performs a large CPU QR decomposition
+            # per layer and dominated startup for 1K-2K-wide GPU models.
+            nn.init.xavier_uniform_(module.weight)
             nn.init.zeros_(module.bias)
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:
@@ -55,6 +57,7 @@ class ProfileValueNet(nn.Module):
 
 def load_contexts(
     paths: list[Path],
+    profile_filter: set[str] | None = None,
 ) -> tuple[list[str], list[str], list[dict[str, Any]]]:
     """Load complete seed/seat counterfactual matrices from JSON reports."""
     games: list[dict[str, Any]] = []
@@ -67,24 +70,47 @@ def load_contexts(
             if declared_profiles is None
             else declared_profiles & current
         )
-        games.extend(payload.get("games", []))
+        compact_contexts = payload.get("contexts", [])
+        if compact_contexts:
+            for context in compact_contexts:
+                for profile, outcome in context["outcomes"].items():
+                    games.append(
+                        {
+                            "profile": profile,
+                            "seed": context["seed"],
+                            "seat": context["seat"],
+                            "decision_day": context.get("decision_day"),
+                            "features": context["features"],
+                            **outcome,
+                        }
+                    )
+        else:
+            games.extend(payload.get("games", []))
     if not games or not declared_profiles:
         raise RuntimeError("No counterfactual games or common profiles found")
+    if profile_filter is not None:
+        declared_profiles &= profile_filter
     if "KEEP" not in declared_profiles:
         raise RuntimeError("Counterfactual data must include KEEP")
 
-    grouped: dict[tuple[int, int], dict[str, dict[str, Any]]] = defaultdict(dict)
+    grouped: dict[tuple[int, int, int], dict[str, dict[str, Any]]] = defaultdict(dict)
     for game in games:
         profile = str(game["profile"])
         if profile in declared_profiles and game.get("features") is not None:
-            grouped[(int(game["seed"]), int(game["seat"]))][profile] = game
+            grouped[
+                (
+                    int(game["seed"]),
+                    int(game["seat"]),
+                    int(game.get("decision_day") or 0),
+                )
+            ][profile] = game
 
     profile_names = sorted(declared_profiles)
     feature_names = sorted(
         next(iter(next(iter(grouped.values())).values()))["features"]
     )
     contexts = []
-    for (seed, seat), by_profile in sorted(grouped.items()):
+    for (seed, seat, decision_day), by_profile in sorted(grouped.items()):
         if any(profile not in by_profile for profile in profile_names):
             continue
         feature_signatures = {
@@ -93,7 +119,8 @@ def load_contexts(
         }
         if len(feature_signatures) != 1:
             raise RuntimeError(
-                f"Profiles do not share a decision state for seed={seed}, seat={seat}"
+                f"Profiles do not share a decision state for seed={seed}, "
+                f"seat={seat}, day={decision_day}"
             )
         margins = np.asarray(
             [float(by_profile[name]["margin"]) for name in profile_names],
@@ -104,6 +131,7 @@ def load_contexts(
             {
                 "seed": seed,
                 "seat": seat,
+                "decision_day": decision_day,
                 "features": np.asarray(next(iter(feature_signatures)), dtype=np.float32),
                 "advantages": margins - keep_margin,
                 "margins": margins,
@@ -162,4 +190,3 @@ def load_value_checkpoint(
     model.load_state_dict(payload["model_state"])
     model.eval()
     return model, payload
-

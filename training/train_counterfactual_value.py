@@ -49,7 +49,18 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--input", type=Path, nargs="+", required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--validation-input", type=Path, nargs="+")
+    parser.add_argument(
+        "--profiles",
+        nargs="+",
+        help="Optional common profile subset for mixed-schema datasets.",
+    )
     parser.add_argument("--validation-fraction", type=float, default=0.2)
+    parser.add_argument(
+        "--split-by-seed",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Keep all seats and decision days from one seed in one split.",
+    )
     parser.add_argument("--epochs", type=int, default=500)
     parser.add_argument("--batch-size", type=int, default=256)
     parser.add_argument("--hidden-size", type=int, default=512)
@@ -60,6 +71,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--classification-coefficient", type=float, default=0.25)
     parser.add_argument("--target-scale", type=float, default=25_000.0)
     parser.add_argument("--patience", type=int, default=80)
+    parser.add_argument(
+        "--amp",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Use CUDA mixed precision when training on GPU.",
+    )
     parser.add_argument("--seed", type=int, default=20260731)
     parser.add_argument("--device", default="cuda")
     return parser.parse_args()
@@ -75,21 +92,39 @@ def main() -> None:
         raise RuntimeError("CUDA requested but unavailable")
 
     feature_names, profile_names, contexts = load_contexts(
-        [path.resolve() for path in args.input]
+        [path.resolve() for path in args.input],
+        set(args.profiles) if args.profiles else None,
     )
     rng = np.random.default_rng(args.seed)
     rng.shuffle(contexts)
     if args.validation_input:
         val_features, val_profiles, validation = load_contexts(
-            [path.resolve() for path in args.validation_input]
+            [path.resolve() for path in args.validation_input],
+            set(args.profiles) if args.profiles else None,
         )
         if val_features != feature_names or val_profiles != profile_names:
             raise RuntimeError("Training and validation schemas differ")
         training = contexts
     else:
-        validation_size = max(1, round(len(contexts) * args.validation_fraction))
-        validation = contexts[:validation_size]
-        training = contexts[validation_size:]
+        if args.split_by_seed:
+            seeds = np.asarray(sorted({int(item["seed"]) for item in contexts}))
+            rng.shuffle(seeds)
+            validation_seed_count = max(
+                1, round(len(seeds) * args.validation_fraction)
+            )
+            validation_seeds = set(int(seed) for seed in seeds[:validation_seed_count])
+            validation = [
+                item for item in contexts if int(item["seed"]) in validation_seeds
+            ]
+            training = [
+                item for item in contexts if int(item["seed"]) not in validation_seeds
+            ]
+        else:
+            validation_size = max(
+                1, round(len(contexts) * args.validation_fraction)
+            )
+            validation = contexts[:validation_size]
+            training = contexts[validation_size:]
     if not training or not validation:
         raise RuntimeError("Training and validation sets must both be non-empty")
 
@@ -115,6 +150,8 @@ def main() -> None:
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=args.learning_rate, weight_decay=args.weight_decay
     )
+    amp_enabled = device.type == "cuda" and args.amp
+    scaler = torch.amp.GradScaler("cuda", enabled=amp_enabled)
     output_dir = args.output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     best_regret = float("inf")
@@ -126,32 +163,44 @@ def main() -> None:
     for epoch in range(1, args.epochs + 1):
         model.train()
         order = torch.randperm(len(training), device=device)
-        epoch_losses = []
+        epoch_loss = torch.zeros((), device=device)
+        batch_count = 0
         for start in range(0, len(training), args.batch_size):
             indices = order[start : start + args.batch_size]
             targets = train_targets[indices]
-            predicted = model(train_features[indices])
-            regression = F.smooth_l1_loss(predicted, targets)
-            target_diff = targets.unsqueeze(2) - targets.unsqueeze(1)
-            prediction_diff = predicted.unsqueeze(2) - predicted.unsqueeze(1)
-            signs = torch.sign(target_diff)
-            comparable = signs != 0
-            ranking = (
-                F.softplus(-signs * prediction_diff)[comparable].mean()
-                if bool(comparable.any())
-                else predicted.sum() * 0.0
-            )
-            classification = F.cross_entropy(predicted, targets.argmax(dim=1))
-            loss = (
-                regression
-                + args.ranking_coefficient * ranking
-                + args.classification_coefficient * classification
-            )
+            with torch.autocast(
+                device_type=device.type,
+                dtype=torch.float16,
+                enabled=amp_enabled,
+            ):
+                predicted = model(train_features[indices])
+                regression = F.smooth_l1_loss(predicted, targets)
+                target_diff = targets.unsqueeze(2) - targets.unsqueeze(1)
+                prediction_diff = predicted.unsqueeze(2) - predicted.unsqueeze(1)
+                signs = torch.sign(target_diff)
+                comparable = signs != 0
+                ranking_values = F.softplus(-signs * prediction_diff)[comparable]
+                ranking = (
+                    ranking_values.mean()
+                    if ranking_values.numel()
+                    else predicted.sum() * 0.0
+                )
+                classification = F.cross_entropy(
+                    predicted, targets.argmax(dim=1)
+                )
+                loss = (
+                    regression
+                    + args.ranking_coefficient * ranking
+                    + args.classification_coefficient * classification
+                )
             optimizer.zero_grad(set_to_none=True)
-            loss.backward()
+            scaler.scale(loss).backward()
+            scaler.unscale_(optimizer)
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-            optimizer.step()
-            epoch_losses.append(float(loss.detach()))
+            scaler.step(optimizer)
+            scaler.update()
+            epoch_loss += loss.detach()
+            batch_count += 1
 
         if epoch == 1 or epoch % 10 == 0 or epoch == args.epochs:
             model.eval()
@@ -162,7 +211,7 @@ def main() -> None:
             validation_metrics = metrics(predictions, val_y, profile_names)
             record = {
                 "epoch": epoch,
-                "loss": float(np.mean(epoch_losses)),
+                "loss": float(epoch_loss / max(1, batch_count)),
                 "validation": validation_metrics,
             }
             history.append(record)

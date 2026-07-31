@@ -30,15 +30,15 @@ milk/wool split and non-PPO improvement order, is in
 
 ## Current agent
 
-`main.py` is the directly-submittable Cow Crown v1 agent. It:
+`main.py` is the directly-submittable Rui Bridge v1 agent. It:
 
-- starts with two central sheep to create an early wool income stream;
-- preserves and harvests the opening crop cycle before conversion;
-- begins the cow transition on zero-indexed day 8;
-- uses a server-trained day-8 decision tree to select 15 or 16 cows;
-- expands northeast and keeps four sheep alongside the cows;
-- hires eleven workers for daily feed, care, fertilizer, and harvest routing;
-- maintains a wheat buffer through market purchases and two wheat plots;
+- reproduces the current rank-1 agent's exact day-0 public action sequence;
+- opens with 16 melons, 6 carrots, 2 central cows, and 6 workers;
+- harvests the melon capital cycle and converts on zero-indexed day 10;
+- expands northeast and targets 8 cows plus 8 sheep;
+- buys cows before sheep during the conversion;
+- hires 11 workers for daily feed, care, fertilizer, and harvest routing;
+- buys wheat as feed instead of dedicating mature-farm tiles to wheat;
 - rehires workers on day 30 to harvest, return, drop, and sell final output.
 
 The previous crop-only strategy is archived as
@@ -57,11 +57,12 @@ Submit after reviewing the generated evaluation:
 ```bash
 .venv/bin/kaggle competitions submit kaggriculture \
   -f main.py \
-  -m "Cow Crown v1: public-replay cow strategy"
+  -m "Rui Bridge v1: rank-1 staged livestock strategy"
 ```
 
-See `reports/cow_strategy_implementation.md` for the replay evidence,
-parameter search, and held-out results.
+See
+[`reports/rui_fixed_v1_implementation_20260731.md`](reports/rui_fixed_v1_implementation_20260731.md)
+for the replay evidence, parameter search, and held-out results.
 
 The latest counterfactual macro-policy improvement and its 200-game direct
 incumbent evaluation are documented in
@@ -127,3 +128,9 @@ the current `main.py`. See
 [`reports/counterfactual_gpu_value_trial_20260731.md`](reports/counterfactual_gpu_value_trial_20260731.md)
 for the corrected profile semantics, standard-runner parity check, and the
 remaining promotion gates.
+
+The scaled multi-day, mixed-opponent GPU experiment uses about 66,000
+counterfactual outcomes. Its day-8 policy reached 70% against `main.py` with
+mean margin +613 while also improving KEEP margins against Pulse and score800.
+See
+[`reports/gpu_counterfactual_scaling_20260731.md`](reports/gpu_counterfactual_scaling_20260731.md).

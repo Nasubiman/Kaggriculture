@@ -1,0 +1,4881 @@
+[
+  {
+    "episode_id": 89126476,
+    "opponent": "Vlad Kochetov",
+    "seat": 1,
+    "mode": "sheep-heavy",
+    "reward": 109234.0,
+    "margin": 24078.0,
+    "max_cows": 8,
+    "max_sheep": 8,
+    "milk_price_day10": 214,
+    "wool_price_day10": 199,
+    "price_gap": 15,
+    "opponent_cows_day10": 8,
+    "opponent_sheep_day10": 6,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 6,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89122529,
+    "opponent": "smlcr",
+    "seat": 0,
+    "mode": "sheep-heavy",
+    "reward": 111471.0,
+    "margin": 7452.0,
+    "max_cows": 8,
+    "max_sheep": 8,
+    "milk_price_day10": 218,
+    "wool_price_day10": 227,
+    "price_gap": -9,
+    "opponent_cows_day10": 4,
+    "opponent_sheep_day10": 2,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 6,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89119601,
+    "opponent": "Max Manushin",
+    "seat": 0,
+    "mode": "sheep-heavy",
+    "reward": 81343.0,
+    "margin": 29517.0,
+    "max_cows": 8,
+    "max_sheep": 8,
+    "milk_price_day10": 193,
+    "wool_price_day10": 226,
+    "price_gap": -33,
+    "opponent_cows_day10": 0,
+    "opponent_sheep_day10": 4,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 6,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89114192,
+    "opponent": "ayutin tin",
+    "seat": 1,
+    "mode": "sheep-heavy",
+    "reward": 112570.0,
+    "margin": 93048.0,
+    "max_cows": 11,
+    "max_sheep": 8,
+    "milk_price_day10": 218,
+    "wool_price_day10": 226,
+    "price_gap": -8,
+    "opponent_cows_day10": 1,
+    "opponent_sheep_day10": 0,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 17,
+        "cows": 11,
+        "sheep": 2,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 5,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89110765,
+    "opponent": "cocoaAI",
+    "seat": 0,
+    "mode": "sheep-heavy",
+    "reward": 109355.0,
+    "margin": 23461.0,
+    "max_cows": 8,
+    "max_sheep": 8,
+    "milk_price_day10": 209,
+    "wool_price_day10": 222,
+    "price_gap": -13,
+    "opponent_cows_day10": 0,
+    "opponent_sheep_day10": 4,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 6,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89106345,
+    "opponent": "Peng Wang",
+    "seat": 0,
+    "mode": "sheep-heavy",
+    "reward": 103862.0,
+    "margin": 17600.0,
+    "max_cows": 12,
+    "max_sheep": 8,
+    "milk_price_day10": 221,
+    "wool_price_day10": 226,
+    "price_gap": -5,
+    "opponent_cows_day10": 0,
+    "opponent_sheep_day10": 1,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 18,
+        "cows": 12,
+        "sheep": 2,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 6,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89101421,
+    "opponent": "Raiden.B",
+    "seat": 1,
+    "mode": "sheep-heavy",
+    "reward": 114152.0,
+    "margin": 34408.0,
+    "max_cows": 11,
+    "max_sheep": 8,
+    "milk_price_day10": 236,
+    "wool_price_day10": 226,
+    "price_gap": 10,
+    "opponent_cows_day10": 5,
+    "opponent_sheep_day10": 0,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 17,
+        "cows": 11,
+        "sheep": 2,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 5,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89100933,
+    "opponent": "Vlad Kochetov",
+    "seat": 1,
+    "mode": "sheep-heavy",
+    "reward": 116997.0,
+    "margin": 27465.0,
+    "max_cows": 8,
+    "max_sheep": 8,
+    "milk_price_day10": 209,
+    "wool_price_day10": 238,
+    "price_gap": -29,
+    "opponent_cows_day10": 0,
+    "opponent_sheep_day10": 14,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 6,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 16,
+        "cows": 8,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89100447,
+    "opponent": "Jesse Ferguson",
+    "seat": 0,
+    "mode": "sheep-heavy",
+    "reward": 85556.0,
+    "margin": 40798.0,
+    "max_cows": 11,
+    "max_sheep": 8,
+    "milk_price_day10": 185,
+    "wool_price_day10": 240,
+    "price_gap": -55,
+    "opponent_cows_day10": 0,
+    "opponent_sheep_day10": 0,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 17,
+        "cows": 11,
+        "sheep": 2,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 5,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 19,
+        "cows": 11,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89099955,
+    "opponent": "fgwiebfaoish",
+    "seat": 0,
+    "mode": "sheep-heavy",
+    "reward": 116846.0,
+    "margin": 79428.0,
+    "max_cows": 12,
+    "max_sheep": 8,
+    "milk_price_day10": 209,
+    "wool_price_day10": 226,
+    "price_gap": -17,
+    "opponent_cows_day10": 0,
+    "opponent_sheep_day10": 0,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 18,
+        "cows": 12,
+        "sheep": 2,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 6,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89099469,
+    "opponent": "Beisenbek Nurassyl [dsmlkz]",
+    "seat": 1,
+    "mode": "sheep-heavy",
+    "reward": 96969.0,
+    "margin": 45315.0,
+    "max_cows": 12,
+    "max_sheep": 8,
+    "milk_price_day10": 209,
+    "wool_price_day10": 226,
+    "price_gap": -17,
+    "opponent_cows_day10": 0,
+    "opponent_sheep_day10": 0,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 18,
+        "cows": 12,
+        "sheep": 1,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 18,
+        "cows": 12,
+        "sheep": 4,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 5,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89098976,
+    "opponent": "Duck!!!",
+    "seat": 0,
+    "mode": "sheep-heavy",
+    "reward": 91229.0,
+    "margin": 54639.0,
+    "max_cows": 12,
+    "max_sheep": 8,
+    "milk_price_day10": 193,
+    "wool_price_day10": 200,
+    "price_gap": -7,
+    "opponent_cows_day10": 0,
+    "opponent_sheep_day10": 4,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 18,
+        "cows": 12,
+        "sheep": 2,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 6,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89098500,
+    "opponent": "Duck!!!",
+    "seat": 1,
+    "mode": "sheep-heavy",
+    "reward": 77840.0,
+    "margin": 45015.0,
+    "max_cows": 12,
+    "max_sheep": 8,
+    "milk_price_day10": 193,
+    "wool_price_day10": 200,
+    "price_gap": -7,
+    "opponent_cows_day10": 0,
+    "opponent_sheep_day10": 4,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 18,
+        "cows": 12,
+        "sheep": 1,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 18,
+        "cows": 12,
+        "sheep": 4,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 6,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89098020,
+    "opponent": "hotaq",
+    "seat": 0,
+    "mode": "sheep-heavy",
+    "reward": 117647.0,
+    "margin": 117647.0,
+    "max_cows": 12,
+    "max_sheep": 8,
+    "milk_price_day10": 193,
+    "wool_price_day10": 219,
+    "price_gap": -26,
+    "opponent_cows_day10": 0,
+    "opponent_sheep_day10": 2,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 18,
+        "cows": 12,
+        "sheep": 2,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 6,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89097540,
+    "opponent": "Aditya Mishra",
+    "seat": 1,
+    "mode": "sheep-heavy",
+    "reward": 119154.0,
+    "margin": 94025.0,
+    "max_cows": 12,
+    "max_sheep": 8,
+    "milk_price_day10": 209,
+    "wool_price_day10": 230,
+    "price_gap": -21,
+    "opponent_cows_day10": 0,
+    "opponent_sheep_day10": 0,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 18,
+        "cows": 12,
+        "sheep": 2,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 6,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89097048,
+    "opponent": "hotaq",
+    "seat": 1,
+    "mode": "sheep-heavy",
+    "reward": 97513.0,
+    "margin": 65573.0,
+    "max_cows": 12,
+    "max_sheep": 8,
+    "milk_price_day10": 193,
+    "wool_price_day10": 219,
+    "price_gap": -26,
+    "opponent_cows_day10": 0,
+    "opponent_sheep_day10": 3,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 18,
+        "cows": 12,
+        "sheep": 2,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 5,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 7,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  },
+  {
+    "episode_id": 89096571,
+    "opponent": "mohduwaishchaudhary",
+    "seat": 0,
+    "mode": "sheep-heavy",
+    "reward": 119763.0,
+    "margin": 104105.0,
+    "max_cows": 12,
+    "max_sheep": 8,
+    "milk_price_day10": 209,
+    "wool_price_day10": 226,
+    "price_gap": -17,
+    "opponent_cows_day10": 0,
+    "opponent_sheep_day10": 0,
+    "daily": {
+      "0": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "1": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "2": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 6,
+        "wheat": 0
+      },
+      "3": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "4": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "5": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "6": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "7": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "8": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "9": {
+        "hands": 6,
+        "pastures": 2,
+        "cows": 2,
+        "sheep": 0,
+        "melon": 16,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "10": {
+        "hands": 12,
+        "pastures": 8,
+        "cows": 6,
+        "sheep": 0,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "11": {
+        "hands": 12,
+        "pastures": 18,
+        "cows": 12,
+        "sheep": 2,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "12": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 6,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "13": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "14": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "15": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "16": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "17": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "18": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "19": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "20": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "21": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "22": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "23": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "24": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "25": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "26": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "27": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "28": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      },
+      "29": {
+        "hands": 12,
+        "pastures": 20,
+        "cows": 12,
+        "sheep": 8,
+        "melon": 0,
+        "carrot": 0,
+        "wheat": 0
+      }
+    }
+  }
+]

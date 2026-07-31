@@ -19,6 +19,7 @@ import torch
 from counterfactual_value import load_value_checkpoint
 from fast_kaggriculture import run_fast_episode
 from generate_macro_counterfactuals import PROFILES, state_features
+from hybrid_policy import load_pasted_agent
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,6 +27,8 @@ _CHECKPOINT_CACHE: dict[str, tuple[Any, dict[str, Any]]] = {}
 
 
 def load_module(path: Path, name: str) -> Any:
+    if path.suffix != ".py":
+        return load_pasted_agent(path)
     spec = importlib.util.spec_from_file_location(name, path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"cannot load {path}")
@@ -43,27 +46,51 @@ def cached_checkpoint(path: str) -> tuple[Any, dict[str, Any]]:
 
 
 class ValueProfileAgent:
-    def __init__(self, module: Any, checkpoint: str, decision_day: int):
+    def __init__(
+        self,
+        module: Any,
+        checkpoints: list[str],
+        decision_day: int,
+        force_profile: str | None = None,
+    ):
         self.module = module
-        self.model, self.payload = cached_checkpoint(checkpoint)
+        self.models_and_payloads = [
+            cached_checkpoint(checkpoint) for checkpoint in checkpoints
+        ]
+        self.payload = self.models_and_payloads[0][1]
+        profile_names = self.payload["profile_names"]
+        if any(
+            payload["profile_names"] != profile_names
+            for _, payload in self.models_and_payloads[1:]
+        ):
+            raise RuntimeError("Ensemble checkpoints have different profiles")
         self.decision_day = decision_day
+        self.force_profile = force_profile
         self.applied = False
         self.selected_profile = "KEEP"
 
     def __call__(self, obs: dict[str, Any]) -> dict[str, Any]:
         if not self.applied and int(obs.get("day", 0)) >= self.decision_day:
             features = state_features(obs)
-            values = np.asarray(
-                [float(features[name]) for name in self.payload["feature_names"]],
-                dtype=np.float32,
-            )
-            values = (
-                values - np.asarray(self.payload["feature_mean"], dtype=np.float32)
-            ) / np.asarray(self.payload["feature_scale"], dtype=np.float32)
             with torch.no_grad():
-                prediction = self.model(torch.from_numpy(values).unsqueeze(0))[0]
-            index = int(prediction.argmax())
-            self.selected_profile = str(self.payload["profile_names"][index])
+                predictions = []
+                for model, payload in self.models_and_payloads:
+                    values = np.asarray(
+                        [float(features[name]) for name in payload["feature_names"]],
+                        dtype=np.float32,
+                    )
+                    values = (
+                        values - np.asarray(payload["feature_mean"], dtype=np.float32)
+                    ) / np.asarray(payload["feature_scale"], dtype=np.float32)
+                    predictions.append(
+                        model(torch.from_numpy(values).unsqueeze(0))[0]
+                    )
+                prediction = torch.stack(predictions).mean(dim=0)
+            if self.force_profile is None:
+                index = int(prediction.argmax())
+                self.selected_profile = str(self.payload["profile_names"][index])
+            else:
+                self.selected_profile = self.force_profile
             learned_profile = getattr(
                 self.module, "_apply_learned_macro_profile", None
             )
@@ -86,7 +113,10 @@ def play(task: dict[str, Any]) -> dict[str, Any]:
     candidate_module = load_module(Path(task["agent"]), f"value_{suffix}")
     opponent_module = load_module(Path(task["opponent"]), f"opponent_{suffix}")
     candidate = ValueProfileAgent(
-        candidate_module, task["checkpoint"], int(task["decision_day"])
+        candidate_module,
+        task["checkpoints"],
+        int(task["decision_day"]),
+        task.get("force_profile"),
     )
     def candidate_function(obs: dict[str, Any]) -> dict[str, Any]:
         return candidate(obs)
@@ -125,10 +155,11 @@ def play(task: dict[str, Any]) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--checkpoint", type=Path, required=True)
+    parser.add_argument("--checkpoint", type=Path, nargs="+", required=True)
     parser.add_argument("--agent", type=Path, default=ROOT / "main.py")
     parser.add_argument("--opponent", type=Path, default=ROOT / "main.py")
     parser.add_argument("--decision-day", type=int, default=8)
+    parser.add_argument("--force-profile", choices=sorted(PROFILES))
     parser.add_argument("--seed-start", type=int, default=900_000)
     parser.add_argument("--seeds", type=int, default=100)
     parser.add_argument("--workers", type=int, default=20)
@@ -141,13 +172,14 @@ def main() -> None:
     args = parser.parse_args()
     tasks = [
         {
-            "checkpoint": str(args.checkpoint.resolve()),
+            "checkpoints": [str(path.resolve()) for path in args.checkpoint],
             "agent": str(args.agent.resolve()),
             "opponent": str(args.opponent.resolve()),
             "decision_day": args.decision_day,
             "seed": args.seed_start + index * 17,
             "seat": seat,
             "fast_runner": args.fast_runner,
+            "force_profile": args.force_profile,
         }
         for index in range(args.seeds)
         for seat in (0, 1)
@@ -157,8 +189,9 @@ def main() -> None:
         games = list(pool.imap_unordered(play, tasks, chunksize=1))
     profile_counts = Counter(game["profile"] for game in games)
     result = {
-        "checkpoint": str(args.checkpoint.resolve()),
+        "checkpoints": [str(path.resolve()) for path in args.checkpoint],
         "fast_runner": args.fast_runner,
+        "force_profile": args.force_profile,
         "games": sorted(games, key=lambda game: (game["seed"], game["seat"])),
         "summary": {
             "games": len(games),

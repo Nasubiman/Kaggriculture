@@ -13,6 +13,8 @@ from pathlib import Path
 from statistics import mean
 from typing import Any
 
+from hybrid_policy import load_pasted_agent
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCTS = (
@@ -60,6 +62,8 @@ PROFILES: dict[str, dict[str, int]] = {
 
 
 def load_module(path: Path, name: str) -> Any:
+    if path.suffix != ".py":
+        return load_pasted_agent(path)
     spec = importlib.util.spec_from_file_location(name, path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"cannot load {path}")
@@ -93,6 +97,8 @@ def state_features(obs: dict[str, Any]) -> dict[str, float]:
     prices = market.get("prices", {}) or {}
     inventory = market.get("inventory", {}) or {}
     features = {
+        "day": float(obs.get("day", 0)),
+        "hour": float(obs.get("hour", 0)),
         "own_money": float(own_farm.get("money", 0)),
         "opponent_money": float(opponent_farm.get("money", 0)),
         "own_hands": float(len(own_farm.get("hands", []))),
@@ -194,6 +200,7 @@ def play(
         "profile": profile_name,
         "seed": seed,
         "seat": seat,
+        "decision_day": decision_day,
         "reward": reward,
         "opponent_reward": opponent_reward,
         "margin": reward - opponent_reward,

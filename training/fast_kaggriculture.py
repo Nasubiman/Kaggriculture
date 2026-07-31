@@ -56,13 +56,48 @@ def run_fast_episode(
     episode_steps: int = 720,
 ) -> list[Any]:
     """Run trusted agents without schema/deepcopy/replay overhead."""
-    env, state = _initial_state(
+    env, state = create_fast_episode(
         seed=seed,
         episode_steps=episode_steps,
         num_agents=len(agents),
     )
 
-    for step in range(episode_steps - 1):
+    return run_fast_steps(
+        agents,
+        env=env,
+        state=state,
+        stop_step=episode_steps - 1,
+    )
+
+
+def create_fast_episode(
+    *, seed: int, episode_steps: int = 720, num_agents: int = 2
+) -> tuple[Any, list[Any]]:
+    """Create a fresh official initial state for interval/branch execution."""
+    return _initial_state(
+        seed=seed,
+        episode_steps=episode_steps,
+        num_agents=num_agents,
+    )
+
+
+def clone_fast_state(state: list[Any]) -> list[Any]:
+    """Clone a trusted live state for counterfactual continuation."""
+    return copy.deepcopy(state)
+
+
+def run_fast_steps(
+    agents: list[Callable[[Any], dict[str, Any]]],
+    *,
+    env: Any,
+    state: list[Any],
+    stop_step: int,
+) -> list[Any]:
+    """Advance a live state until observation.step reaches ``stop_step``."""
+    start_step = int(state[0].observation.get("step", 0))
+    env.state = state
+
+    for step in range(start_step, stop_step):
         for index, agent in enumerate(agents):
             state[index].observation.step = step
             state[index].action = agent(state[index].observation)
