@@ -59,13 +59,13 @@ server-head-to-head:
 server-push-replays:
 	test -d replays
 	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_DATA)/datasets/replays"'
-	rsync -avz --info=progress2 replays/ $(SERVER_HOST):$(SERVER_DATA)/datasets/replays/
+	rsync -avz --progress replays/ $(SERVER_HOST):$(SERVER_DATA)/datasets/replays/
 
 server-push-datasets:
 	test -d datasets/processed
 	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_DATA)/datasets/processed"'
-	rsync -avz --info=progress2 datasets/processed/ $(SERVER_HOST):$(SERVER_DATA)/datasets/processed/
+	rsync -avz --progress datasets/processed/ $(SERVER_HOST):$(SERVER_DATA)/datasets/processed/
 
 server-pull-results:
 	mkdir -p $(SERVER_RESULTS)
-	rsync -avz --info=progress2 $(SERVER_HOST):$(SERVER_DATA)/runs/ $(SERVER_RESULTS)/
+	rsync -avz --progress $(SERVER_HOST):$(SERVER_DATA)/runs/ $(SERVER_RESULTS)/
