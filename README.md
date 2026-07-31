@@ -135,11 +135,11 @@ mean margin +613 while also improving KEEP margins against Pulse and score800.
 See
 [`reports/gpu_counterfactual_scaling_20260731.md`](reports/gpu_counterfactual_scaling_20260731.md).
 
-The new structured strategy search expands the search space from nine scalar
-constants to 26 semantic opening, two-transition, layout, purchase, crop, and
-service-order genes. It uses staged fast-runner evaluation plus a GPU surrogate and found a
-71%-win-rate held-out candidate in a three-minute smoke run. See
-[`reports/structured_strategy_search_20260731.md`](reports/structured_strategy_search_20260731.md).
+The structured strategy search now covers 52 semantic fields, including mixed
+opening, staged labor and land expansion, market-conditioned cow/sheep/goose
+profiles, and a third crop/endgame transition. A five-minute server run found a
+92.5%-win-rate held-out candidate and passed the strong-reference gate. See
+[`reports/structured_strategy_gates_20260801.md`](reports/structured_strategy_gates_20260801.md).
 
 For future promotion checks, Pulse and score800 are treated as obsolete weak
 references. Structured candidates are compared directly with the current

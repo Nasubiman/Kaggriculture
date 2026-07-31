@@ -23,6 +23,7 @@ from strategy_genome import (
     crossover,
     feature_vector,
     mutate,
+    rank1_seed_genome,
 )
 
 
@@ -169,7 +170,8 @@ def proposal_pool(
     rng: random.Random,
 ) -> list[StrategyGenome]:
     parents = elites or [StrategyGenome()]
-    proposals = [parents[0], StrategyGenome()]
+    proposals = [*parents[:4], StrategyGenome(), rank1_seed_genome()]
+    proposals = list({genome.key(): genome for genome in proposals}.values())
     seen = {genome.key() for genome in proposals}
     attempts = 0
     while len(proposals) < size and attempts < size * 100:
@@ -304,7 +306,7 @@ def main() -> None:
     deadline = started + args.minutes * 60.0
     archive_by_key: dict[str, dict[str, Any]] = {}
     history: list[dict[str, Any]] = []
-    elites = [StrategyGenome()]
+    elites = [StrategyGenome(), rank1_seed_genome()]
     generation = 0
 
     metadata = {
@@ -328,8 +330,19 @@ def main() -> None:
         initializer=worker_init,
         initargs=(str(ROOT), str(args.opponent.resolve()), args.fast_runner),
     ) as pool:
-        baseline = evaluate(pool, [StrategyGenome()], [8_900_001 + i for i in range(12)])[0]
-        archive_by_key[baseline["key"]] = baseline
+        anchors = evaluate(
+            pool,
+            [StrategyGenome(), rank1_seed_genome()],
+            [8_900_001 + i for i in range(12)],
+        )
+        for anchor in anchors:
+            archive_by_key[anchor["key"]] = anchor
+        elites = [
+            StrategyGenome(**record["genome"])
+            for record in sorted(
+                anchors, key=lambda record: record["objective"], reverse=True
+            )
+        ]
         while time.monotonic() < deadline:
             raw = proposal_pool(
                 elites,

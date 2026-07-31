@@ -22,6 +22,7 @@ server-results/
 logs/
 *.zip
 submission.tar.gz
+candidate_main.py
 *.ckpt
 *.pt
 *.pth
