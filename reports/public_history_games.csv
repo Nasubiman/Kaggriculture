@@ -1,0 +1,16 @@
+rank,team,episode_id,player,opponent,seed,reward,opponent_reward,win,max_hands
+1,Victor @ Tufa Labs,89062813,0,Vlad Kochetov,1763906942,96422.0,36940.0,True,15
+1,Victor @ Tufa Labs,89058340,1,Waffle,1139216001,131089.0,62682.0,True,12
+1,Victor @ Tufa Labs,89050386,1,Raiden.B,1098996572,67108.0,77569.0,False,15
+2,Danilo_Malbashich,89061335,1,Tony Li,1721543694,78212.0,59081.0,True,12
+2,Danilo_Malbashich,89060847,0,Waffle,1255581825,72560.0,55944.0,True,12
+2,Danilo_Malbashich,89060364,1,Raiden.B,549711485,62998.0,88936.0,False,12
+3,Raiden.B,89059343,1,Waffle,2067208678,83240.0,65373.0,True,10
+3,Raiden.B,89053834,0,Danilo_Malbashich,1899954261,87065.0,60679.0,True,10
+3,Raiden.B,89052354,0,fgwiebfaoish,2052861659,100594.0,77123.0,True,10
+4,Waffle,89061336,0,Shivangoudaa,1444160763,73273.0,68336.0,True,8
+4,Waffle,89060847,1,Danilo_Malbashich,1255581825,55944.0,72560.0,False,8
+4,Waffle,89059343,0,Raiden.B,2067208678,65373.0,83240.0,False,8
+5,fgwiebfaoish,89054335,1,Danilo_Malbashich,1971553371,53656.0,60038.0,False,11
+5,fgwiebfaoish,89053343,1,Danilo_Malbashich,694786146,49328.0,69467.0,False,11
+5,fgwiebfaoish,89049882,1,Beisenbek Nurassyl [dsmlkz],751913585,48779.0,25251.0,True,11

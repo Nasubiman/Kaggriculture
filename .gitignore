@@ -1,0 +1,22 @@
+# Local Python environment
+.venv/
+__pycache__/
+*.py[cod]
+
+# Local credentials and environment variables
+.env
+.env.*
+!.env.example
+.kaggle/
+kaggle.json
+access_token
+
+# Kaggle downloads and generated submissions
+kaggle-data/
+replays/
+logs/
+*.zip
+submission.tar.gz
+
+# macOS
+.DS_Store
