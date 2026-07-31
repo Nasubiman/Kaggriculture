@@ -64,3 +64,16 @@ For moving development to a CPU/GPU server, including the files that are not
 tracked by Git, environment recreation, parity checks, and the proposed
 imitation-learning/self-play workflow, see
 [`SERVER_MIGRATION_RUNBOOK.md`](SERVER_MIGRATION_RUNBOOK.md).
+
+The configured hybrid workflow keeps replay collection and normal development
+on the local Mac and uses `kag-server` only for compute-heavy work:
+
+```bash
+make server-check
+make server-update-code
+make server-evaluate
+make server-head-to-head
+make server-push-replays
+make server-push-datasets
+make server-pull-results
+```

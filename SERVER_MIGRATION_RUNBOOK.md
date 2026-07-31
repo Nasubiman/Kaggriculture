@@ -373,3 +373,117 @@ SSH切断で学習を止めない。
 12. CPU推論可能な提出形式へexport
 
 最初の成功条件は「GPUを使うこと」ではなく、**既存結果を再現したうえで、同一のheld-out評価において学習モデルがCow Crown v1を安定して上回ること**とする。
+
+## 15. 実際に構築したハイブリッド環境
+
+2026-07-31に、ローカルMacを開発・データ収集の本体とし、次のサーバーを計算専用にする構成を作成した。
+
+| 項目 | 設定 |
+|---|---|
+| SSH alias | `kag-server` |
+| Host | `192.168.100.211` |
+| User | `nakamura_y` |
+| Hostname | `deepstation` |
+| Remote repository | `/home/nakamura_y/agriculture/Kaggriculture` |
+| Compute data root | `/media/deepstation/storage/nakamura_y/kaggriculture` |
+| CPU | 20 logical CPUs |
+| RAM | 62 GiB |
+| GPU | NVIDIA GeForce RTX 2080 Ti 11 GiB ×2 |
+| NVIDIA driver | 550.54.15 |
+
+ホーム領域は空き約100 GB、使用率95%だったため、大きいdataset、environment、checkpoint、runはホームではなく`/media/deepstation/storage`へ置く。
+
+### Python environment
+
+既存AnacondaからPython 3.12.13の環境を次に作成した。
+
+```text
+/media/deepstation/storage/nakamura_y/kaggriculture/envs/runtime
+```
+
+Remote repositoryの`.venv`は、このenvironmentを指すsymlinkである。
+
+```text
+/home/nakamura_y/agriculture/Kaggriculture/.venv
+  -> /media/deepstation/storage/nakamura_y/kaggriculture/envs/runtime
+```
+
+インストール済みの基準バージョン:
+
+```text
+Python 3.12.13
+kaggle 2.2.4
+kaggle-environments 1.32.2
+```
+
+### Compute data layout
+
+```text
+/media/deepstation/storage/nakamura_y/kaggriculture/
+├── envs/
+├── datasets/
+│   └── reference/
+│       └── score800_reference.txt
+├── runs/
+├── checkpoints/
+└── logs/
+```
+
+### Parity validation
+
+サーバー上で既存のCow Crown v1を再評価した。
+
+| Evaluation | Games | Wins | Mean reward | Mean margin | Time |
+|---|---:|---:|---:|---:|---:|
+| starter/random | 12 | 12 | 109,420 | +107,681 | 31.49 sec |
+| score 800 reference | 10 | 10 | 107,046.3 | +72,461.6 | 32.62 sec |
+
+score 800 referenceとの各seed・各seatの値はローカル結果と完全一致した。
+
+検証結果:
+
+```text
+/media/deepstation/storage/nakamura_y/kaggriculture/runs/setup_validation/
+├── baseline_evaluation.json
+└── cow_vs_score800.json
+```
+
+### 日常的に使うコマンド
+
+ローカルリポジトリから実行する。
+
+```bash
+# 接続、Python、Git、GPU、diskを確認
+make server-check
+
+# ローカルでpush済みのコードをサーバーへ反映
+make server-update-code
+
+# サーバー上で通常評価
+make server-evaluate
+
+# サーバー上でscore 800参照と評価
+make server-head-to-head
+
+# 必要なときだけ生replayを転送
+make server-push-replays
+
+# 加工済みdatasetを転送
+make server-push-datasets
+
+# run結果をローカルのserver-results/へ回収
+make server-pull-results
+```
+
+`server-results/`、`datasets/`、`checkpoints/`、`runs/`、一般的な学習weight形式はGit対象外に設定している。
+
+### 運用ルール
+
+1. コードはローカルで編集し、Gitでサーバーへ反映する。
+2. Kaggle Game Historyの収集とKaggle提出はローカルで行う。
+3. datasetは必要なものだけ`rsync`でサーバーへ送る。
+4. 大量シミュレーション、模倣学習、PPO、league評価はサーバーで行う。
+5. runのsummaryとbest checkpointだけをローカルへ戻す。
+6. サーバーへKaggle tokenを置かない。
+7. 長時間runは`tmux`または将来のjob runnerから起動する。
+8. 2枚のGPUは最初から分散学習に使わず、1枚で正しい学習を確認してから利用する。

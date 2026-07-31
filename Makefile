@@ -2,8 +2,13 @@ PYTHON ?= python3.12
 VENV := .venv
 KAGGLE := $(VENV)/bin/kaggle
 COMPETITION := kaggriculture
+SERVER_HOST ?= kag-server
+SERVER_REPO ?= /home/nakamura_y/agriculture/Kaggriculture
+SERVER_DATA ?= /media/deepstation/storage/nakamura_y/kaggriculture
+SERVER_REFERENCE ?= $(SERVER_DATA)/datasets/reference/score800_reference.txt
+SERVER_RESULTS ?= server-results
 
-.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head
+.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head server-check server-update-code server-evaluate server-head-to-head server-push-replays server-push-datasets server-pull-results
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -37,3 +42,29 @@ evaluate:
 
 head-to-head:
 	$(VENV)/bin/python scripts/head_to_head.py
+
+server-check:
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; printf "repo=%s\n" "$$PWD"; .venv/bin/python --version; git status --short; nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader; df -h "$(SERVER_DATA)"'
+
+server-update-code:
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; git pull --ff-only'
+
+server-evaluate:
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(SERVER_DATA)/runs/manual"; .venv/bin/python scripts/evaluate_agent.py --output "$(SERVER_DATA)/runs/manual/baseline_evaluation.json"'
+
+server-head-to-head:
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(SERVER_DATA)/runs/manual"; .venv/bin/python scripts/head_to_head.py --reference "$(SERVER_REFERENCE)" --seeds 7101 7102 7103 7104 7105 --output "$(SERVER_DATA)/runs/manual/cow_vs_score800.json"'
+
+server-push-replays:
+	test -d replays
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_DATA)/datasets/replays"'
+	rsync -avz --info=progress2 replays/ $(SERVER_HOST):$(SERVER_DATA)/datasets/replays/
+
+server-push-datasets:
+	test -d datasets/processed
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_DATA)/datasets/processed"'
+	rsync -avz --info=progress2 datasets/processed/ $(SERVER_HOST):$(SERVER_DATA)/datasets/processed/
+
+server-pull-results:
+	mkdir -p $(SERVER_RESULTS)
+	rsync -avz --info=progress2 $(SERVER_HOST):$(SERVER_DATA)/runs/ $(SERVER_RESULTS)/
