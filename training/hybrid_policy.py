@@ -331,7 +331,7 @@ class ActorCritic(nn.Module):
             # Analytic behavior-cloning prior: KEEP reproduces the strong
             # deterministic teacher exactly, while the remaining probability
             # still explores semantic deviations during PPO rollouts.
-            self.actor.bias[0] = 4.0
+            self.actor.bias[0] = 4.5
 
     @staticmethod
     def _initialize(module: nn.Module) -> None:
@@ -489,7 +489,7 @@ class HybridPolicyAgent:
             )
             rewards.append(shaping_coefficient * (next_potential - potential))
         outcome = 1.0 if reward > opponent_reward else -1.0 if reward < opponent_reward else 0.0
-        rewards[-1] += outcome + 0.25 * final_potential
+        rewards[-1] += outcome + 0.5 * final_potential
         finalized = []
         for step, step_reward in zip(self.trajectory, rewards):
             record = dict(step)

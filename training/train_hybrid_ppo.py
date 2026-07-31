@@ -332,10 +332,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--gamma", type=float, default=0.995)
     parser.add_argument("--gae-lambda", type=float, default=0.95)
     parser.add_argument("--clip-range", type=float, default=0.2)
-    parser.add_argument("--entropy-coefficient", type=float, default=0.02)
+    parser.add_argument("--entropy-coefficient", type=float, default=0.002)
     parser.add_argument("--value-coefficient", type=float, default=0.5)
-    parser.add_argument("--teacher-coefficient", type=float, default=0.01)
+    parser.add_argument("--teacher-coefficient", type=float, default=0.03)
     parser.add_argument("--shaping-coefficient", type=float, default=0.1)
+    parser.add_argument("--incumbent-fraction", type=float, default=0.4)
     parser.add_argument("--league-interval", type=int, default=2)
     parser.add_argument("--max-league-size", type=int, default=8)
     parser.add_argument("--seed", type=int, default=20260731)
@@ -430,11 +431,18 @@ def main() -> None:
             for path in league_checkpoints
         )
         weights = pfsp_weights(opponents, estimates)
-        chosen = []
-        for index in range(args.games_per_iteration):
+        incumbent_games = max(
+            1,
+            min(
+                args.games_per_iteration,
+                math.ceil(args.games_per_iteration * args.incumbent_fraction),
+            ),
+        )
+        chosen = [opponents[0]] * incumbent_games
+        for index in range(args.games_per_iteration - incumbent_games):
             opponent = (
-                opponents[index]
-                if index < len(opponents)
+                opponents[index + 1]
+                if index + 1 < len(opponents)
                 else rng.choices(opponents, weights=weights, k=1)[0]
             )
             chosen.append(opponent)
@@ -476,8 +484,7 @@ def main() -> None:
             clip_range=args.clip_range,
             entropy_coefficient=args.entropy_coefficient,
             value_coefficient=args.value_coefficient,
-            teacher_coefficient=args.teacher_coefficient
-            * max(0.0, 1.0 - update / max(1, args.iterations)),
+            teacher_coefficient=args.teacher_coefficient,
         )
         model.eval()
         gpu_peak_memory_mb = (
