@@ -28,14 +28,14 @@ from kaggle_environments import make
 ROOT = Path(__file__).resolve().parents[1]
 
 BASELINE_PARAMS: dict[str, int | float] = {
-    "COW_START_DAY": 11,
-    "COW_TARGET": 20,
-    "COW_PURCHASE_BATCH": 12,
-    "COW_HANDS": 12,
-    "WHEAT_TILES": 2,
-    "WHEAT_PICKUP_BATCH": 8,
-    "SALE_PROCEEDS_FACTOR": 0.65,
-    "SHEEP_TARGET": 2,
+    "COW_START_DAY": 8,
+    "COW_TARGET": 16,
+    "COW_PURCHASE_BATCH": 4,
+    "COW_HANDS": 11,
+    "WHEAT_TILES": 3,
+    "WHEAT_PICKUP_BATCH": 12,
+    "SALE_PROCEEDS_FACTOR": 0.5,
+    "SHEEP_TARGET": 4,
     "OPENING_HANDS": 7,
 }
 
