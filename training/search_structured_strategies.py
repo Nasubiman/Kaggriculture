@@ -30,6 +30,8 @@ from strategy_genome import (
 ROOT = Path(__file__).resolve().parents[1]
 _CANDIDATE_MODULE: Any = None
 _OPPONENT_AGENT: Any = None
+_OPPONENT_PATH: Path | None = None
+_RELOAD_OPPONENT = False
 _FAST_RUNNER = True
 
 
@@ -70,13 +72,16 @@ def load_incumbent_genome(path: Path) -> StrategyGenome:
 
 
 def worker_init(repo: str, opponent_path: str, fast_runner: bool) -> None:
-    global _CANDIDATE_MODULE, _OPPONENT_AGENT, _FAST_RUNNER
+    global _CANDIDATE_MODULE, _OPPONENT_AGENT, _OPPONENT_PATH
+    global _RELOAD_OPPONENT, _FAST_RUNNER
     root = Path(repo)
     suffix = str(os.getpid())
     _CANDIDATE_MODULE = load_module(
         root / "main.py", f"structured_candidate_{suffix}"
     )
     opponent = Path(opponent_path)
+    _OPPONENT_PATH = opponent
+    _RELOAD_OPPONENT = opponent.suffix == ".py" and opponent.parent.parent.name == "test"
     _OPPONENT_AGENT = (
         load_module(opponent, f"structured_opponent_{suffix}").agent
         if opponent.suffix == ".py"
@@ -90,10 +95,16 @@ def play_task(task: tuple[dict[str, Any], int, int]) -> dict[str, Any]:
     genome = StrategyGenome(**genome_values).normalized()
     try:
         candidate = configure_module(_CANDIDATE_MODULE, genome)
+        opponent = _OPPONENT_AGENT
+        if _RELOAD_OPPONENT and _OPPONENT_PATH is not None:
+            opponent = load_module(
+                _OPPONENT_PATH,
+                f"structured_opponent_{os.getpid()}_{seed}_{seat}",
+            ).agent
         agents = (
-            [candidate, _OPPONENT_AGENT]
+            [candidate, opponent]
             if seat == 0
-            else [_OPPONENT_AGENT, candidate]
+            else [opponent, candidate]
         )
         if _FAST_RUNNER:
             final = run_fast_episode(agents, seed=seed)

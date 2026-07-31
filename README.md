@@ -144,9 +144,24 @@ passed the strong-reference gate in 200/200 games. See
 [`reports/hierarchical_strategy_search_20260801.md`](reports/hierarchical_strategy_search_20260801.md).
 
 For future promotion checks, Pulse and score800 are treated as obsolete weak
-references. Structured candidates are compared directly with the current
-`main.py`, then gated against the model extracted from `submission.tar.gz` via
-`make server-structured-gate`.
+references. Reusable opponents live at `test/<model-name>/main.py`. Structured
+candidates are compared directly with the current `main.py`, then gated against
+every model below `test/` via `make server-structured-gate`.
+
+Import a newly downloaded archive and test the current agent with:
+
+```bash
+make test-import TEST_MODEL=my_model  # submission.tar.gz -> test/my_model/main.py
+make test-list                        # list registered opponents
+make test-models                      # local evaluation against all opponents
+make server-test-models               # the same evaluation on kag-server
+```
+
+Use `TEST_MODELS="model_a model_b"` to evaluate only selected folders. Import
+also writes `metadata.json` with archive and source SHA-256 hashes, and refuses
+to overwrite an existing model name. Each agent module is reloaded for every
+game, matching Kaggle's game isolation even when an opponent keeps module-level
+state.
 
 The usual genome workflow is intentionally short:
 

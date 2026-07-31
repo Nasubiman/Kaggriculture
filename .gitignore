@@ -21,7 +21,7 @@ runs/
 server-results/
 logs/
 *.zip
-submission.tar.gz
+submission*.tar*.gz
 candidate_main.py
 *.ckpt
 *.pt

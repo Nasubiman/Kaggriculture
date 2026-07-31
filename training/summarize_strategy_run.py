@@ -30,11 +30,25 @@ def main() -> None:
             None,
         )
         if path is None:
+            if label == "submission":
+                # Backward-compatible result name used before test/<name>/main.py.
+                continue
             print(f"{label:10} not evaluated")
             continue
         summary = json.loads(path.read_text(encoding="utf-8"))["summary"]
         print(
             f"{label:10} "
+            f"wins={summary['wins']}/{summary['games']} "
+            f"rate={summary['win_rate']:.1%} "
+            f"margin={summary['mean_margin']:.1f} "
+            f"reward={summary['mean_reward']:.1f} "
+            f"errors={summary['errors']}"
+        )
+    for path in sorted(args.run.glob("gate_test_*_fast.json")):
+        label = path.name.removeprefix("gate_test_").removesuffix("_fast.json")
+        summary = json.loads(path.read_text(encoding="utf-8"))["summary"]
+        print(
+            f"test/{label:25} "
             f"wins={summary['wins']}/{summary['games']} "
             f"rate={summary['win_rate']:.1%} "
             f"margin={summary['mean_margin']:.1f} "
