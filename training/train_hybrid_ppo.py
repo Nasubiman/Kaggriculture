@@ -461,6 +461,8 @@ def main() -> None:
         if errors:
             raise RuntimeError(f"Rollout errors: {errors[:2]}")
         trajectories = [game["trajectory"] for game in games if game["trajectory"]]
+        if device.type == "cuda":
+            torch.cuda.reset_peak_memory_stats(device)
         model.train()
         training = train_batch(
             model,
@@ -478,6 +480,11 @@ def main() -> None:
             * max(0.0, 1.0 - update / max(1, args.iterations)),
         )
         model.eval()
+        gpu_peak_memory_mb = (
+            torch.cuda.max_memory_allocated(device) / (1024 * 1024)
+            if device.type == "cuda"
+            else 0.0
+        )
         summary = summarize_games(games)
         for name, opponent_summary in summary["by_opponent"].items():
             previous = estimates.get(name, 0.5)
@@ -496,6 +503,7 @@ def main() -> None:
             "estimated_win_rates": estimates,
             "games": summary,
             "training": training,
+            "gpu_peak_memory_mb": gpu_peak_memory_mb,
         }
         with (output_dir / "metrics.jsonl").open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(record) + "\n")
@@ -525,7 +533,8 @@ def main() -> None:
             f"margin={summary['mean_margin']:+.1f} "
             f"transitions={int(training['transitions'])} "
             f"entropy={training['entropy']:.3f} "
-            f"kl={training['approximate_kl']:.5f}",
+            f"kl={training['approximate_kl']:.5f} "
+            f"gpu_peak_mb={gpu_peak_memory_mb:.1f}",
             flush=True,
         )
 

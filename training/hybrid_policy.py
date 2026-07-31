@@ -328,7 +328,10 @@ class ActorCritic(nn.Module):
         self.critic = nn.Linear(128, 1)
         self.apply(self._initialize)
         with torch.no_grad():
-            self.actor.bias[0] = 2.0
+            # Analytic behavior-cloning prior: KEEP reproduces the strong
+            # deterministic teacher exactly, while the remaining probability
+            # still explores semantic deviations during PPO rollouts.
+            self.actor.bias[0] = 4.0
 
     @staticmethod
     def _initialize(module: nn.Module) -> None:
