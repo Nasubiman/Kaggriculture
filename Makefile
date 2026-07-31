@@ -6,6 +6,7 @@ SERVER_HOST ?= kag-server
 SERVER_REPO ?= /home/nakamura_y/agriculture/Kaggriculture
 SERVER_DATA ?= /media/deepstation/storage/nakamura_y/kaggriculture
 SERVER_REFERENCE ?= $(SERVER_DATA)/datasets/reference/score800_reference.txt
+SERVER_STRONG_REFERENCE ?= $(SERVER_DATA)/datasets/reference/submission_tar_main.py
 SERVER_RESULTS ?= server-results
 HYBRID_RUN ?= $(SERVER_DATA)/runs/hybrid_ppo_manual
 HYBRID_ITERATIONS ?= 20
@@ -16,8 +17,19 @@ CF_RUN ?= $(SERVER_DATA)/runs/counterfactual_value_manual
 CF_SEEDS ?= 200
 CF_PROFILES ?= KEEP COW_14 COW_15 SHEEP_2 SHEEP_3 HANDS_10 WHEAT_4 BATCH_6
 CF_DECISION_DAY ?= 8
+STRUCTURED_NAME ?= structured_$(shell date +%Y%m%d_%H%M%S)
+STRUCTURED_RUN ?= $(SERVER_DATA)/runs/$(STRUCTURED_NAME)
+STRUCTURED_LOCAL_RUN ?= $(SERVER_RESULTS)/$(STRUCTURED_NAME)
+STRUCTURED_MINUTES ?= 90
+STRUCTURED_POPULATION ?= 48
+STRUCTURED_WORKERS ?= 20
+STRUCTURED_HELDOUT_SEEDS ?= 200
+STRUCTURED_PARITY_SEEDS ?= 20
+STRUCTURED_GATE_SEEDS ?= 200
+LAST_STRUCTURED_RUN := $(SERVER_RESULTS)/LATEST_STRUCTURED_RUN
+RUN ?= $(shell test -f "$(LAST_STRUCTURED_RUN)" && cat "$(LAST_STRUCTURED_RUN)")
 
-.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
+.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head genome-train genome-status genome-candidate genome-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -70,6 +82,52 @@ server-head-to-head:
 
 server-hybrid-train:
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(HYBRID_RUN)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 CUDA_VISIBLE_DEVICES=0 .venv/bin/python training/train_hybrid_ppo.py --output-dir "$(HYBRID_RUN)" --iterations "$(HYBRID_ITERATIONS)" --games-per-iteration "$(HYBRID_GAMES)" --workers "$(HYBRID_WORKERS)" --score800-reference "$(SERVER_REFERENCE)" --device cuda'
+
+server-structured-search:
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(STRUCTURED_RUN)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 CUDA_VISIBLE_DEVICES=0 PYTHONPATH=training .venv/bin/python training/search_structured_strategies.py --minutes "$(STRUCTURED_MINUTES)" --population "$(STRUCTURED_POPULATION)" --proposal-multiplier 96 --stage1 12 --stage2 4 --workers "$(STRUCTURED_WORKERS)" --device cuda --output-dir "$(STRUCTURED_RUN)"'
+
+server-structured-gate:
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; test -f "$(STRUCTURED_RUN)/best_genome.json"; test -f "$(SERVER_STRONG_REFERENCE)"; PYTHONPATH=training .venv/bin/python training/evaluate_strategy_genome.py --genome "$(STRUCTURED_RUN)/best_genome.json" --opponent "$(SERVER_STRONG_REFERENCE)" --seed-start 9700000 --seeds "$(STRUCTURED_GATE_SEEDS)" --workers "$(STRUCTURED_WORKERS)" --output "$(STRUCTURED_RUN)/gate_submission_tar_fast.json"'
+
+# One-command structured search: sync, train, validate, gate, and pull only this run.
+genome-train:
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(STRUCTURED_RUN)/source"'
+	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py
+	rsync -az training/strategy_genome.py training/search_structured_strategies.py training/evaluate_strategy_genome.py $(SERVER_HOST):$(SERVER_REPO)/training/
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; cp main.py "$(STRUCTURED_RUN)/source/main.py"; cp training/strategy_genome.py training/search_structured_strategies.py training/evaluate_strategy_genome.py "$(STRUCTURED_RUN)/source/"; git rev-parse HEAD > "$(STRUCTURED_RUN)/source/git_commit.txt"; git diff > "$(STRUCTURED_RUN)/source/worktree.patch"'
+	$(MAKE) server-structured-search STRUCTURED_RUN="$(STRUCTURED_RUN)" STRUCTURED_MINUTES="$(STRUCTURED_MINUTES)" STRUCTURED_POPULATION="$(STRUCTURED_POPULATION)" STRUCTURED_WORKERS="$(STRUCTURED_WORKERS)"
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/evaluate_strategy_genome.py --genome "$(STRUCTURED_RUN)/best_genome.json" --opponent main.py --seed-start 9800000 --seeds "$(STRUCTURED_HELDOUT_SEEDS)" --workers "$(STRUCTURED_WORKERS)" --fast-runner --output "$(STRUCTURED_RUN)/heldout_vs_current_fast.json"'
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; PYTHONPATH=training .venv/bin/python training/evaluate_strategy_genome.py --genome "$(STRUCTURED_RUN)/best_genome.json" --opponent main.py --seed-start 9900000 --seeds "$(STRUCTURED_PARITY_SEEDS)" --workers "$(STRUCTURED_WORKERS)" --fast-runner --output "$(STRUCTURED_RUN)/parity_fast.json"; PYTHONPATH=training .venv/bin/python training/evaluate_strategy_genome.py --genome "$(STRUCTURED_RUN)/best_genome.json" --opponent main.py --seed-start 9900000 --seeds "$(STRUCTURED_PARITY_SEEDS)" --workers "$(STRUCTURED_WORKERS)" --no-fast-runner --output "$(STRUCTURED_RUN)/parity_standard.json"'
+	$(MAKE) server-structured-gate STRUCTURED_RUN="$(STRUCTURED_RUN)" STRUCTURED_GATE_SEEDS="$(STRUCTURED_GATE_SEEDS)" STRUCTURED_WORKERS="$(STRUCTURED_WORKERS)"
+	mkdir -p "$(STRUCTURED_LOCAL_RUN)"
+	rsync -az --progress $(SERVER_HOST):$(STRUCTURED_RUN)/ "$(STRUCTURED_LOCAL_RUN)/"
+	mkdir -p "$(SERVER_RESULTS)"
+	printf '%s\n' "$(STRUCTURED_LOCAL_RUN)" > "$(LAST_STRUCTURED_RUN)"
+	$(VENV)/bin/python training/summarize_strategy_run.py "$(STRUCTURED_LOCAL_RUN)"
+	@printf '\nDone. Next: make genome-candidate\n'
+
+# Show the latest run (or RUN=server-results/...) without opening JSON files.
+genome-status:
+	test -n "$(RUN)"
+	$(VENV)/bin/python training/summarize_strategy_run.py "$(RUN)"
+
+# Build a standalone candidate from the latest run (or RUN=server-results/...).
+genome-candidate:
+	test -n "$(RUN)"
+	test -f "$(RUN)/best_genome.json"
+	test -f "$(RUN)/source/main.py"
+	$(VENV)/bin/python training/promote_strategy_genome.py --genome "$(RUN)/best_genome.json" --base "$(RUN)/source/main.py" --output candidate_main.py
+	$(VENV)/bin/python -m py_compile candidate_main.py
+	@printf 'Candidate ready: candidate_main.py\nNext: make genome-use\n'
+
+# Explicitly promote the generated candidate to main.py, keeping one backup in the run.
+genome-use: genome-candidate
+	test -f "$(RUN)/main_before_promotion.py" || cp main.py "$(RUN)/main_before_promotion.py"
+	cp candidate_main.py main.py
+	$(VENV)/bin/python -m py_compile main.py
+	$(VENV)/bin/python -c 'import main; assert callable(main.agent); print("main.agent OK")'
+	cp main.py "$(RUN)/promoted_main.py"
+	@printf '\nPromoted %s/best_genome.json to main.py\n' "$(RUN)"
 
 server-counterfactual-generate:
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$$(dirname "$(CF_DATA)")"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python training/generate_branched_counterfactuals.py --agent main.py --opponent main.py --decision-days 8 12 16 20 24 --seed-start 1100000 --seeds "$(CF_SEEDS)" --workers 20 --profiles $(CF_PROFILES) --output "$(CF_DATA)"'

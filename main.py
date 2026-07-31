@@ -333,6 +333,12 @@ OPENING_ANIMAL = "COW"
 OPENING_ANIMAL_TARGET = 2
 OPENING_REPLANT = True
 USE_LEARNED_MACRO = False
+SETUP_PRIORITY = 2
+CARE_PRIORITY = 3
+FERTILIZER_PRIORITY = 4
+ANIMAL_HARVEST_PRIORITY = 5
+CASH_WATER_PRIORITY = 6
+WHEAT_TASK_PRIORITY = 8
 
 RUI_COW_TARGETS = (
     (4, 4), (4, 3), (3, 2), (4, 2),
@@ -670,7 +676,7 @@ def _cash_crop_tasks(obs, farm, excluded):
                 if age >= 10 and amount > 0:
                     tasks.append((0, position, ["HARVEST"]))
                 elif not tile.get("watered_today", False):
-                    tasks.append((6, position, ["WATER"]))
+                    tasks.append((CASH_WATER_PRIORITY, position, ["WATER"]))
             elif amount > 0:
                 tasks.append((0, position, ["HARVEST"]))
     return tasks
@@ -694,10 +700,10 @@ def _planned_cash_crop_tasks(obs, farm, private, targets):
         if not isinstance(tile, dict):
             continue
         if tile.get("kind") == "WEED":
-            tasks.append((2, position, ["DIG"]))
+            tasks.append((SETUP_PRIORITY, position, ["DIG"]))
             continue
         if tile.get("kind") != "PLANT":
-            tasks.append((2, position, ["DIG"]))
+            tasks.append((SETUP_PRIORITY, position, ["DIG"]))
             continue
         crop = tile.get("crop")
         amount = int(tile.get("yield_units", 0))
@@ -705,14 +711,14 @@ def _planned_cash_crop_tasks(obs, farm, private, targets):
         if crop != CASH_CROP:
             if crop == "MELON" and age < 10:
                 if not tile.get("watered_today", False):
-                    tasks.append((6, position, ["WATER"]))
+                    tasks.append((CASH_WATER_PRIORITY, position, ["WATER"]))
             elif amount > 0:
                 tasks.append((0, position, ["HARVEST"]))
             else:
-                tasks.append((2, position, ["DIG"]))
+                tasks.append((SETUP_PRIORITY, position, ["DIG"]))
             continue
         if not tile.get("watered_today", False):
-            tasks.append((6, position, ["WATER"]))
+            tasks.append((CASH_WATER_PRIORITY, position, ["WATER"]))
         elif amount > 0:
             tasks.append((0, position, ["HARVEST"]))
     return tasks
@@ -993,12 +999,12 @@ def _cow_actions(obs, farm, private, animals=None):
     for target, animal in animals.items():
         if not animal.get("cared_today", False):
             animal_service_tasks.append(
-                (3, target, ["CARE"], ("CARE", target))
+                (CARE_PRIORITY, target, ["CARE"], ("CARE", target))
             )
         if animal.get("fertilizer_available", False):
             animal_service_tasks.append(
                 (
-                    4,
+                    FERTILIZER_PRIORITY,
                     target,
                     ["COLLECT_FERTILIZER"],
                     ("FERTILIZER", target),
@@ -1007,7 +1013,7 @@ def _cow_actions(obs, farm, private, animals=None):
         if int(animal.get("yield_units", 0)) > 0:
             animal_service_tasks.append(
                 (
-                    5,
+                    ANIMAL_HARVEST_PRIORITY,
                     target,
                     ["HARVEST"],
                     ("ANIMAL_PRODUCT", target),
@@ -1018,7 +1024,7 @@ def _cow_actions(obs, farm, private, animals=None):
     for target, action in setup_tasks:
         field_tasks.append(
             (
-                0 if action[0] == "HARVEST" else 2,
+                0 if action[0] == "HARVEST" else SETUP_PRIORITY,
                 target,
                 action,
                 ("FIELD", target),
@@ -1027,7 +1033,7 @@ def _cow_actions(obs, farm, private, animals=None):
     for target, action in sheep_setup_tasks:
         field_tasks.append(
             (
-                0 if action[0] == "HARVEST" else 2,
+                0 if action[0] == "HARVEST" else SETUP_PRIORITY,
                 target,
                 action,
                 ("FIELD", target),
@@ -1048,7 +1054,7 @@ def _cow_actions(obs, farm, private, animals=None):
     wheat_nonplant_tasks = []
     wheat_plant_tasks = []
     for target, action in wheat_tasks:
-        task = (8, target, action, ("FIELD", target))
+        task = (WHEAT_TASK_PRIORITY, target, action, ("FIELD", target))
         if action[0] == "PLANT":
             wheat_plant_tasks.append(task)
         else:

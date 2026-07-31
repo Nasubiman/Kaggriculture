@@ -134,3 +134,28 @@ counterfactual outcomes. Its day-8 policy reached 70% against `main.py` with
 mean margin +613 while also improving KEEP margins against Pulse and score800.
 See
 [`reports/gpu_counterfactual_scaling_20260731.md`](reports/gpu_counterfactual_scaling_20260731.md).
+
+The new structured strategy search expands the search space from nine scalar
+constants to 26 semantic opening, two-transition, layout, purchase, crop, and
+service-order genes. It uses staged fast-runner evaluation plus a GPU surrogate and found a
+71%-win-rate held-out candidate in a three-minute smoke run. See
+[`reports/structured_strategy_search_20260731.md`](reports/structured_strategy_search_20260731.md).
+
+For future promotion checks, Pulse and score800 are treated as obsolete weak
+references. Structured candidates are compared directly with the current
+`main.py`, then gated against the model extracted from `submission.tar.gz` via
+`make server-structured-gate`.
+
+The usual genome workflow is intentionally short:
+
+```bash
+make genome-train      # sync, train, validate, gate, and download
+make genome-status     # show the latest scores
+make genome-candidate  # create standalone candidate_main.py
+make genome-use        # back up and replace main.py explicitly
+```
+
+Runs receive timestamped names automatically. Pass
+`RUN=server-results/<run-name>` to the last three commands to select an older
+run instead of the latest one. The complete Japanese procedure is in
+`memo.txt`.
