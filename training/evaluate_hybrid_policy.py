@@ -23,24 +23,35 @@ def main() -> None:
         "--pulse-agent", type=Path, default=ROOT / "agents" / "pulse_breaker_v2.py"
     )
     parser.add_argument("--score800-reference", type=Path)
+    parser.add_argument(
+        "--opponents",
+        nargs="+",
+        choices=("incumbent", "pulse", "score800"),
+        default=("incumbent", "pulse", "score800"),
+    )
     parser.add_argument("--seeds", nargs="+", type=int, required=True)
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 
-    opponents = [
-        {
+    opponents = []
+    if "incumbent" in args.opponents:
+        opponents.append({
             "name": "incumbent",
             "kind": "scripted",
             "path": str(args.base_agent.resolve()),
-        },
-        {
+        })
+    if "pulse" in args.opponents:
+        opponents.append({
             "name": "pulse",
             "kind": "scripted",
             "path": str(args.pulse_agent.resolve()),
-        },
-    ]
-    if args.score800_reference and args.score800_reference.exists():
+        })
+    if (
+        "score800" in args.opponents
+        and args.score800_reference
+        and args.score800_reference.exists()
+    ):
         opponents.append(
             {
                 "name": "score800",
@@ -53,7 +64,7 @@ def main() -> None:
             "candidate_checkpoint": str(args.checkpoint.resolve()),
             "base_agent": str(args.base_agent.resolve()),
             "candidate_deterministic": True,
-            "record_trajectory": False,
+            "record_trajectory": True,
             "opponent": opponent,
             "seed": seed,
             "seat": seat,

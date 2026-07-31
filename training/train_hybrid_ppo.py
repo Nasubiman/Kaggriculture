@@ -280,6 +280,7 @@ def summarize_games(games: list[dict[str, Any]]) -> dict[str, Any]:
             by_opponent[opponent] = {
                 "games": len(subset),
                 "wins": sum(bool(game["win"]) for game in subset),
+                "ties": sum(bool(game["tie"]) for game in subset),
                 "win_rate": mean(float(game["win"]) for game in subset),
                 "mean_reward": mean(float(game["reward"]) for game in subset),
                 "mean_margin": mean(float(game["margin"]) for game in subset),
@@ -293,6 +294,7 @@ def summarize_games(games: list[dict[str, Any]]) -> dict[str, Any]:
         "valid_games": len(valid),
         "errors": len(games) - len(valid),
         "wins": sum(bool(game["win"]) for game in valid),
+        "ties": sum(bool(game["tie"]) for game in valid),
         "win_rate": mean(float(game["win"]) for game in valid) if valid else 0.0,
         "mean_reward": mean(float(game["reward"]) for game in valid) if valid else 0.0,
         "mean_margin": mean(float(game["margin"]) for game in valid) if valid else 0.0,
