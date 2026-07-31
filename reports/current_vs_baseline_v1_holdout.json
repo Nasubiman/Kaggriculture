@@ -3,9 +3,9 @@
     {
       "seed": 9101,
       "seat": 0,
-      "reward": 36641.0,
+      "reward": 36956.0,
       "opponent_reward": 12099.0,
-      "margin": 24542.0,
+      "margin": 24857.0,
       "win": true,
       "tie": false,
       "status": "DONE"
@@ -33,9 +33,9 @@
     {
       "seed": 9102,
       "seat": 1,
-      "reward": 37272.0,
+      "reward": 37587.0,
       "opponent_reward": 11511.0,
-      "margin": 25761.0,
+      "margin": 26076.0,
       "win": true,
       "tie": false,
       "status": "DONE"
@@ -183,9 +183,9 @@
     {
       "seed": 9110,
       "seat": 0,
-      "reward": 36513.0,
+      "reward": 36829.0,
       "opponent_reward": 10897.0,
-      "margin": 25616.0,
+      "margin": 25932.0,
       "win": true,
       "tie": false,
       "status": "DONE"
@@ -193,9 +193,9 @@
     {
       "seed": 9110,
       "seat": 1,
-      "reward": 36201.0,
+      "reward": 36517.0,
       "opponent_reward": 10867.0,
-      "margin": 25334.0,
+      "margin": 25650.0,
       "win": true,
       "tie": false,
       "status": "DONE"
@@ -206,9 +206,9 @@
     "wins": 20,
     "ties": 0,
     "win_rate": 1.0,
-    "mean_reward": 37077.6,
+    "mean_reward": 37140.7,
     "mean_opponent_reward": 10908.55,
-    "mean_margin": 26169.05,
+    "mean_margin": 26232.15,
     "all_done": true
   }
 }

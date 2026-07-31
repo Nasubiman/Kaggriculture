@@ -33,7 +33,8 @@ strategy summary is written to `reports/public_history_summary.md`.
 - prioritizes the core farm before expansion tasks;
 - harvests six-unit melons from age 10;
 - sells melon batches before a clipped-sale opponent can reach the best prices;
-- adds fifteen wheat plots after expansion.
+- adds fifteen wheat plots after expansion;
+- harvests, returns, drops, and sells remaining production on day 30.
 
 Run the fixed-seed, both-seat evaluation:
 

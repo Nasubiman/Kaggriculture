@@ -34,6 +34,12 @@ SELL_ORDER = (
 TARGET_HANDS = 7
 EXTRA_WHEAT = 15
 LAND_DAY = 11
+FINAL_HARVEST_CUTOFF = 17
+ANIMAL_PRODUCTS = {
+    "GOOSE": "EGG",
+    "COW": "MILK",
+    "SHEEP": "WOOL",
+}
 
 
 def _plan(board_size, expanded=False):
@@ -218,15 +224,166 @@ def _unit_actions(obs, farm, private, plan, core_first=False):
     return actions
 
 
-def _market_actions(obs, farm, private, plan):
+def _shed_access_tiles(board_size):
+    half = board_size // 2
+    return [
+        (half - 1, half - 1),
+        (half, half - 1),
+        (half - 1, half),
+        (half, half),
+    ]
+
+
+def _nearest_shed_tile(position, board_size):
+    return min(
+        _shed_access_tiles(board_size),
+        key=lambda target: (
+            abs(position[0] - target[0])
+            + abs(position[1] - target[1]),
+            target[1],
+            target[0],
+        ),
+    )
+
+
+def _final_harvest_tasks(farm, prices):
+    tasks = []
+    for y, row in enumerate(farm["tiles"]):
+        for x, tile in enumerate(row):
+            if not isinstance(tile, dict):
+                continue
+            amount = int(tile.get("yield_units", 0))
+            if amount <= 0:
+                continue
+            if tile.get("kind") == "PLANT":
+                product = tile.get("crop")
+            else:
+                product = ANIMAL_PRODUCTS.get(tile.get("animal"))
+            if product in SELL_ORDER:
+                value = amount * int(prices.get(product, 1))
+                tasks.append(((x, y), product, value))
+    return tasks
+
+
+def _final_day_actions(obs, farm, private):
+    hour = int(obs.get("hour", 0))
+    board_size = len(farm["tiles"])
+    prices = (obs.get("market", {}) or {}).get("prices", {}) or {}
+    positions = [farm["farmer"], *farm.get("hands", [])]
+    inventories = private.get("inventories", []) or []
+    tasks = _final_harvest_tasks(farm, prices)
+    reserved = set()
+    actions = []
+    shed_tiles = set(_shed_access_tiles(board_size))
+    remaining_actions = 24 - hour
+
+    for unit_index, position in enumerate(positions):
+        inventory = (
+            inventories[unit_index]
+            if unit_index < len(inventories)
+            else {}
+        ) or {}
+        carrying = any(
+            int(amount) > 0 for amount in inventory.values()
+        )
+        current = tuple(position)
+
+        if carrying:
+            target = _nearest_shed_tile(current, board_size)
+            actions.append(
+                ["DROP"]
+                if current in shed_tiles
+                else _move(current, target)
+            )
+            continue
+
+        candidates = []
+        if hour <= FINAL_HARVEST_CUTOFF:
+            for target, product, value in tasks:
+                if target in reserved:
+                    continue
+                distance = (
+                    abs(current[0] - target[0])
+                    + abs(current[1] - target[1])
+                )
+                return_target = _nearest_shed_tile(
+                    target, board_size
+                )
+                return_distance = (
+                    abs(target[0] - return_target[0])
+                    + abs(target[1] - return_target[1])
+                )
+                required = distance + 1 + return_distance + 1
+                if required <= remaining_actions:
+                    candidates.append(
+                        (
+                            -value,
+                            required,
+                            distance,
+                            target[1],
+                            target[0],
+                            target,
+                            product,
+                        )
+                    )
+
+        if not candidates:
+            actions.append(["PASS"])
+            continue
+
+        selected = min(candidates)
+        target = selected[-2]
+        reserved.add(target)
+        actions.append(
+            ["HARVEST"]
+            if current == target
+            else _move(current, target)
+        )
+    return actions
+
+
+def _pending_drop_items(farm, private, actions):
+    board_size = len(farm["tiles"])
+    shed_tiles = set(_shed_access_tiles(board_size))
+    positions = [farm["farmer"], *farm.get("hands", [])]
+    inventories = private.get("inventories", []) or []
+    pending = {}
+    for unit_index, action in enumerate(actions):
+        if (
+            not action
+            or action[0] != "DROP"
+            or unit_index >= len(positions)
+            or tuple(positions[unit_index]) not in shed_tiles
+            or unit_index >= len(inventories)
+        ):
+            continue
+        for item, amount in (inventories[unit_index] or {}).items():
+            if item in SELL_ORDER and int(amount) > 0:
+                pending[item] = (
+                    pending.get(item, 0) + int(amount)
+                )
+    return pending
+
+
+def _market_actions(
+    obs,
+    farm,
+    private,
+    plan,
+    pending_drop=None,
+):
     day = int(obs.get("day", 0))
     hour = int(obs.get("hour", 0))
     shed = private.get("shed", {}) or {}
     seeds = private.get("seeds", {}) or {}
+    pending_drop = pending_drop or {}
     orders = []
 
     for item in SELL_ORDER:
-        amount = int(shed.get(item, 0))
+        amount = (
+            int(shed.get(item, 0))
+            + int(pending_drop.get(item, 0))
+        )
         if amount > 0 and len(orders) < 10:
             # The key counter-strategy: capture the high-price portion now and
             # depress the opponent's clipped melon stream that follows.
@@ -234,7 +391,8 @@ def _market_actions(obs, farm, private, plan):
 
     budget = float(farm.get("money", 0))
     if (
-        day >= LAND_DAY
+        day < 29
+        and day >= LAND_DAY
         and "NE" not in farm.get("unlocked_quadrants", [])
         and budget >= 1000
         and len(orders) < 10
@@ -279,6 +437,26 @@ def _market_actions(obs, farm, private, plan):
         while missing and len(orders) < 10:
             orders.append(["HIRE"])
             missing -= 1
+    elif day == 29 and hour <= 2:
+        final_tasks = len(
+            _final_harvest_tasks(
+                farm,
+                (obs.get("market", {}) or {}).get(
+                    "prices", {}
+                ) or {},
+            )
+        )
+        target_hands = min(
+            TARGET_HANDS,
+            max(0, final_tasks - 1),
+        )
+        missing = max(
+            0,
+            target_hands - len(farm.get("hands", [])),
+        )
+        while missing and len(orders) < 10:
+            orders.append(["HIRE"])
+            missing -= 1
 
     return orders
 
@@ -302,13 +480,19 @@ def agent(obs):
     )
 
     if int(obs.get("day", 0)) >= 29:
+        actions = _final_day_actions(obs, farm, private)
+        pending_drop = _pending_drop_items(
+            farm, private, actions
+        )
         return {
-            "farmer": ["PASS"],
-            "hands": [
-                ["PASS"] for _ in farm.get("hands", [])
-            ],
+            "farmer": actions[0] if actions else ["PASS"],
+            "hands": actions[1:],
             "market": _market_actions(
-                obs, farm, private, plan
+                obs,
+                farm,
+                private,
+                plan,
+                pending_drop,
             ),
         }
 

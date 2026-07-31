@@ -20,8 +20,8 @@ reducing the price received by the opponent's later clipped sales.
 | Evaluation | Seeds | Games | Wins | Win rate | Mean reward | Opponent | Mean margin |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | Parameter-development set | 701–704 | 8 | 8 | 100% | 30,626 | 25,805 | +4,821 |
-| Held-out final set | 9001–9010 | 20 | 20 | 100% | 30,369 | 25,480 | +4,889 |
-| Archived baseline_v1 holdout | 9101–9110 | 20 | 20 | 100% | 37,078 | 10,909 | +26,169 |
+| Held-out final set | 9001–9010 | 20 | 20 | 100% | 30,481 | 25,480 | +5,001 |
+| Archived baseline_v1 holdout | 9101–9110 | 20 | 20 | 100% | 37,141 | 10,909 | +26,232 |
 | starter/random regression | 101, 202, 303 | 12 | 12 | 100% | 46,482 | 1,746 | +44,736 |
 
 All 40 reported games completed with status `DONE`. The held-out result exceeds
@@ -35,3 +35,17 @@ Raw results:
 - `reports/current_vs_baseline_v1_holdout.json`
 
 The previous submitted baseline is archived as `agents/baseline_v1.py`.
+
+## Day-30 liquidation
+
+The original Pulse Breaker passed all field actions on zero-indexed day 29 and
+only sold items already in the shed. The revised agent now:
+
+1. assigns harvestable plants or animals to available units;
+2. stops accepting tasks that cannot be harvested and returned before season end;
+3. routes carried inventory to the nearest shed-access tile;
+4. issues `DROP` and matching `SELL` orders in the same turn.
+
+On seed 9101 this recovered one otherwise-abandoned strawberry and changed the
+reward from 36,641 to 36,956 (+315). Across the Harvest Pulse holdout, mean
+reward increased by 112.2 without losing any games.

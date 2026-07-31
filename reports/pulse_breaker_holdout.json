@@ -33,9 +33,9 @@
     {
       "seed": 9002,
       "seat": 1,
-      "reward": 29712.0,
+      "reward": 30019.0,
       "opponent_reward": 25598.0,
-      "margin": 4114.0,
+      "margin": 4421.0,
       "win": true,
       "tie": false,
       "status": "DONE"
@@ -43,9 +43,9 @@
     {
       "seed": 9003,
       "seat": 0,
-      "reward": 29878.0,
+      "reward": 30171.0,
       "opponent_reward": 24781.0,
-      "margin": 5097.0,
+      "margin": 5390.0,
       "win": true,
       "tie": false,
       "status": "DONE"
@@ -73,9 +73,9 @@
     {
       "seed": 9004,
       "seat": 1,
-      "reward": 30375.0,
+      "reward": 30786.0,
       "opponent_reward": 25842.0,
-      "margin": 4533.0,
+      "margin": 4944.0,
       "win": true,
       "tie": false,
       "status": "DONE"
@@ -133,9 +133,9 @@
     {
       "seed": 9007,
       "seat": 1,
-      "reward": 29895.0,
+      "reward": 30208.0,
       "opponent_reward": 25398.0,
-      "margin": 4497.0,
+      "margin": 4810.0,
       "win": true,
       "tie": false,
       "status": "DONE"
@@ -153,9 +153,9 @@
     {
       "seed": 9008,
       "seat": 1,
-      "reward": 29810.0,
+      "reward": 30130.0,
       "opponent_reward": 25630.0,
-      "margin": 4180.0,
+      "margin": 4500.0,
       "win": true,
       "tie": false,
       "status": "DONE"
@@ -163,9 +163,9 @@
     {
       "seed": 9009,
       "seat": 0,
-      "reward": 29552.0,
+      "reward": 29852.0,
       "opponent_reward": 24181.0,
-      "margin": 5371.0,
+      "margin": 5671.0,
       "win": true,
       "tie": false,
       "status": "DONE"
@@ -173,9 +173,9 @@
     {
       "seed": 9009,
       "seat": 1,
-      "reward": 29473.0,
+      "reward": 29773.0,
       "opponent_reward": 24423.0,
-      "margin": 5050.0,
+      "margin": 5350.0,
       "win": true,
       "tie": false,
       "status": "DONE"
@@ -206,9 +206,9 @@
     "wins": 20,
     "ties": 0,
     "win_rate": 1.0,
-    "mean_reward": 30368.7,
+    "mean_reward": 30480.9,
     "mean_opponent_reward": 25480.2,
-    "mean_margin": 4888.5,
+    "mean_margin": 5000.7,
     "all_done": true
   }
 }
