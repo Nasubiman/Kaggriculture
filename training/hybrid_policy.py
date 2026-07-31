@@ -413,12 +413,14 @@ class HybridPolicyAgent:
         seed: int,
         record_trajectory: bool,
         suffix: str,
+        keep_logit_penalty: float = 0.0,
     ) -> None:
         self.module = load_agent_module(base_agent_path, suffix)
         self.model = model.to("cpu").eval()
         self.deterministic = deterministic
         self.rng = np.random.default_rng(seed)
         self.record_trajectory = record_trajectory
+        self.keep_logit_penalty = float(keep_logit_penalty)
         self.macro = MacroState.from_agent_module(self.module)
         self.last_day = -1
         self.trajectory: list[dict[str, Any]] = []
@@ -432,6 +434,7 @@ class HybridPolicyAgent:
             tensor = torch.from_numpy(observation).unsqueeze(0)
             with torch.no_grad():
                 logits, value = self.model(tensor)
+                logits[0, 0] -= self.keep_logit_penalty
                 logits = masked_logits(logits, torch.from_numpy(mask).unsqueeze(0))
                 probabilities = torch.softmax(logits, dim=-1)[0].cpu().numpy()
             action = (

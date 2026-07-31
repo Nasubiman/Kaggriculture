@@ -68,6 +68,7 @@ def rollout_task(task: dict[str, Any]) -> dict[str, Any]:
         seed=seed * 31 + seat,
         record_trajectory=bool(task.get("record_trajectory", True)),
         suffix=f"candidate_{seed}_{seat}",
+        keep_logit_penalty=float(task.get("keep_logit_penalty", 0.0)),
     )
 
     opponent_spec = task["opponent"]
@@ -461,6 +462,7 @@ def main() -> None:
                 "seed": args.seed + update * 10_000 + index * 17,
                 "seat": index % 2,
                 "shaping_coefficient": shaping,
+                "keep_logit_penalty": 0.0,
             }
             for index, opponent in enumerate(chosen)
         ]

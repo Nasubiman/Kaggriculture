@@ -31,6 +31,12 @@ def main() -> None:
     )
     parser.add_argument("--seeds", nargs="+", type=int, required=True)
     parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument(
+        "--keep-logit-penalty",
+        type=float,
+        default=0.0,
+        help="Subtract this value from the teacher KEEP logit at inference.",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 
@@ -69,6 +75,7 @@ def main() -> None:
             "seed": seed,
             "seat": seat,
             "shaping_coefficient": 0.0,
+            "keep_logit_penalty": args.keep_logit_penalty,
         }
         for opponent in opponents
         for seed in args.seeds
@@ -80,6 +87,7 @@ def main() -> None:
     result = {
         "checkpoint": str(args.checkpoint.resolve()),
         "seeds": args.seeds,
+        "keep_logit_penalty": args.keep_logit_penalty,
         "summary": summarize_games(games),
         "games": [
             {key: value for key, value in game.items() if key != "trajectory"}
