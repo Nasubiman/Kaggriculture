@@ -77,3 +77,7 @@ make server-push-replays
 make server-push-datasets
 make server-pull-results
 ```
+
+`make server-update-code` requires a clean local working tree and pushes the
+current commit directly over SSH. The compute server does not need GitHub
+credentials.

@@ -477,6 +477,14 @@ make server-pull-results
 
 `server-results/`、`datasets/`、`checkpoints/`、`runs/`、一般的な学習weight形式はGit対象外に設定している。
 
+`server-update-code`はGitHubからpullするのではなく、ローカルrepositoryからSSH経由でremote repositoryの`main`へ直接pushする。remoteには次のrepository-local設定を適用済みで、remote working treeがcleanな場合だけ安全に更新される。
+
+```text
+receive.denyCurrentBranch=updateInstead
+```
+
+そのため、計算サーバーへGitHub tokenやGitHub SSH keyを置く必要はない。ローカル側に未commitの変更がある場合、`server-update-code`は実行を拒否する。
+
 ### 運用ルール
 
 1. コードはローカルで編集し、Gitでサーバーへ反映する。

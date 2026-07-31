@@ -47,7 +47,8 @@ server-check:
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; printf "repo=%s\n" "$$PWD"; .venv/bin/python --version; git status --short; nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader; df -h "$(SERVER_DATA)"'
 
 server-update-code:
-	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; git pull --ff-only'
+	test -z "$$(git status --porcelain)"
+	git push $(SERVER_HOST):$(SERVER_REPO) HEAD:main
 
 server-evaluate:
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(SERVER_DATA)/runs/manual"; .venv/bin/python scripts/evaluate_agent.py --output "$(SERVER_DATA)/runs/manual/baseline_evaluation.json"'
