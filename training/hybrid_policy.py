@@ -62,24 +62,24 @@ ACTION_NAMES = (
     "COMMIT_COWS",
     "DELAY_COWS",
     "EARLIER_COWS",
-    "MORE_COWS",
-    "FEWER_COWS",
-    "MORE_SHEEP",
-    "FEWER_SHEEP",
-    "MORE_HANDS",
-    "FEWER_HANDS",
-    "MORE_WHEAT",
-    "FEWER_WHEAT",
-    "BUY_FASTER",
-    "BUY_SLOWER",
+    "COWS_18",
+    "COWS_14",
+    "SHEEP_6",
+    "SHEEP_2",
+    "HANDS_12",
+    "HANDS_10",
+    "WHEAT_HEAVY",
+    "WHEAT_LEAN",
+    "BUY_FAST",
+    "BUY_STEADY",
     "SPEND_MORE",
     "SPEND_LESS",
-    "PICKUP_MORE",
-    "PICKUP_LESS",
+    "PICKUP_16",
+    "PICKUP_8",
 )
 ACTION_COUNT = len(ACTION_NAMES)
 OBSERVATION_SIZE = 102
-POLICY_VERSION = 1
+POLICY_VERSION = 2
 
 
 @dataclass
@@ -117,20 +117,24 @@ class MacroState:
         mask[1] = not self.transitioned and day >= 4
         mask[2] = not self.transitioned and self.cow_start_day < 14
         mask[3] = not self.transitioned and self.cow_start_day > day
-        mask[4] = self.transitioned and self.cow_target < 28
-        mask[5] = self.transitioned and self.cow_target > 12
-        mask[6] = self.sheep_target < 6
-        mask[7] = self.sheep_target > 0
-        mask[8] = self.cow_hands < 16
-        mask[9] = self.cow_hands > 7
-        mask[10] = self.wheat_tiles < 8
-        mask[11] = self.wheat_tiles > 0
-        mask[12] = self.cow_purchase_batch < 20
-        mask[13] = self.cow_purchase_batch > 2
-        mask[14] = self.sale_proceeds_factor < 0.95
-        mask[15] = self.sale_proceeds_factor > 0.4
-        mask[16] = self.wheat_pickup_batch < 20
-        mask[17] = self.wheat_pickup_batch > 2
+        mask[4] = self.transitioned and self.cow_target != 18
+        mask[5] = self.transitioned and self.cow_target != 14
+        mask[6] = self.sheep_target != 6
+        mask[7] = self.sheep_target != 2
+        mask[8] = self.cow_hands != 12
+        mask[9] = self.cow_hands != 10
+        mask[10] = (
+            self.wheat_tiles != 4 or self.wheat_pickup_batch != 14
+        )
+        mask[11] = (
+            self.wheat_tiles != 2 or self.wheat_pickup_batch != 10
+        )
+        mask[12] = self.cow_purchase_batch != 8
+        mask[13] = self.cow_purchase_batch != 4
+        mask[14] = self.sale_proceeds_factor != 0.65
+        mask[15] = self.sale_proceeds_factor != 0.45
+        mask[16] = self.wheat_pickup_batch != 16
+        mask[17] = self.wheat_pickup_batch != 8
         return mask
 
     def apply_action(self, action: int, day: int) -> None:
@@ -142,37 +146,35 @@ class MacroState:
         elif action == 3:
             self.cow_start_day = max(day, self.cow_start_day - 1)
         elif action == 4:
-            self.cow_target = min(28, self.cow_target + 2)
+            self.cow_target = 18
         elif action == 5:
-            self.cow_target = max(12, self.cow_target - 2)
+            self.cow_target = 14
         elif action == 6:
-            self.sheep_target = min(6, self.sheep_target + 1)
+            self.sheep_target = 6
         elif action == 7:
-            self.sheep_target = max(0, self.sheep_target - 1)
+            self.sheep_target = 2
         elif action == 8:
-            self.cow_hands = min(16, self.cow_hands + 1)
+            self.cow_hands = 12
         elif action == 9:
-            self.cow_hands = max(7, self.cow_hands - 1)
+            self.cow_hands = 10
         elif action == 10:
-            self.wheat_tiles = min(8, self.wheat_tiles + 1)
+            self.wheat_tiles = 4
+            self.wheat_pickup_batch = 14
         elif action == 11:
-            self.wheat_tiles = max(0, self.wheat_tiles - 1)
+            self.wheat_tiles = 2
+            self.wheat_pickup_batch = 10
         elif action == 12:
-            self.cow_purchase_batch = min(20, self.cow_purchase_batch + 2)
+            self.cow_purchase_batch = 8
         elif action == 13:
-            self.cow_purchase_batch = max(2, self.cow_purchase_batch - 2)
+            self.cow_purchase_batch = 4
         elif action == 14:
-            self.sale_proceeds_factor = min(
-                0.95, round(self.sale_proceeds_factor + 0.05, 2)
-            )
+            self.sale_proceeds_factor = 0.65
         elif action == 15:
-            self.sale_proceeds_factor = max(
-                0.4, round(self.sale_proceeds_factor - 0.05, 2)
-            )
+            self.sale_proceeds_factor = 0.45
         elif action == 16:
-            self.wheat_pickup_batch = min(20, self.wheat_pickup_batch + 2)
+            self.wheat_pickup_batch = 16
         elif action == 17:
-            self.wheat_pickup_batch = max(2, self.wheat_pickup_batch - 2)
+            self.wheat_pickup_batch = 8
         self.refresh_phase(day)
 
     def apply_to_module(self, module: Any) -> None:
@@ -331,7 +333,7 @@ class ActorCritic(nn.Module):
             # Analytic behavior-cloning prior: KEEP reproduces the strong
             # deterministic teacher exactly, while the remaining probability
             # still explores semantic deviations during PPO rollouts.
-            self.actor.bias[0] = 4.5
+            self.actor.bias[0] = 3.0
 
     @staticmethod
     def _initialize(module: nn.Module) -> None:
