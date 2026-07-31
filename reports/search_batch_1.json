@@ -1,0 +1,382 @@
+[
+  {
+    "index": 7,
+    "name": "less_melon_h9",
+    "wins": 2,
+    "games": 2,
+    "mean_reward": 29984.5,
+    "mean_opponent": 28621.5,
+    "mean_margin": 1363.0,
+    "variant": {
+      "name": "less_melon_h9",
+      "MIX": [
+        [
+          "MELON",
+          10
+        ],
+        [
+          "CARROT",
+          5
+        ],
+        [
+          "WHEAT",
+          6
+        ],
+        [
+          "TOMATO",
+          2
+        ],
+        [
+          "STRAWBERRY",
+          2
+        ]
+      ],
+      "TARGET_HANDS": 9,
+      "EXTRA_WHEAT": 15,
+      "LAND_DAY": 11,
+      "melon_clip": 2
+    }
+  },
+  {
+    "index": 1,
+    "name": "reference_h7",
+    "wins": 1,
+    "games": 2,
+    "mean_reward": 29441.0,
+    "mean_opponent": 29441.0,
+    "mean_margin": 0.0,
+    "variant": {
+      "name": "reference_h7",
+      "MIX": [
+        [
+          "MELON",
+          13
+        ],
+        [
+          "CARROT",
+          4
+        ],
+        [
+          "WHEAT",
+          4
+        ],
+        [
+          "TOMATO",
+          2
+        ],
+        [
+          "STRAWBERRY",
+          2
+        ]
+      ],
+      "TARGET_HANDS": 7,
+      "EXTRA_WHEAT": 15,
+      "LAND_DAY": 11,
+      "melon_clip": 2
+    }
+  },
+  {
+    "index": 3,
+    "name": "reference_h9",
+    "wins": 1,
+    "games": 2,
+    "mean_reward": 27029.0,
+    "mean_opponent": 27781.0,
+    "mean_margin": -752.0,
+    "variant": {
+      "name": "reference_h9",
+      "MIX": [
+        [
+          "MELON",
+          13
+        ],
+        [
+          "CARROT",
+          4
+        ],
+        [
+          "WHEAT",
+          4
+        ],
+        [
+          "TOMATO",
+          2
+        ],
+        [
+          "STRAWBERRY",
+          2
+        ]
+      ],
+      "TARGET_HANDS": 9,
+      "EXTRA_WHEAT": 15,
+      "LAND_DAY": 11,
+      "melon_clip": 2
+    }
+  },
+  {
+    "index": 2,
+    "name": "reference_h8",
+    "wins": 0,
+    "games": 2,
+    "mean_reward": 28334.0,
+    "mean_opponent": 29147.5,
+    "mean_margin": -813.5,
+    "variant": {
+      "name": "reference_h8",
+      "MIX": [
+        [
+          "MELON",
+          13
+        ],
+        [
+          "CARROT",
+          4
+        ],
+        [
+          "WHEAT",
+          4
+        ],
+        [
+          "TOMATO",
+          2
+        ],
+        [
+          "STRAWBERRY",
+          2
+        ]
+      ],
+      "TARGET_HANDS": 8,
+      "EXTRA_WHEAT": 15,
+      "LAND_DAY": 11,
+      "melon_clip": 2
+    }
+  },
+  {
+    "index": 0,
+    "name": "reference_h6",
+    "wins": 0,
+    "games": 2,
+    "mean_reward": 28763.0,
+    "mean_opponent": 29957.5,
+    "mean_margin": -1194.5,
+    "variant": {
+      "name": "reference_h6",
+      "MIX": [
+        [
+          "MELON",
+          13
+        ],
+        [
+          "CARROT",
+          4
+        ],
+        [
+          "WHEAT",
+          4
+        ],
+        [
+          "TOMATO",
+          2
+        ],
+        [
+          "STRAWBERRY",
+          2
+        ]
+      ],
+      "TARGET_HANDS": 6,
+      "EXTRA_WHEAT": 15,
+      "LAND_DAY": 11,
+      "melon_clip": 2
+    }
+  },
+  {
+    "index": 4,
+    "name": "less_melon_h6",
+    "wins": 0,
+    "games": 2,
+    "mean_reward": 29077.5,
+    "mean_opponent": 31472.0,
+    "mean_margin": -2394.5,
+    "variant": {
+      "name": "less_melon_h6",
+      "MIX": [
+        [
+          "MELON",
+          10
+        ],
+        [
+          "CARROT",
+          5
+        ],
+        [
+          "WHEAT",
+          6
+        ],
+        [
+          "TOMATO",
+          2
+        ],
+        [
+          "STRAWBERRY",
+          2
+        ]
+      ],
+      "TARGET_HANDS": 6,
+      "EXTRA_WHEAT": 15,
+      "LAND_DAY": 11,
+      "melon_clip": 2
+    }
+  },
+  {
+    "index": 8,
+    "name": "balanced_h6",
+    "wins": 0,
+    "games": 2,
+    "mean_reward": 29307.0,
+    "mean_opponent": 32214.0,
+    "mean_margin": -2907.0,
+    "variant": {
+      "name": "balanced_h6",
+      "MIX": [
+        [
+          "MELON",
+          8
+        ],
+        [
+          "CARROT",
+          5
+        ],
+        [
+          "WHEAT",
+          7
+        ],
+        [
+          "TOMATO",
+          2
+        ],
+        [
+          "STRAWBERRY",
+          3
+        ]
+      ],
+      "TARGET_HANDS": 6,
+      "EXTRA_WHEAT": 15,
+      "LAND_DAY": 11,
+      "melon_clip": 2
+    }
+  },
+  {
+    "index": 6,
+    "name": "less_melon_h8",
+    "wins": 0,
+    "games": 2,
+    "mean_reward": 28516.0,
+    "mean_opponent": 32413.5,
+    "mean_margin": -3897.5,
+    "variant": {
+      "name": "less_melon_h8",
+      "MIX": [
+        [
+          "MELON",
+          10
+        ],
+        [
+          "CARROT",
+          5
+        ],
+        [
+          "WHEAT",
+          6
+        ],
+        [
+          "TOMATO",
+          2
+        ],
+        [
+          "STRAWBERRY",
+          2
+        ]
+      ],
+      "TARGET_HANDS": 8,
+      "EXTRA_WHEAT": 15,
+      "LAND_DAY": 11,
+      "melon_clip": 2
+    }
+  },
+  {
+    "index": 5,
+    "name": "less_melon_h7",
+    "wins": 0,
+    "games": 2,
+    "mean_reward": 29000.5,
+    "mean_opponent": 33496.5,
+    "mean_margin": -4496.0,
+    "variant": {
+      "name": "less_melon_h7",
+      "MIX": [
+        [
+          "MELON",
+          10
+        ],
+        [
+          "CARROT",
+          5
+        ],
+        [
+          "WHEAT",
+          6
+        ],
+        [
+          "TOMATO",
+          2
+        ],
+        [
+          "STRAWBERRY",
+          2
+        ]
+      ],
+      "TARGET_HANDS": 7,
+      "EXTRA_WHEAT": 15,
+      "LAND_DAY": 11,
+      "melon_clip": 2
+    }
+  },
+  {
+    "index": 9,
+    "name": "balanced_h7",
+    "wins": 0,
+    "games": 2,
+    "mean_reward": 27983.0,
+    "mean_opponent": 35163.5,
+    "mean_margin": -7180.5,
+    "variant": {
+      "name": "balanced_h7",
+      "MIX": [
+        [
+          "MELON",
+          8
+        ],
+        [
+          "CARROT",
+          5
+        ],
+        [
+          "WHEAT",
+          7
+        ],
+        [
+          "TOMATO",
+          2
+        ],
+        [
+          "STRAWBERRY",
+          3
+        ]
+      ],
+      "TARGET_HANDS": 7,
+      "EXTRA_WHEAT": 15,
+      "LAND_DAY": 11,
+      "melon_clip": 2
+    }
+  }
+]

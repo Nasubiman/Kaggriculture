@@ -3,7 +3,7 @@ VENV := .venv
 KAGGLE := $(VENV)/bin/kaggle
 COMPETITION := kaggriculture
 
-.PHONY: setup kaggle-check kaggle-download history-collect history-analyze evaluate
+.PHONY: setup kaggle-check kaggle-download history-collect history-analyze evaluate head-to-head
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -25,3 +25,6 @@ history-analyze:
 
 evaluate:
 	$(VENV)/bin/python scripts/evaluate_agent.py
+
+head-to-head:
+	$(VENV)/bin/python scripts/head_to_head.py

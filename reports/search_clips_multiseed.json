@@ -1,0 +1,116 @@
+[
+  {
+    "index": 23,
+    "name": "reference_clip999",
+    "wins": 6,
+    "games": 6,
+    "mean_reward": 30296.833333333332,
+    "mean_opponent": 25603.5,
+    "mean_margin": 4693.333333333333,
+    "variant": {
+      "name": "reference_clip999",
+      "MIX": [
+        [
+          "MELON",
+          13
+        ],
+        [
+          "CARROT",
+          4
+        ],
+        [
+          "WHEAT",
+          4
+        ],
+        [
+          "TOMATO",
+          2
+        ],
+        [
+          "STRAWBERRY",
+          2
+        ]
+      ],
+      "TARGET_HANDS": 7,
+      "EXTRA_WHEAT": 15,
+      "LAND_DAY": 11,
+      "melon_clip": 999
+    }
+  },
+  {
+    "index": 22,
+    "name": "reference_clip5",
+    "wins": 6,
+    "games": 6,
+    "mean_reward": 29960.166666666668,
+    "mean_opponent": 26437.0,
+    "mean_margin": 3523.1666666666665,
+    "variant": {
+      "name": "reference_clip5",
+      "MIX": [
+        [
+          "MELON",
+          13
+        ],
+        [
+          "CARROT",
+          4
+        ],
+        [
+          "WHEAT",
+          4
+        ],
+        [
+          "TOMATO",
+          2
+        ],
+        [
+          "STRAWBERRY",
+          2
+        ]
+      ],
+      "TARGET_HANDS": 7,
+      "EXTRA_WHEAT": 15,
+      "LAND_DAY": 11,
+      "melon_clip": 5
+    }
+  },
+  {
+    "index": 21,
+    "name": "reference_clip3",
+    "wins": 6,
+    "games": 6,
+    "mean_reward": 29358.166666666668,
+    "mean_opponent": 27173.5,
+    "mean_margin": 2184.6666666666665,
+    "variant": {
+      "name": "reference_clip3",
+      "MIX": [
+        [
+          "MELON",
+          13
+        ],
+        [
+          "CARROT",
+          4
+        ],
+        [
+          "WHEAT",
+          4
+        ],
+        [
+          "TOMATO",
+          2
+        ],
+        [
+          "STRAWBERRY",
+          2
+        ]
+      ],
+      "TARGET_HANDS": 7,
+      "EXTRA_WHEAT": 15,
+      "LAND_DAY": 11,
+      "melon_clip": 3
+    }
+  }
+]

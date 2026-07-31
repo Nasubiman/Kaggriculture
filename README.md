@@ -26,19 +26,20 @@ strategy summary is written to `reports/public_history_summary.md`.
 
 ## Baseline
 
-`main.py` is a directly-submittable, history-informed rule-based agent. It:
+`main.py` is the directly-submittable Pulse Breaker v2 agent. It:
 
-- hires workers aggressively;
-- expands land from day 9;
-- uses quick wheat/carrot income before diversifying;
-- prioritizes endangered plants, harvesting, watering, weeds, then planting;
-- delays sales during severe premium-product gluts;
-- liquidates inventory near the end of the season.
+- uses a deterministic 25-tile diversified crop plan;
+- hires seven workers and expands northeast on day 11;
+- prioritizes the core farm before expansion tasks;
+- harvests six-unit melons from age 10;
+- sells melon batches before a clipped-sale opponent can reach the best prices;
+- adds fifteen wheat plots after expansion.
 
 Run the fixed-seed, both-seat evaluation:
 
 ```bash
 make evaluate
+make head-to-head
 ```
 
 Submit after reviewing the generated evaluation:

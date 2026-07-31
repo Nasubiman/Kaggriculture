@@ -1,0 +1,133 @@
+{
+  "agent": "/Users/nakamuray/code_test/Kaggriculture/main.py",
+  "games": [
+    {
+      "opponent": "starter",
+      "seed": 101,
+      "seat": 0,
+      "reward": 46889.0,
+      "opponent_reward": 3467.0,
+      "margin": 43422.0,
+      "win": true,
+      "status": "DONE"
+    },
+    {
+      "opponent": "starter",
+      "seed": 101,
+      "seat": 1,
+      "reward": 45945.0,
+      "opponent_reward": 3467.0,
+      "margin": 42478.0,
+      "win": true,
+      "status": "DONE"
+    },
+    {
+      "opponent": "starter",
+      "seed": 202,
+      "seat": 0,
+      "reward": 46696.0,
+      "opponent_reward": 3438.0,
+      "margin": 43258.0,
+      "win": true,
+      "status": "DONE"
+    },
+    {
+      "opponent": "starter",
+      "seed": 202,
+      "seat": 1,
+      "reward": 45708.0,
+      "opponent_reward": 3438.0,
+      "margin": 42270.0,
+      "win": true,
+      "status": "DONE"
+    },
+    {
+      "opponent": "starter",
+      "seed": 303,
+      "seat": 0,
+      "reward": 46796.0,
+      "opponent_reward": 3487.0,
+      "margin": 43309.0,
+      "win": true,
+      "status": "DONE"
+    },
+    {
+      "opponent": "starter",
+      "seed": 303,
+      "seat": 1,
+      "reward": 46796.0,
+      "opponent_reward": 3487.0,
+      "margin": 43309.0,
+      "win": true,
+      "status": "DONE"
+    },
+    {
+      "opponent": "random",
+      "seed": 101,
+      "seat": 0,
+      "reward": 46631.0,
+      "opponent_reward": 0.0,
+      "margin": 46631.0,
+      "win": true,
+      "status": "DONE"
+    },
+    {
+      "opponent": "random",
+      "seed": 101,
+      "seat": 1,
+      "reward": 46171.0,
+      "opponent_reward": 0.0,
+      "margin": 46171.0,
+      "win": true,
+      "status": "DONE"
+    },
+    {
+      "opponent": "random",
+      "seed": 202,
+      "seat": 0,
+      "reward": 46640.0,
+      "opponent_reward": 170.0,
+      "margin": 46470.0,
+      "win": true,
+      "status": "DONE"
+    },
+    {
+      "opponent": "random",
+      "seed": 202,
+      "seat": 1,
+      "reward": 45987.0,
+      "opponent_reward": 0.0,
+      "margin": 45987.0,
+      "win": true,
+      "status": "DONE"
+    },
+    {
+      "opponent": "random",
+      "seed": 303,
+      "seat": 0,
+      "reward": 46690.0,
+      "opponent_reward": 0.0,
+      "margin": 46690.0,
+      "win": true,
+      "status": "DONE"
+    },
+    {
+      "opponent": "random",
+      "seed": 303,
+      "seat": 1,
+      "reward": 46831.0,
+      "opponent_reward": 0.0,
+      "margin": 46831.0,
+      "win": true,
+      "status": "DONE"
+    }
+  ],
+  "summary": {
+    "games": 12,
+    "win_rate": 1.0,
+    "mean_reward": 46481.666666666664,
+    "reward_stddev": 392.6466463487099,
+    "mean_margin": 44735.5,
+    "all_done": true
+  }
+}
