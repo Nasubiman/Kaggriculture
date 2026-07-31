@@ -72,7 +72,7 @@ def rollout_task(task: dict[str, Any]) -> dict[str, Any]:
 
     opponent_spec = task["opponent"]
     if opponent_spec["kind"] == "policy":
-        opponent = HybridPolicyAgent(
+        opponent_policy = HybridPolicyAgent(
             Path(task["base_agent"]),
             _cached_model(opponent_spec["checkpoint"]),
             deterministic=bool(opponent_spec.get("deterministic", True)),
@@ -80,12 +80,26 @@ def rollout_task(task: dict[str, Any]) -> dict[str, Any]:
             record_trajectory=False,
             suffix=f"opponent_{seed}_{seat}",
         )
+
+        def opponent(obs: Any) -> dict[str, Any]:
+            return opponent_policy(obs)
+
     else:
         opponent = _scripted_agent(
             opponent_spec["path"], f"scripted_{seed}_{seat}"
         )
 
-    agents = [candidate, opponent] if seat == 0 else [opponent, candidate]
+    # kaggle-environments recognizes plain functions but silently treats an
+    # arbitrary callable object as a passive agent.  Keep the stateful wrapper
+    # behind a function closure so one semantic decision is recorded per day.
+    def candidate_function(obs: Any) -> dict[str, Any]:
+        return candidate(obs)
+
+    agents = (
+        [candidate_function, opponent]
+        if seat == 0
+        else [opponent, candidate_function]
+    )
     try:
         env = make(
             "kaggriculture",
