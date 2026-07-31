@@ -135,11 +135,13 @@ mean margin +613 while also improving KEEP margins against Pulse and score800.
 See
 [`reports/gpu_counterfactual_scaling_20260731.md`](reports/gpu_counterfactual_scaling_20260731.md).
 
-The structured strategy search now covers 52 semantic fields, including mixed
-opening, staged labor and land expansion, market-conditioned cow/sheep/goose
-profiles, and a third crop/endgame transition. A five-minute server run found a
-92.5%-win-rate held-out candidate and passed the strong-reference gate. See
-[`reports/structured_strategy_gates_20260801.md`](reports/structured_strategy_gates_20260801.md).
+The structured strategy search now covers 53 semantic fields, organized into
+five conditional strategy families and six coherent gene blocks. Inactive
+genes are excluded from mutation, deduplication, and GPU-surrogate learning.
+The search always starts from the promoted `main.py` genome. A five-minute
+hierarchical server run beat that incumbent in 160/200 held-out games and
+passed the strong-reference gate in 200/200 games. See
+[`reports/hierarchical_strategy_search_20260801.md`](reports/hierarchical_strategy_search_20260801.md).
 
 For future promotion checks, Pulse and score800 are treated as obsolete weak
 references. Structured candidates are compared directly with the current

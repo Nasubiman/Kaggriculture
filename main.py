@@ -1702,6 +1702,13 @@ CASH_LAYOUTS = ("near", "far")
 OPENING_MODES = ("rui_scripted", "generic", "mixed")
 OPENING_ANIMALS = ("COW", "SHEEP")
 LIVESTOCK_POLICIES = ("fixed", "market")
+STRATEGY_FAMILIES = (
+    "legacy",
+    "crop_rotation",
+    "land_expansion",
+    "market_livestock",
+    "hybrid",
+)
 SERVICE_ORDERS = (
     "care_fertilizer_harvest",
     "care_harvest_fertilizer",
@@ -1729,6 +1736,7 @@ RANK1_SHEEP_ORDER = (
 
 @dataclass(frozen=True)
 class StrategyGenome:
+    strategy_family: str = "legacy"
     opening_mode: str = "rui_scripted"
     opening_animal: str = "COW"
     opening_animals: int = 2
@@ -1784,6 +1792,9 @@ class StrategyGenome:
 
     def normalized(self) -> "StrategyGenome":
         values = asdict(self)
+        values["strategy_family"] = _choice(
+            values["strategy_family"], STRATEGY_FAMILIES
+        )
         values["opening_mode"] = _choice(values["opening_mode"], OPENING_MODES)
         values["opening_animal"] = _choice(values["opening_animal"], OPENING_ANIMALS)
         values["livestock_policy"] = _choice(
@@ -1898,12 +1909,18 @@ class StrategyGenome:
 
     def key(self) -> str:
         values = self.to_dict()
+        active = active_field_names(self)
+        defaults = StrategyGenome().to_dict()
+        for name in values:
+            if name not in active:
+                values[name] = defaults[name]
         return "|".join(f"{name}={values[name]}" for name in values)
 
 
 def rank1_seed_genome() -> StrategyGenome:
     """A searchable anchor distilled from the current rank-1 public games."""
     return StrategyGenome(
+        strategy_family="hybrid",
         opening_mode="mixed",
         opening_hands=6,
         opening_cows=2,
@@ -2293,11 +2310,12 @@ def configure_module(module: Any, genome: StrategyGenome):
 
     return phased_agent
 
-_FROZEN_GENOME = {'opening_mode': 'rui_scripted',
+_FROZEN_GENOME = {'strategy_family': 'crop_rotation',
+ 'opening_mode': 'rui_scripted',
  'opening_animal': 'COW',
  'opening_animals': 2,
  'opening_hands': 6,
- 'opening_cows': 2,
+ 'opening_cows': 4,
  'opening_sheep': 2,
  'transition_day': 10,
  'cow_count': 8,
@@ -2306,45 +2324,45 @@ _FROZEN_GENOME = {'opening_mode': 'rui_scripted',
  'wheat_tiles': 0,
  'cash_tiles': 0,
  'mature_hands': 11,
- 'hand_ramp_day': 10,
- 'hand_ramp_target': 11,
+ 'hand_ramp_day': 9,
+ 'hand_ramp_target': 6,
  'hand_full_day': 10,
  'land_target': 2,
- 'land_first_day': 10,
+ 'land_first_day': 6,
  'land_second_day': 29,
  'livestock_policy': 'fixed',
- 'adaptive_day': 7,
- 'price_gap': 15,
- 'cow_heavy_cows': 10,
- 'cow_heavy_sheep': 2,
+ 'adaptive_day': 10,
+ 'price_gap': 40,
+ 'cow_heavy_cows': 9,
+ 'cow_heavy_sheep': 6,
  'sheep_heavy_cows': 4,
  'sheep_heavy_sheep': 8,
- 'adaptive_goose_count': 3,
- 'purchase_batch': 3,
+ 'adaptive_goose_count': 0,
+ 'purchase_batch': 6,
  'cow_first': True,
  'replant': True,
- 'wheat_pickup_batch': 12,
- 'sale_factor': 0.5,
+ 'wheat_pickup_batch': 10,
+ 'sale_factor': 0.45,
  'layout_family': 'rui',
- 'cash_layout': 'near',
+ 'cash_layout': 'far',
  'mirror': False,
  'service_order': 'care_fertilizer_harvest',
  'second_transition_day': 20,
  'late_cow_count': 8,
  'late_sheep_count': 8,
  'late_goose_count': 0,
- 'late_wheat_tiles': 10,
+ 'late_wheat_tiles': 20,
  'late_cash_tiles': 0,
- 'late_hands': 11,
+ 'late_hands': 9,
  'late_service_order': 'care_fertilizer_harvest',
- 'third_transition_day': 27,
- 'end_cow_count': 8,
- 'end_sheep_count': 8,
+ 'third_transition_day': 28,
+ 'end_cow_count': 5,
+ 'end_sheep_count': 6,
  'end_goose_count': 0,
  'end_wheat_tiles': 0,
  'end_cash_tiles': 0,
- 'end_hands': 11,
- 'end_service_order': 'care_fertilizer_harvest'}
+ 'end_hands': 9,
+ 'end_service_order': 'harvest_care_fertilizer'}
 _opening_plan_before_frozen_genome = _opening_plan
 _agent_before_frozen_genome = agent
 

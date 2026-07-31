@@ -12,6 +12,13 @@ CASH_LAYOUTS = ("near", "far")
 OPENING_MODES = ("rui_scripted", "generic", "mixed")
 OPENING_ANIMALS = ("COW", "SHEEP")
 LIVESTOCK_POLICIES = ("fixed", "market")
+STRATEGY_FAMILIES = (
+    "legacy",
+    "crop_rotation",
+    "land_expansion",
+    "market_livestock",
+    "hybrid",
+)
 SERVICE_ORDERS = (
     "care_fertilizer_harvest",
     "care_harvest_fertilizer",
@@ -39,6 +46,7 @@ RANK1_SHEEP_ORDER = (
 
 @dataclass(frozen=True)
 class StrategyGenome:
+    strategy_family: str = "legacy"
     opening_mode: str = "rui_scripted"
     opening_animal: str = "COW"
     opening_animals: int = 2
@@ -94,6 +102,9 @@ class StrategyGenome:
 
     def normalized(self) -> "StrategyGenome":
         values = asdict(self)
+        values["strategy_family"] = _choice(
+            values["strategy_family"], STRATEGY_FAMILIES
+        )
         values["opening_mode"] = _choice(values["opening_mode"], OPENING_MODES)
         values["opening_animal"] = _choice(values["opening_animal"], OPENING_ANIMALS)
         values["livestock_policy"] = _choice(
@@ -208,12 +219,18 @@ class StrategyGenome:
 
     def key(self) -> str:
         values = self.to_dict()
+        active = active_field_names(self)
+        defaults = StrategyGenome().to_dict()
+        for name in values:
+            if name not in active:
+                values[name] = defaults[name]
         return "|".join(f"{name}={values[name]}" for name in values)
 
 
 def rank1_seed_genome() -> StrategyGenome:
     """A searchable anchor distilled from the current rank-1 public games."""
     return StrategyGenome(
+        strategy_family="hybrid",
         opening_mode="mixed",
         opening_hands=6,
         opening_cows=2,
@@ -605,6 +622,7 @@ def configure_module(module: Any, genome: StrategyGenome):
 
 
 FIELD_CHOICES: dict[str, tuple[Any, ...]] = {
+    "strategy_family": STRATEGY_FAMILIES,
     "opening_mode": OPENING_MODES,
     "opening_animal": OPENING_ANIMALS,
     "opening_animals": tuple(range(1, 5)),
@@ -660,12 +678,163 @@ FIELD_CHOICES: dict[str, tuple[Any, ...]] = {
 }
 
 
+GENE_BLOCKS: dict[str, tuple[str, ...]] = {
+    "opening": (
+        "opening_mode", "opening_animal", "opening_animals", "opening_hands",
+        "opening_cows", "opening_sheep", "replant", "transition_day",
+    ),
+    "expansion": (
+        "land_target", "land_first_day", "land_second_day", "hand_ramp_day",
+        "hand_ramp_target", "hand_full_day", "mature_hands",
+    ),
+    "livestock": (
+        "livestock_policy", "adaptive_day", "price_gap", "cow_count",
+        "sheep_count", "goose_count", "cow_heavy_cows", "cow_heavy_sheep",
+        "sheep_heavy_cows", "sheep_heavy_sheep", "adaptive_goose_count",
+        "purchase_batch", "cow_first",
+    ),
+    "production": (
+        "wheat_tiles", "cash_tiles", "wheat_pickup_batch", "sale_factor",
+        "second_transition_day", "late_wheat_tiles", "late_cash_tiles",
+    ),
+    "endgame": (
+        "third_transition_day", "end_cow_count", "end_sheep_count",
+        "end_goose_count", "end_wheat_tiles", "end_cash_tiles", "end_hands",
+        "end_service_order",
+    ),
+    "layout_service": (
+        "layout_family", "cash_layout", "mirror", "service_order",
+        "late_cow_count", "late_sheep_count", "late_goose_count",
+        "late_hands", "late_service_order",
+    ),
+}
+
+
+def family_seed_genomes(
+    base: StrategyGenome | None = None,
+) -> tuple[StrategyGenome, ...]:
+    """Coherent macro anchors; scalar search is performed inside each family."""
+    legacy = replace(
+        (base or StrategyGenome()).normalized(), strategy_family="legacy"
+    )
+    crop = replace(legacy, strategy_family="crop_rotation")
+    if base is None:
+        crop = replace(
+            crop,
+            second_transition_day=20,
+            late_wheat_tiles=10,
+            third_transition_day=27,
+            end_wheat_tiles=0,
+        )
+    expansion = replace(
+        legacy,
+        strategy_family="land_expansion",
+        land_target=3,
+        land_first_day=7,
+        land_second_day=10,
+        hand_ramp_day=7,
+        hand_ramp_target=9,
+        hand_full_day=9,
+        mature_hands=12,
+        layout_family="rank1",
+    )
+    market = replace(
+        legacy,
+        strategy_family="market_livestock",
+        livestock_policy="market",
+        adaptive_day=7,
+        layout_family="rank1",
+    )
+    hybrid = replace(legacy, strategy_family="hybrid")
+    return tuple(
+        genome.normalized()
+        for genome in (
+            legacy,
+            crop,
+            expansion,
+            market,
+            hybrid,
+            rank1_seed_genome(),
+        )
+    )
+
+
+def active_field_names(genome: StrategyGenome) -> set[str]:
+    """Return genes that can change behavior for this conditional genome."""
+    genome = genome.normalized()
+    active = {
+        "strategy_family", "opening_mode", "opening_hands", "transition_day",
+        "cow_count", "sheep_count", "wheat_tiles", "cash_tiles",
+        "mature_hands", "purchase_batch", "cow_first", "wheat_pickup_batch",
+        "sale_factor", "layout_family", "cash_layout", "service_order",
+        "second_transition_day", "late_cow_count", "late_sheep_count",
+        "late_wheat_tiles", "late_cash_tiles", "late_hands",
+        "late_service_order",
+    }
+    if genome.opening_mode == "generic":
+        active.update(("opening_animal", "opening_animals", "replant", "mirror"))
+    elif genome.opening_mode == "mixed":
+        active.update(("opening_cows", "opening_sheep", "replant", "mirror"))
+    if genome.strategy_family in ("land_expansion", "hybrid"):
+        active.update(
+            (
+                "land_target", "land_first_day", "hand_ramp_day",
+                "hand_ramp_target", "hand_full_day",
+            )
+        )
+        if genome.land_target >= 3:
+            active.add("land_second_day")
+    if genome.strategy_family in ("market_livestock", "hybrid"):
+        active.update(("livestock_policy", "goose_count", "late_goose_count"))
+        if genome.livestock_policy == "market":
+            active.update(
+                (
+                    "adaptive_day", "price_gap", "cow_heavy_cows",
+                    "cow_heavy_sheep", "sheep_heavy_cows",
+                    "sheep_heavy_sheep", "adaptive_goose_count",
+                )
+            )
+    if genome.strategy_family in ("crop_rotation", "hybrid"):
+        active.update(
+            (
+                "third_transition_day", "end_cow_count", "end_sheep_count",
+                "end_wheat_tiles", "end_cash_tiles", "end_hands",
+                "end_service_order",
+            )
+        )
+        if genome.strategy_family == "hybrid":
+            active.add("end_goose_count")
+    return active
+
+
 def mutate(
     parent: StrategyGenome, rng: random.Random, changes: int | None = None
 ) -> StrategyGenome:
     values = parent.normalized().to_dict()
-    count = changes or rng.choices((1, 2, 3, 4), weights=(35, 40, 20, 5))[0]
-    names = rng.sample(list(FIELD_CHOICES), min(count, len(FIELD_CHOICES)))
+    if rng.random() < 0.10:
+        alternatives = [
+            genome
+            for genome in family_seed_genomes(parent)
+            if genome.strategy_family != parent.strategy_family
+        ]
+        if alternatives:
+            values = rng.choice(alternatives).to_dict()
+            parent = StrategyGenome(**values)
+
+    active = active_field_names(parent)
+    count = changes or rng.choices((1, 2, 3, 4), weights=(25, 40, 25, 10))[0]
+    if rng.random() < 0.55:
+        blocks = [
+            tuple(name for name in names if name in active)
+            for names in GENE_BLOCKS.values()
+        ]
+        blocks = [block for block in blocks if block]
+        block = rng.choice(blocks)
+        block_count = min(len(block), max(2, count))
+        names = rng.sample(list(block), block_count)
+    else:
+        choices = sorted(active)
+        names = rng.sample(choices, min(count, len(choices)))
     for name in names:
         choices = FIELD_CHOICES[name]
         current = values[name]
@@ -687,16 +856,28 @@ def crossover(
     first: StrategyGenome, second: StrategyGenome, rng: random.Random
 ) -> StrategyGenome:
     a, b = first.to_dict(), second.to_dict()
-    return StrategyGenome(
-        **{name: a[name] if rng.random() < 0.5 else b[name] for name in a}
-    ).normalized()
+    family_parent = a if rng.random() < 0.5 else b
+    values = dict(family_parent)
+    covered = {"strategy_family"}
+    for names in GENE_BLOCKS.values():
+        source = a if rng.random() < 0.5 else b
+        for name in names:
+            values[name] = source[name]
+            covered.add(name)
+    for name in values.keys() - covered:
+        values[name] = a[name] if rng.random() < 0.5 else b[name]
+    return StrategyGenome(**values).normalized()
 
 
 def feature_vector(genome: StrategyGenome) -> list[float]:
     values = genome.normalized().to_dict()
-    vector = []
+    active = active_field_names(genome)
+    defaults = StrategyGenome().to_dict()
+    vector: list[float] = []
     for name, choices in FIELD_CHOICES.items():
-        value = values[name]
+        enabled = name in active
+        value = values[name] if enabled else defaults[name]
         index = choices.index(value)
         vector.append(index / max(1, len(choices) - 1))
+        vector.append(float(enabled))
     return vector

@@ -21,9 +21,9 @@ from strategy_genome import (
     StrategyGenome,
     configure_module,
     crossover,
+    family_seed_genomes,
     feature_vector,
     mutate,
-    rank1_seed_genome,
 )
 
 
@@ -50,6 +50,23 @@ def load_pasted_agent(path: Path) -> Any:
     namespace: dict[str, Any] = {}
     exec(compile(source, str(path), "exec"), namespace)
     return SimpleNamespace(agent=namespace["agent"])
+
+
+def load_incumbent_genome(path: Path) -> StrategyGenome:
+    """Recover the promoted genome so every search starts from the incumbent."""
+    if path.suffix != ".py":
+        return StrategyGenome()
+    try:
+        module = load_module(path, "structured_incumbent_metadata")
+        raw = getattr(module, "_FROZEN_GENOME", None)
+        if not isinstance(raw, dict):
+            return StrategyGenome()
+        fields = StrategyGenome.__dataclass_fields__
+        return StrategyGenome(
+            **{name: value for name, value in raw.items() if name in fields}
+        ).normalized()
+    except Exception:
+        return StrategyGenome()
 
 
 def worker_init(repo: str, opponent_path: str, fast_runner: bool) -> None:
@@ -170,7 +187,7 @@ def proposal_pool(
     rng: random.Random,
 ) -> list[StrategyGenome]:
     parents = elites or [StrategyGenome()]
-    proposals = [*parents[:4], StrategyGenome(), rank1_seed_genome()]
+    proposals = [*parents[:4], *family_seed_genomes(parents[0])]
     proposals = list({genome.key(): genome for genome in proposals}.values())
     seen = {genome.key() for genome in proposals}
     attempts = 0
@@ -306,7 +323,8 @@ def main() -> None:
     deadline = started + args.minutes * 60.0
     archive_by_key: dict[str, dict[str, Any]] = {}
     history: list[dict[str, Any]] = []
-    elites = [StrategyGenome(), rank1_seed_genome()]
+    incumbent = load_incumbent_genome(args.opponent.resolve())
+    elites = list(family_seed_genomes(incumbent))
     generation = 0
 
     metadata = {
@@ -319,6 +337,10 @@ def main() -> None:
         "opponent": str(args.opponent.resolve()),
         "fast_runner": args.fast_runner,
         "baseline": StrategyGenome().to_dict(),
+        "incumbent": incumbent.to_dict(),
+        "family_anchors": [
+            genome.to_dict() for genome in family_seed_genomes(incumbent)
+        ],
     }
     (output_dir / "metadata.json").write_text(
         json.dumps(metadata, indent=2) + "\n", encoding="utf-8"
@@ -332,7 +354,7 @@ def main() -> None:
     ) as pool:
         anchors = evaluate(
             pool,
-            [StrategyGenome(), rank1_seed_genome()],
+            list(family_seed_genomes(incumbent)),
             [8_900_001 + i for i in range(12)],
         )
         for anchor in anchors:
