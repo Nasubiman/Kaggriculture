@@ -24,15 +24,20 @@ make history-analyze
 Replay JSON files are stored under `replays/` and ignored by Git. The generated
 strategy summary is written to `reports/public_history_summary.md`.
 
+The current rank-1 adaptation study, including the reproducible day-10
+milk/wool split and non-PPO improvement order, is in
+[`reports/rank1_non_ppo_ideas_20260731.md`](reports/rank1_non_ppo_ideas_20260731.md).
+
 ## Current agent
 
 `main.py` is the directly-submittable Cow Crown v1 agent. It:
 
 - starts with two central sheep to create an early wool income stream;
 - preserves and harvests the opening crop cycle before conversion;
-- begins the cow transition on zero-indexed day 11;
-- expands northeast and builds twenty cow pastures near the shed;
-- hires twelve workers for daily feed, care, fertilizer, and harvest routing;
+- begins the cow transition on zero-indexed day 8;
+- uses a server-trained day-8 decision tree to select 15 or 16 cows;
+- expands northeast and keeps four sheep alongside the cows;
+- hires eleven workers for daily feed, care, fertilizer, and harvest routing;
 - maintains a wheat buffer through market purchases and two wheat plots;
 - rehires workers on day 30 to harvest, return, drop, and sell final output.
 
@@ -57,6 +62,10 @@ Submit after reviewing the generated evaluation:
 
 See `reports/cow_strategy_implementation.md` for the replay evidence,
 parameter search, and held-out results.
+
+The latest counterfactual macro-policy improvement and its 200-game direct
+incumbent evaluation are documented in
+[`reports/macro_counterfactual_improvement_20260731.md`](reports/macro_counterfactual_improvement_20260731.md).
 
 ## Server migration
 

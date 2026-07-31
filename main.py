@@ -1255,8 +1255,40 @@ def _cow_market_actions(obs, farm, private):
     return orders
 
 
+def _apply_learned_macro_profile(obs):
+    """Choose the day-8 livestock profile from public market state.
+
+    The small decision tree was fitted on server-generated counterfactual
+    matches.  Resetting on day 0 also keeps repeated local Arena games
+    independent when the same imported module is reused.
+    """
+    global COW_TARGET, WHEAT_TILES
+
+    day = int(obs.get("day", 0))
+    hour = int(obs.get("hour", 0))
+    if day == 0 and hour == 0:
+        COW_TARGET = 16
+        WHEAT_TILES = 3
+    if day != COW_START_DAY or hour != 0:
+        return
+
+    market = obs.get("market", {}) or {}
+    inventory = market.get("inventory", {}) or {}
+    prices = market.get("prices", {}) or {}
+    carrot_inventory = int(inventory.get("CARROT", 10_000))
+    wheat_price = int(prices.get("WHEAT", 25))
+
+    WHEAT_TILES = 2
+    COW_TARGET = (
+        16
+        if carrot_inventory > 9_975 and wheat_price <= 34
+        else 15
+    )
+
+
 def agent(obs):
     day = int(obs.get("day", 0))
+    _apply_learned_macro_profile(obs)
     farms = obs.get("farms", []) or []
     player = int(obs.get("player", 0))
     if player >= len(farms):
