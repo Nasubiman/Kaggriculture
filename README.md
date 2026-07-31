@@ -57,3 +57,10 @@ Submit after reviewing the generated evaluation:
 
 See `reports/cow_strategy_implementation.md` for the replay evidence,
 parameter search, and held-out results.
+
+## Server migration
+
+For moving development to a CPU/GPU server, including the files that are not
+tracked by Git, environment recreation, parity checks, and the proposed
+imitation-learning/self-play workflow, see
+[`SERVER_MIGRATION_RUNBOOK.md`](SERVER_MIGRATION_RUNBOOK.md).
