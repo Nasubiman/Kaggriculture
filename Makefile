@@ -63,7 +63,7 @@ EV45_ABLATION_OPPONENTS ?= 0801_ev1 0801_ev2 0801_ev3 0801_v1 0801_ev4 0801_ev5
 PAIRED_SEARCH_NAME ?= paired_coordinates_$(shell date +%Y%m%d_%H%M%S)
 PAIRED_SEARCH_RUN ?= $(SERVER_DATA)/runs/$(PAIRED_SEARCH_NAME)
 PAIRED_SEARCH_LOCAL_RUN ?= $(SERVER_RESULTS)/$(PAIRED_SEARCH_NAME)
-PAIRED_SEARCH_OPPONENTS ?= 0801_ev4 0801_ev5 0801_v2
+PAIRED_SEARCH_OPPONENTS ?= 0801_ev4 0801_ev5 0801_v2 0801_ev6
 PAIRED_SEARCH_WORKERS ?= 20
 PAIRED_STAGE0_SEEDS ?= 4
 PAIRED_STAGE1_SEEDS ?= 16
@@ -73,8 +73,23 @@ PAIRED_STAGE1_COUNT ?= 20
 PAIRED_TOP_FIELDS ?= 5
 PAIRED_FINALISTS ?= 3
 LAST_PAIRED_SEARCH_RUN := $(SERVER_RESULTS)/LATEST_PAIRED_SEARCH_RUN
+SCHEDULE_SEARCH_NAME ?= schedule_$(shell date +%Y%m%d_%H%M%S)
+SCHEDULE_SEARCH_RUN ?= $(SERVER_DATA)/runs/$(SCHEDULE_SEARCH_NAME)
+SCHEDULE_SEARCH_LOCAL_RUN ?= $(SERVER_RESULTS)/$(SCHEDULE_SEARCH_NAME)
+SCHEDULE_SEARCH_OPPONENTS ?= 0801_ev4 0801_ev5 0801_v2 0801_ev6
+SCHEDULE_SEARCH_WORKERS ?= 20
+SCHEDULE_SEARCH_POPULATION ?= 64
+SCHEDULE_STAGE0_SEEDS ?= 4
+SCHEDULE_STAGE1_SEEDS ?= 16
+SCHEDULE_STAGE2_SEEDS ?= 24
+SCHEDULE_FINAL_SEEDS ?= 100
+SCHEDULE_STAGE1_COUNT ?= 20
+SCHEDULE_ELITE_COUNT ?= 6
+SCHEDULE_FINALISTS ?= 3
+LAST_SCHEDULE_SEARCH_RUN := $(SERVER_RESULTS)/LATEST_SCHEDULE_SEARCH_RUN
+SCHEDULE_RESULT ?= $(shell test -f "$(LAST_SCHEDULE_SEARCH_RUN)" && cat "$(LAST_SCHEDULE_SEARCH_RUN)")
 
-.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
+.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search schedule-search schedule-status schedule-candidate schedule-use genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -207,6 +222,39 @@ paired-search: server-sync-fast-runner
 	mkdir -p "$(SERVER_RESULTS)"
 	printf '%s\n' "$(PAIRED_SEARCH_LOCAL_RUN)" > "$(LAST_PAIRED_SEARCH_RUN)"
 	@printf '\nDone. Results: %s\n' "$(PAIRED_SEARCH_LOCAL_RUN)"
+
+schedule-search: server-sync-fast-runner
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(SCHEDULE_SEARCH_RUN)/source"'
+	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py
+	rsync -az training/schedule_genome.py training/search_schedule.py training/promote_schedule.py $(SERVER_HOST):$(SERVER_REPO)/training/
+	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; cp main.py training/schedule_genome.py training/search_schedule.py training/promote_schedule.py "$(SCHEDULE_SEARCH_RUN)/source/"; cp -R test "$(SCHEDULE_SEARCH_RUN)/source/"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/search_schedule.py --base main.py --models-dir test --opponents $(SCHEDULE_SEARCH_OPPONENTS) --workers "$(SCHEDULE_SEARCH_WORKERS)" --population "$(SCHEDULE_SEARCH_POPULATION)" --stage0-seeds "$(SCHEDULE_STAGE0_SEEDS)" --stage1-seeds "$(SCHEDULE_STAGE1_SEEDS)" --stage2-seeds "$(SCHEDULE_STAGE2_SEEDS)" --final-seeds "$(SCHEDULE_FINAL_SEEDS)" --stage1-count "$(SCHEDULE_STAGE1_COUNT)" --elite-count "$(SCHEDULE_ELITE_COUNT)" --finalists "$(SCHEDULE_FINALISTS)" --output-dir "$(SCHEDULE_SEARCH_RUN)"'
+	mkdir -p "$(SCHEDULE_SEARCH_LOCAL_RUN)"
+	rsync -az $(SERVER_HOST):$(SCHEDULE_SEARCH_RUN)/ "$(SCHEDULE_SEARCH_LOCAL_RUN)/"
+	mkdir -p "$(SERVER_RESULTS)"
+	printf '%s\n' "$(SCHEDULE_SEARCH_LOCAL_RUN)" > "$(LAST_SCHEDULE_SEARCH_RUN)"
+	@printf '\nDone. Next: make schedule-status\n'
+
+schedule-status:
+	test -n "$(SCHEDULE_RESULT)"
+	test -f "$(SCHEDULE_RESULT)/decision.json"
+	$(VENV)/bin/python -c 'import json; d=json.load(open("$(SCHEDULE_RESULT)/decision.json")); s=d["selected"]; print("accepted=",d["accepted"]); print("reason=",d["reason"]); print("selected=",s["label"]); print("delta=",round(s["mean_delta"],1),"lower95=",round(s["lower_95_delta"],1),"worst=",round(s["worst_opponent_delta"],1))'
+
+schedule-candidate:
+	test -n "$(SCHEDULE_RESULT)"
+	test -f "$(SCHEDULE_RESULT)/best_schedule.json"
+	test -f "$(SCHEDULE_RESULT)/source/main.py"
+	PYTHONPATH=training $(VENV)/bin/python training/promote_schedule.py --schedule "$(SCHEDULE_RESULT)/best_schedule.json" --base "$(SCHEDULE_RESULT)/source/main.py" --output candidate_main.py
+	$(VENV)/bin/python -m py_compile candidate_main.py
+	@printf 'Candidate ready: candidate_main.py\n'
+
+schedule-use: schedule-candidate
+	$(VENV)/bin/python -c 'import json; d=json.load(open("$(SCHEDULE_RESULT)/decision.json")); assert d["accepted"], "schedule acceptance gate was not met"'
+	test -f "$(SCHEDULE_RESULT)/main_before_promotion.py" || cp main.py "$(SCHEDULE_RESULT)/main_before_promotion.py"
+	cp candidate_main.py main.py
+	$(MAKE) submission-build
+	cp main.py "$(SCHEDULE_RESULT)/promoted_main.py"
+	@printf '\nPromoted accepted schedule to main.py\n'
 
 server-hybrid-train: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(HYBRID_RUN)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 CUDA_VISIBLE_DEVICES=0 .venv/bin/python training/train_hybrid_ppo.py --output-dir "$(HYBRID_RUN)" --iterations "$(HYBRID_ITERATIONS)" --games-per-iteration "$(HYBRID_GAMES)" --workers "$(HYBRID_WORKERS)" --score800-reference "$(SERVER_REFERENCE)" --device cuda'

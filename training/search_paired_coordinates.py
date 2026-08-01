@@ -19,9 +19,11 @@ from fast_kaggriculture import run_fast_episode
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OPPONENTS = ("0801_ev4", "0801_ev5", "0801_v2")
+DEFAULT_OPPONENTS = ("0801_ev4", "0801_ev5", "0801_v2", "0801_ev6")
 _ENGINE_PATH = ""
 _OPPONENT_PATHS: dict[str, str] = {}
+_CANDIDATE_AGENTS: dict[str, Any] = {}
+_OPPONENT_AGENTS: dict[str, Any] = {}
 
 
 def load_module(path: Path, name: str) -> Any:
@@ -45,21 +47,32 @@ def incumbent_genome(path: Path) -> Ev2Genome:
 
 
 def worker_init(engine_path: str, opponent_paths: dict[str, str]) -> None:
-    global _ENGINE_PATH, _OPPONENT_PATHS
+    global _ENGINE_PATH, _OPPONENT_PATHS, _CANDIDATE_AGENTS, _OPPONENT_AGENTS
     _ENGINE_PATH = engine_path
     _OPPONENT_PATHS = opponent_paths
+    _CANDIDATE_AGENTS = {}
+    _OPPONENT_AGENTS = {}
 
 
 def play(task: tuple[dict[str, Any], str, str, int, int]) -> dict[str, Any]:
     values, key, opponent, seed, seat = task
-    suffix = f"{os.getpid()}_{opponent}_{seed}_{seat}_{abs(hash(key))}"
     try:
-        engine = load_module(Path(_ENGINE_PATH), f"paired_engine_{suffix}")
-        candidate = configure_module(engine, Ev2Genome(**values))
-        opponent_module = load_module(
-            Path(_OPPONENT_PATHS[opponent]), f"paired_opponent_{suffix}"
-        )
-        opponent_agent = opponent_module.agent
+        candidate = _CANDIDATE_AGENTS.get(key)
+        if candidate is None:
+            engine = load_module(
+                Path(_ENGINE_PATH),
+                f"paired_engine_{os.getpid()}_{abs(hash(key))}",
+            )
+            candidate = configure_module(engine, Ev2Genome(**values))
+            _CANDIDATE_AGENTS[key] = candidate
+        opponent_agent = _OPPONENT_AGENTS.get(opponent)
+        if opponent_agent is None:
+            opponent_module = load_module(
+                Path(_OPPONENT_PATHS[opponent]),
+                f"paired_opponent_{os.getpid()}_{opponent}",
+            )
+            opponent_agent = opponent_module.agent
+            _OPPONENT_AGENTS[opponent] = opponent_agent
         agents = (
             [candidate, opponent_agent]
             if seat == 0
@@ -142,6 +155,62 @@ def one_dimensional_candidates(base: Ev2Genome) -> list[dict[str, Any]]:
                     {field: proposed},
                 )
             )
+    return unique_candidates(rows)
+
+
+def structural_candidates(base: Ev2Genome) -> list[dict[str, Any]]:
+    """Add coherent, non-local hypotheses that coordinate search cannot reach.
+
+    The coordinate neighbourhood is intentionally conservative, but a strong
+    fixed-trace rival can expose a different *schedule* involving several
+    coupled genes.  These profiles keep those coupled changes together so
+    stage 0 can reject or retain the complete idea instead of testing an
+    inactive half (for example, a larger herd without enough animal slots).
+    """
+    profiles = {
+        "ev6_late_herd": {
+            "target_herd": 16,
+            "animal_slots_ne": 6,
+            "animal_slots_sw": 5,
+            "animal_purchase_last_day": 17,
+        },
+        "ev6_expansion": {
+            "first_land_day": 9,
+            "second_land_day": 12,
+        },
+        "ev6_three_stage": {
+            "max_hands": 11,
+            "core_herd": 4,
+            "mid_herd": 9,
+            "target_herd": 16,
+            "herd_expansion_day": 7,
+            "herd_final_day": 11,
+            "animal_purchase_last_day": 17,
+            "animal_slots_ne": 6,
+            "animal_slots_sw": 5,
+            "first_land_day": 9,
+            "second_land_day": 12,
+        },
+        "ev6_herd_current_land": {
+            "core_herd": 4,
+            "mid_herd": 9,
+            "target_herd": 16,
+            "herd_expansion_day": 7,
+            "herd_final_day": 11,
+            "animal_purchase_last_day": 17,
+            "animal_slots_ne": 6,
+            "animal_slots_sw": 5,
+        },
+    }
+    rows = []
+    for label, requested in profiles.items():
+        rows.append(
+            candidate(
+                replace(base, **requested).normalized(),
+                label,
+                requested,
+            )
+        )
     return unique_candidates(rows)
 
 
@@ -326,7 +395,7 @@ def main() -> None:
     if missing:
         raise SystemExit("missing file(s): " + ", ".join(missing))
     metadata = {
-        "method": "paired coordinate racing v1",
+        "method": "paired coordinate + structural racing v2",
         "incumbent": str(args.incumbent.resolve()),
         "engine": str(args.engine.resolve()),
         "opponents": {name: str(path) for name, path in opponent_paths.items()},
@@ -356,7 +425,9 @@ def main() -> None:
         stage0_seed_values = seeds(args.seed_start, args.stage0_seeds)
         stage0 = evaluate(
             pool,
-            one_dimensional_candidates(base),
+            unique_candidates(
+                one_dimensional_candidates(base) + structural_candidates(base)
+            ),
             list(opponent_paths),
             stage0_seed_values,
             incumbent_key,
@@ -367,10 +438,18 @@ def main() -> None:
         stage1_inputs = [incumbent_summary] + [
             row for row in stage0 if row["key"] != incumbent_key
         ][: args.stage1_count]
+        structural_keys = {
+            row["genome"].key() for row in structural_candidates(base)
+        }
+        stage1_inputs += [
+            row
+            for row in stage0
+            if row["key"] in structural_keys
+        ]
         stage1_seed_values = seeds(args.seed_start + 100_000, args.stage1_seeds)
         stage1 = evaluate(
             pool,
-            rows_from_summaries(stage1_inputs),
+            unique_candidates(rows_from_summaries(stage1_inputs)),
             list(opponent_paths),
             stage1_seed_values,
             incumbent_key,
@@ -381,7 +460,16 @@ def main() -> None:
             [row for row in stage1 if row["key"] != incumbent_key],
             args.top_fields,
         )
-        stage2_inputs = pairwise_candidates(base, singles)
+        # Keep coherent multi-gene profiles alive.  They cannot be rebuilt by
+        # pairwise_candidates(), which deliberately combines only two singles.
+        structural = [
+            row
+            for row in stage1
+            if row["key"] != incumbent_key and len(row["requested"]) > 1
+        ][: args.top_fields]
+        stage2_inputs = unique_candidates(
+            pairwise_candidates(base, singles) + rows_from_summaries(structural)
+        )
         stage2_seed_values = seeds(args.seed_start + 200_000, args.stage2_seeds)
         stage2 = evaluate(
             pool,
