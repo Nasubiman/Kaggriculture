@@ -1,16 +1,4 @@
-# Kaggriculture public expansion baseline
-#
-# Strategy
-# - Buy useful land early and run a mixed crop plan instead of a single-crop opening.
-# - Build a mixed cow/sheep herd and reserve wheat for daily feed.
-# - Hire up to twelve hands early in the day so expansion tiles can be worked in parallel.
-#
-# Known limitations
-# - Hiring is deliberately simple and can overpay when the marginal hand has little work.
-# - Crop and herd targets are fixed; the policy does not condition on the opponent.
-# - Late-horizon adaptation and inventory routing are intentionally simple.
-#
-# This is a reproducible public baseline, not the current private competition agent.
+import math
 
 from collections import deque
 
@@ -22,28 +10,31 @@ CROP_RULES = {
     "MELON": (80, 10, 12, 16, False),
 }
 
-COW_COST = 400
-TARGET_HANDS_CORE = 10
-TARGET_HANDS_EXPANDED = 10
-LAND_DAY = 4
-EXPANSION_DEADLINE = 16
-EXPANSION_BUFFER = 500
 SELL_ORDER = (
-    "MILK", "FERTILIZER", "MELON", "STRAWBERRY",
-    "TOMATO", "CARROT", "WHEAT", "EGG", "WOOL",
+    "MILK", "WOOL", "MELON", "STRAWBERRY",
+    "FERTILIZER", "TOMATO", "CARROT", "WHEAT", "EGG",
 )
 
+_TOP_ROUTE = None
+_TOP_PHASE = 0
+_LAST_STEP = -1
 
-def _animal_slots(board_size, unlocked_quadrants):
-    h = board_size // 2
-    quadrants = set(unlocked_quadrants or ["NW"])
-    # The four core slots reproduce the public top-agent opening: 2 cows + 2 sheep.
-    slots = [(h - 1, h - 1), (h - 2, h - 1), (h - 1, h - 2), (h - 1, h - 3)]
-    if "NE" in quadrants:
-        slots.extend([(h, h - 1), (h, h - 2), (h + 1, h - 3), (h + 2, h - 2), (h + 2, h - 1)])
-    if "SW" in quadrants:
-        slots.extend([(h - 2, h), (h - 1, h), (h - 1, h + 1)])
-    return [p for p in slots if 0 <= p[0] < board_size and 0 <= p[1] < board_size]
+
+def _step_number(obs):
+    return int(obs.get("step", int(obs.get("day", 0)) * 24 + int(obs.get("hour", 0))))
+
+
+def _reset_episode_state(obs):
+    global _TOP_ROUTE, _TOP_PHASE, _LAST_STEP
+    step = _step_number(obs)
+    if step < _LAST_STEP or (step == 0 and _LAST_STEP > 0):
+        _TOP_ROUTE = None
+        _TOP_PHASE = 0
+    _LAST_STEP = step
+
+
+def _dist(a, b):
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
 def _shed_tiles(board_size, tiles):
@@ -53,10 +44,6 @@ def _shed_tiles(board_size, tiles):
         if 0 <= p[0] < board_size and 0 <= p[1] < board_size and tiles[p[1]][p[0]] != "LOCKED":
             out.append(p)
     return out
-
-
-def _dist(a, b):
-    return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
 
 def _nearest_shed(board_size, tiles, pos):
@@ -112,15 +99,6 @@ def _total(private, item):
     return value
 
 
-def _placed_cows(farm):
-    return sum(
-        1
-        for row in farm.get("tiles", []) or []
-        for tile in row
-        if isinstance(tile, dict) and tile.get("animal") == "COW"
-    )
-
-
 def _count_public_animals(farm, animal):
     return sum(
         1
@@ -128,6 +106,97 @@ def _count_public_animals(farm, animal):
         for tile in row
         if isinstance(tile, dict) and tile.get("animal") == animal
     )
+
+
+def _opponent_animals(obs):
+    farms = obs.get("farms", []) or []
+    player = int(obs.get("player", 0))
+    counts = {"GOOSE": 0, "COW": 0, "SHEEP": 0}
+    if len(farms) != 2 or player not in (0, 1):
+        return counts
+    opponent = farms[1 - player]
+    for row in opponent.get("tiles", []) or []:
+        for tile in row:
+            if isinstance(tile, dict):
+                animal = tile.get("animal")
+                if animal in counts:
+                    counts[animal] += 1
+    return counts
+
+
+def _route_signals(obs):
+    prices = ((obs.get("market", {}) or {}).get("prices", {}) or {})
+    milk = float(prices.get("MILK", 160))
+    wool = float(prices.get("WOOL", 200))
+    opponent = _opponent_animals(obs)
+    shops = set(((obs.get("town", {}) or {}).get("unlocked_shops", []) or []))
+
+    milk_demand = len(shops.intersection({"PIZZA_SHOP", "ICE_CREAM_SHOP", "SMOOTHIE_SHOP"}))
+    wool_demand = 1 if "YARN_STORE" in shops else 0
+
+    milk_signal = milk * (1.0 + 0.055 * milk_demand) / (1.0 + 0.045 * opponent["COW"])
+    wool_signal = wool * (1.0 + 0.080 * wool_demand) / (1.0 + 0.040 * opponent["SHEEP"])
+    return milk_signal, wool_signal, opponent
+
+
+def _top_target(obs, expanded):
+    global _TOP_ROUTE, _TOP_PHASE
+    if not expanded:
+        _TOP_ROUTE = None
+        _TOP_PHASE = 0
+        return {"COW": 2, "SHEEP": 2}
+
+    day = int(obs.get("day", 0))
+    if day < 7:
+        return {"COW": 2, "SHEEP": 2}
+
+    milk_signal, wool_signal, opponent = _route_signals(obs)
+
+    if _TOP_PHASE == 0 or _TOP_ROUTE is None:
+        if opponent["COW"] >= 6 and opponent["SHEEP"] <= 2:
+            _TOP_ROUTE = (4, 4)
+        elif opponent["SHEEP"] >= 6 and opponent["COW"] <= 2:
+            _TOP_ROUTE = (6, 2)
+        else:
+            _TOP_ROUTE = (6, 2) if milk_signal >= 0.97 * wool_signal else (4, 4)
+        _TOP_PHASE = 1
+
+    if day >= 11 and _TOP_PHASE == 1:
+        farms = obs.get("farms", []) or []
+        player = int(obs.get("player", 0))
+        farm = farms[player] if player < len(farms) else {}
+        private = obs.get("private", {}) or {}
+        cows = _count_public_animals(farm, "COW") + _total(private, "COW")
+        sheep = _count_public_animals(farm, "SHEEP") + _total(private, "SHEEP")
+        remaining = max(0, 12 - cows - sheep)
+
+        force_sheep = opponent["COW"] >= 7 and opponent["COW"] >= opponent["SHEEP"] + 4
+        force_cows = opponent["SHEEP"] >= 7 and opponent["SHEEP"] >= opponent["COW"] + 4
+
+        if force_sheep or wool_signal > 1.05 * milk_signal:
+            cow_add, sheep_add = 0, remaining
+        elif force_cows or milk_signal > 1.05 * wool_signal:
+            cow_add, sheep_add = remaining, 0
+        else:
+            cow_need = max(0, 6 - cows)
+            cow_add = min(remaining, cow_need)
+            sheep_add = remaining - cow_add
+
+        _TOP_ROUTE = (cows + cow_add, sheep + sheep_add)
+        _TOP_PHASE = 2
+
+    return {"COW": int(_TOP_ROUTE[0]), "SHEEP": int(_TOP_ROUTE[1])}
+
+
+def _animal_slots(board_size, unlocked_quadrants):
+    h = board_size // 2
+    quadrants = set(unlocked_quadrants or ["NW"])
+    slots = [(h - 1, h - 1), (h - 2, h - 1), (h - 1, h - 2), (h - 1, h - 3)]
+    if "NE" in quadrants:
+        slots.extend([(h, h - 1), (h, h - 2), (h + 1, h - 3), (h + 2, h - 2), (h + 2, h - 1)])
+    if "SW" in quadrants:
+        slots.extend([(h - 2, h), (h - 1, h), (h - 1, h + 1)])
+    return [p for p in slots if 0 <= p[0] < board_size and 0 <= p[1] < board_size]
 
 
 def _crop_plan(board_size, unlocked_quadrants, animal_slots):
@@ -161,6 +230,7 @@ def _crop_plan(board_size, unlocked_quadrants, animal_slots):
         plan.update(zip(cells, crops[:len(cells)]))
     return plan
 
+
 def _add(tasks, priority, pos, action, need=None):
     tasks.append({"priority": priority, "pos": tuple(pos), "action": list(action), "need": need})
 
@@ -173,11 +243,48 @@ def _animal_for_slot(position, slots):
     return "SHEEP" if index in sheep_slots else "COW"
 
 
+def _fertilizer_gain(obs, tile):
+    if not isinstance(tile, dict) or tile.get("kind") != "PLANT":
+        return 0.0
+    day = int(obs.get("day", 0))
+    if day >= 27 or int(tile.get("fertilized_until_day", -1)) >= day:
+        return 0.0
+
+    crop = tile.get("crop")
+    planted = int(tile.get("planted_day", day))
+    age = day - planted
+    held = int(tile.get("yield_units", 0))
+    prices = ((obs.get("market", {}) or {}).get("prices", {}) or {})
+    crop_price = float(prices.get(crop, 0))
+    fertilizer_price = float(prices.get("FERTILIZER", 100))
+
+    bonus_units = 0
+    if crop == "MELON":
+        if 5 <= age <= 11 and held < 6:
+            active_days = sum(1 for future_age in (age, age + 1, age + 2) if 6 <= future_age <= 12)
+            bonus_units = min(max(0, 6 - held), active_days)
+    elif crop == "STRAWBERRY":
+        if age >= 8:
+            for offset in (0, 1, 2):
+                next_day = day + offset + 1
+                since_first = next_day - planted - 10
+                if since_first >= 0 and since_first % 2 == 0:
+                    production_index = since_first // 2 + 1
+                    if production_index <= 4:
+                        bonus_units += 1
+
+    gain = bonus_units * crop_price - fertilizer_price
+    return gain if gain >= 35 else 0.0
+
+
 def _animal_tasks(obs, farm, private, slots):
     day = int(obs.get("day", 0))
     prices = ((obs.get("market", {}) or {}).get("prices", {}) or {})
+    fertilizer_price = int(prices.get("FERTILIZER", 100))
+    fertilizer_stock = _total(private, "FERTILIZER")
     tasks = []
     tiles = farm["tiles"]
+
     for pos in slots:
         x, y = pos
         tile = tiles[y][x]
@@ -187,12 +294,24 @@ def _animal_tasks(obs, farm, private, slots):
         if isinstance(tile, dict) and tile.get("animal") in ("COW", "SHEEP"):
             animal = tile["animal"]
             product = "MILK" if animal == "COW" else "WOOL"
+            product_floor = 42 if animal == "COW" else 52
+            pending = int(tile.get("pending_care_bonus", 0))
+
             if not tile.get("fed_today", False):
                 _add(tasks, 0, pos, ["FEED"], "WHEAT")
+
             if tile.get("fertilizer_available", False):
-                _add(tasks, 1, pos, ["COLLECT_FERTILIZER"])
-            if day <= 27 and int(prices.get(product, 100)) >= 20 and not tile.get("cared_today", False):
+                if not (fertilizer_price < 22 and fertilizer_stock >= 6):
+                    _add(tasks, 1, pos, ["COLLECT_FERTILIZER"])
+
+            if (
+                day <= 27
+                and int(prices.get(product, 100)) >= product_floor
+                and not tile.get("cared_today", False)
+                and pending < 5
+            ):
                 _add(tasks, 2, pos, ["CARE"])
+
             held = int(tile.get("yield_units", 0))
             if held >= 3 or (day >= 27 and held > 0):
                 _add(tasks, 1, pos, ["HARVEST"])
@@ -206,16 +325,19 @@ def _animal_tasks(obs, farm, private, slots):
             _add(tasks, 0, pos, ["DIG"])
     return tasks
 
+
 def _crop_tasks(obs, farm, private, plan, cow_slots):
     day = int(obs.get("day", 0))
     hour = int(obs.get("hour", 0))
     seeds = private.get("seeds", {}) or {}
     tasks = []
+    tiles = farm["tiles"]
+
     for pos, planned in plan.items():
         if pos in cow_slots:
             continue
         x, y = pos
-        tile = farm["tiles"][y][x]
+        tile = tiles[y][x]
         if tile == "LOCKED":
             continue
         if tile is None:
@@ -242,6 +364,35 @@ def _crop_tasks(obs, farm, private, plan, cow_slots):
                 _add(tasks, 4, pos, ["HARVEST"])
         elif age >= first and (held >= 3 or (day >= 27 and held > 0)):
             _add(tasks, 4, pos, ["HARVEST"])
+
+    stock = _total(private, "FERTILIZER")
+    if stock > 0 and day < 27 and hour <= 17:
+        candidates = []
+        for pos in sorted(plan, key=lambda p: (p[1], p[0])):
+            if pos in cow_slots:
+                continue
+            x, y = pos
+            tile = tiles[y][x]
+            if not isinstance(tile, dict) or tile.get("kind") != "PLANT":
+                continue
+            if int(tile.get("consecutive_unwatered", 0)) >= 1:
+                continue
+            crop = tile.get("crop")
+            held = int(tile.get("yield_units", 0))
+            if crop == "STRAWBERRY" and held >= 3:
+                continue
+            gain = _fertilizer_gain(obs, tile)
+            if gain > 0:
+                candidates.append((gain, pos))
+
+        selected = {
+            pos for _, pos in sorted(candidates, key=lambda z: (-z[0], z[1][1], z[1][0]))[:min(stock, 2)]
+        }
+        if selected:
+            tasks = [t for t in tasks if t.get("pos") not in selected]
+            for pos in sorted(selected, key=lambda p: (p[1], p[0])):
+                _add(tasks, 2, pos, ["FERTILIZE"], "FERTILIZER")
+
     return tasks
 
 
@@ -257,13 +408,13 @@ def _task_cost(farm, pos, inv, shed, task):
 
 
 def _task_action(farm, pos, inv, shed, task):
-    need = task["need"]
+    need = task.get("need")
     if need is not None and int(inv.get(need, 0)) <= 0:
         if int(shed.get(need, 0)) <= 0:
             return ["PASS"]
         s = _nearest_shed(len(farm["tiles"]), farm["tiles"], pos)
         if tuple(pos) == tuple(s):
-            return ["PICKUP", need, 1 if need in ("COW", "SHEEP") else 4]
+            return ["PICKUP", need, 1 if need in ("COW", "SHEEP", "FERTILIZER") else 4]
         return _move(farm["tiles"], pos, s)
     if tuple(pos) == task["pos"]:
         return list(task["action"])
@@ -329,46 +480,6 @@ def _fib(n):
     return a
 
 
-_TOP_ROUTE = None
-_TOP_PHASE = 0
-
-
-def _top_target(obs, expanded):
-    global _TOP_ROUTE, _TOP_PHASE
-    if not expanded:
-        return {"COW": 2, "SHEEP": 2}
-    day = int(obs.get("day", 0))
-    if day < 7:
-        return {"COW": 2, "SHEEP": 2}
-    prices = ((obs.get("market", {}) or {}).get("prices", {}) or {})
-    milk = float(prices.get("MILK", 160))
-    wool = float(prices.get("WOOL", 200))
-    if _TOP_PHASE == 0:
-        # The public leader buys the first extra tranche on days 7-8.  When
-        # milk is nearly as valuable as wool it concentrates that tranche in
-        # cows; otherwise it preserves a balanced option for the final read.
-        _TOP_ROUTE = (6, 2) if milk >= 0.97 * wool else (4, 4)
-        _TOP_PHASE = 1
-    if day >= 11 and _TOP_PHASE == 1:
-        farms = obs.get("farms", []) or []
-        player = int(obs.get("player", 0))
-        farm = farms[player] if player < len(farms) else {}
-        private = obs.get("private", {}) or {}
-        cows = _count_public_animals(farm, "COW") + _total(private, "COW")
-        sheep = _count_public_animals(farm, "SHEEP") + _total(private, "SHEEP")
-        remaining = max(0, 12 - cows - sheep)
-        if milk > 1.03 * wool:
-            cow_add, sheep_add = remaining, 0
-        elif wool > 1.03 * milk:
-            cow_add, sheep_add = 0, remaining
-        else:
-            cow_add = (remaining + 1) // 2
-            sheep_add = remaining // 2
-        _TOP_ROUTE = (cows + cow_add, sheep + sheep_add)
-        _TOP_PHASE = 2
-    return {"COW": _TOP_ROUTE[0], "SHEEP": _TOP_ROUTE[1]}
-
-
 def _market_actions(obs, farm, private, animal_slots, crop_plan):
     day = int(obs.get("day", 0))
     hour = int(obs.get("hour", 0))
@@ -377,14 +488,8 @@ def _market_actions(obs, farm, private, animal_slots, crop_plan):
     orders = []
     budget = float(farm.get("money", 0))
 
-    placed = {
-        animal: _count_public_animals(farm, animal)
-        for animal in ("COW", "SHEEP")
-    }
-    owned = {
-        animal: placed[animal] + _total(private, animal)
-        for animal in ("COW", "SHEEP")
-    }
+    placed = {animal: _count_public_animals(farm, animal) for animal in ("COW", "SHEEP")}
+    owned = {animal: placed[animal] + _total(private, animal) for animal in ("COW", "SHEEP")}
     quadrants = list(farm.get("unlocked_quadrants", []) or ["NW"])
     expanded = len(quadrants) >= 2
     target = _top_target(obs, expanded)
@@ -397,6 +502,8 @@ def _market_actions(obs, farm, private, animal_slots, crop_plan):
         amount = int(shed.get(item, 0))
         if item == "WHEAT" and day < 29:
             amount = max(0, amount - wheat_reserve)
+        if item == "FERTILIZER" and day <= 25:
+            amount = max(0, amount - 6)
         if amount <= 0:
             continue
         cap = amount if day >= 29 else 20 if item in ("MILK", "WOOL", "FERTILIZER") else 28
@@ -474,27 +581,77 @@ def _market_actions(obs, farm, private, animal_slots, crop_plan):
             missing -= 1
     return orders[:10]
 
+
+def _safe_format_action(act):
+    if not isinstance(act, list) or not act:
+        return ["PASS"]
+    return [str(x) for x in act]
+
+
 def agent(obs):
-    farms = obs.get("farms", []) or []
-    player = int(obs.get("player", 0))
-    if player < 0 or player >= len(farms):
-        return {"farmer": ["PASS"], "hands": [], "market": []}
-    farm = farms[player]
-    private = obs.get("private", {}) or {}
-    board_size = len(farm.get("tiles", [])) or 10
-    quadrants = list(farm.get("unlocked_quadrants", []) or ["NW"])
-    expanded = len(quadrants) >= 2
-    all_animal_slots = _animal_slots(board_size, quadrants)
-    animals_owned = sum(
-        _count_public_animals(farm, animal) + _total(private, animal)
-        for animal in ("COW", "SHEEP")
-    )
-    active_count = min(len(all_animal_slots), max(3, animals_owned))
-    animal_slots = all_animal_slots[:active_count]
-    crop_plan = _crop_plan(board_size, quadrants, set(all_animal_slots))
-    actions = _unit_actions(obs, farm, private, animal_slots, crop_plan)
-    return {
-        "farmer": actions[0] if actions else ["PASS"],
-        "hands": actions[1:] if len(actions) > 1 else [],
-        "market": _market_actions(obs, farm, private, all_animal_slots, crop_plan),
-    }
+    """
+    Основна точка входу агента. 
+    Огорнута в суворе очищення виходу для забезпечення 100% сумісності з валідатором.
+    """
+    try:
+        _reset_episode_state(obs)
+        farms = obs.get("farms", []) or []
+        player = int(obs.get("player", 0))
+        
+        if player < 0 or player >= len(farms):
+            return {"farmer": ["PASS"], "hands": [], "market": []}
+
+        farm = farms[player]
+        private = obs.get("private", {}) or {}
+        board_size = len(farm.get("tiles", [])) or 10
+        quadrants = list(farm.get("unlocked_quadrants", []) or ["NW"])
+
+        all_animal_slots = _animal_slots(board_size, quadrants)
+        animals_owned = sum(
+            _count_public_animals(farm, animal) + _total(private, animal)
+            for animal in ("COW", "SHEEP")
+        )
+        active_count = min(len(all_animal_slots), max(3, animals_owned))
+        animal_slots = all_animal_slots[:active_count]
+        crop_plan = _crop_plan(board_size, quadrants, set(all_animal_slots))
+
+        actions = _unit_actions(obs, farm, private, animal_slots, crop_plan)
+        
+        # Гарантуємо точний збіг кількості робітників (hands)
+        hands_count = len(farm.get("hands", []) or [])
+        farmer_action = _safe_format_action(actions[0]) if len(actions) > 0 else ["PASS"]
+        
+        hands_actions = []
+        for i in range(hands_count):
+            if i + 1 < len(actions):
+                hands_actions.append(_safe_format_action(actions[i + 1]))
+            else:
+                hands_actions.append(["PASS"])
+
+        # Очищення ринкових ордерів
+        market = _market_actions(obs, farm, private, all_animal_slots, crop_plan)
+        clean_market = []
+        for ord_item in market[:10]:
+            if isinstance(ord_item, list) and len(ord_item) >= 1:
+                clean_market.append([str(x) for x in ord_item])
+
+        return {
+            "farmer": farmer_action,
+            "hands": hands_actions,
+            "market": clean_market,
+        }
+
+    except Exception:
+        # Безпечний аварійний вихід у разі критичного збою на боці середовища
+        try:
+            farms = obs.get("farms", []) or []
+            player = int(obs.get("player", 0))
+            hands_count = len(farms[player].get("hands", []) or []) if player < len(farms) else 0
+        except Exception:
+            hands_count = 0
+
+        return {
+            "farmer": ["PASS"],
+            "hands": [["PASS"] for _ in range(hands_count)],
+            "market": []
+        }

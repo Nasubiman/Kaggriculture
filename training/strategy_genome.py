@@ -385,7 +385,7 @@ def layout_targets(
         position for position in crop_order if position not in occupied
     )[:cash_tiles]
 
-    def mirrored(values: tuple[tuple[int, int], ...] | list[tuple[int, int]]):
+    def mirrored(values):
         result = tuple(values)
         if genome.mirror:
             return tuple((board_size - 1 - x, y) for x, y in result)
@@ -480,7 +480,7 @@ def configure_module(module: Any, genome: StrategyGenome):
             "order": genome.service_order,
         }
 
-    def select_market_profile(obs: dict[str, Any]) -> str | None:
+    def select_market_profile(obs: dict[str, Any]):
         day = int(obs.get("day", 0))
         if day == 0:
             phase_state["profile"] = None

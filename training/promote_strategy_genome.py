@@ -50,7 +50,17 @@ class _FrozenModuleProxy:
         globals()[name] = value
 
 
-agent = configure_module(_FrozenModuleProxy(), StrategyGenome(**_FROZEN_GENOME))
+_configured_agent = configure_module(
+    _FrozenModuleProxy(), StrategyGenome(**_FROZEN_GENOME)
+)
+
+
+def kaggle_agent(obs):
+    """Final callable: Kaggle selects the last callable defined in this file."""
+    return _configured_agent(obs)
+
+
+agent = kaggle_agent
 # --- END FROZEN STRATEGY GENOME ---
 '''
 

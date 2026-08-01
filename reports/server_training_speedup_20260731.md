@@ -6,7 +6,7 @@ Host: `kag-server`
 ## Result
 
 Steady-state hybrid PPO rollout throughput increased from about 2.0 to
-30.0 games/second, a 15.0× improvement.
+33.1 games/second, a 16.5× improvement after the 2026-08-01 follow-up.
 
 | Configuration | Games/update | Workers | Rollout seconds | Games/sec |
 |---|---:|---:|---:|---:|
@@ -18,16 +18,51 @@ Steady-state hybrid PPO rollout throughput increased from about 2.0 to
 | fast runner + target cache | 60 | 20 | 2.7–2.8 | 21.61–21.82 |
 | reused environment + allocation-free routing | 60 | 20 | 2.4 | 24.56–24.64 |
 | shared per-turn task candidates | 60 | 20 | 2.0 | 29.82–30.14 |
+| default market-price cache | 60 | 20 | 1.8 | 32.29–34.17 |
 
-With the final setup, a 60-game update takes approximately 2.2 seconds:
+With the final setup, a 60-game update takes approximately 2.0–2.1 seconds:
 
-- rollout: approximately 2.0 seconds;
+- rollout: approximately 1.8 seconds;
 - GPU PPO update: 0.24–0.25 seconds;
 - peak allocated GPU memory: about 19 MB.
 
-Total steady update time is about 2.2–2.3 seconds. The first update still pays
-worker import/startup cost and took 5.6 seconds.
+The first update still pays worker import/startup cost and took 5.4 seconds.
 Workers remain alive afterward, so longer runs operate at the steady rate.
+
+### 2026-08-01 follow-up: default market-price cache
+
+Profiling showed that the official interpreter recalculated the same
+`(item, inventory)` default-market price tens of thousands of times per game.
+The fast runner now uses a bounded 65,536-entry LRU cache for this pure
+calculation. Custom market parameters still call the official function.
+
+The optimization does not monkey-patch the public Kaggriculture module.
+Instead, the fast runner reuses the official functions' code objects with an
+isolated globals dictionary containing the cached price function. Standard
+runner calls in the same process therefore remain untouched.
+
+The production-shaped benchmark used five PPO updates, 60 games per update,
+20 persistent workers, and the same seed/configuration for both versions.
+The first update was excluded because it includes worker imports and startup.
+
+| Version | Steady updates | Mean games/sec | Median games/sec | Mean rollout seconds |
+|---|---:|---:|---:|---:|
+| previous fast runner | 4 | 30.3678 | 30.2256 | 1.9767 |
+| cached market prices | 4 | 33.0716 | 32.9131 | 1.8152 |
+
+This is an 8.90% throughput increase (1.089×). A local single-process A/B
+over 20 identical games measured a similar 9.47% increase. On the compute
+server, 20 optimized fast-runner games exactly matched the standard runner's
+summaries and complete game records.
+
+The server artifacts are retained at:
+
+- baseline: `/media/deepstation/storage/nakamura_y/kaggriculture/runs/fast_runner_benchmark_20260801/baseline_ab7245a`
+- optimized: `/media/deepstation/storage/nakamura_y/kaggriculture/runs/fast_runner_benchmark_20260801/candidate_cache_v1`
+
+`make server-sync-fast-runner` installs the current runner explicitly. All
+server targets that use the fast path depend on this sync step, preventing a
+local runner change from being omitted on the compute server.
 
 ## Changes
 

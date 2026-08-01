@@ -118,7 +118,9 @@ runs, and current limitations.
 
 Training rollouts now use persistent workers and a parity-tested fast
 interpreter path. On `kag-server`, the measured steady throughput is about
-30.0 games/second, versus 2.0 before optimization. See
+33.1 games/second, versus 2.0 before optimization. The fast path also caches
+the official default-market price calculation without modifying the standard
+runner. See
 [`reports/server_training_speedup_20260731.md`](reports/server_training_speedup_20260731.md)
 for benchmarks, fidelity checks, and the recommended 20-worker/60-game setup.
 

@@ -11,6 +11,7 @@ SERVER_RESULTS ?= server-results
 TEST_DIR ?= test
 TEST_MODEL ?=
 TEST_MODELS ?=
+TEST_CANDIDATE ?= main.py
 TEST_SEEDS ?= 100
 TEST_WORKERS ?= 20
 TEST_OUTPUT ?= reports/test_models.json
@@ -34,8 +35,20 @@ STRUCTURED_PARITY_SEEDS ?= 20
 STRUCTURED_GATE_SEEDS ?= 200
 LAST_STRUCTURED_RUN := $(SERVER_RESULTS)/LATEST_STRUCTURED_RUN
 RUN ?= $(shell test -f "$(LAST_STRUCTURED_RUN)" && cat "$(LAST_STRUCTURED_RUN)")
+EV2_SEARCH_NAME ?= ev2_hierarchical_$(shell date +%Y%m%d_%H%M%S)
+EV2_SEARCH_RUN ?= $(SERVER_DATA)/runs/$(EV2_SEARCH_NAME)
+EV2_SEARCH_LOCAL_RUN ?= $(SERVER_RESULTS)/$(EV2_SEARCH_NAME)
+EV2_SEARCH_MINUTES ?= 5
+EV2_SEARCH_POPULATION ?= 32
+EV2_SEARCH_WORKERS ?= 20
+EV2_START_GENOME ?=
+LAST_EV2_SEARCH_RUN := $(SERVER_RESULTS)/LATEST_EV2_SEARCH_RUN
+EV2_RESULT ?= $(shell test -f "$(LAST_EV2_SEARCH_RUN)" && cat "$(LAST_EV2_SEARCH_RUN)")
+RANK1_ABLATION_SEEDS ?= 20
+RANK1_ABLATION_OUTPUT ?= reports/rank1_nishchal_ablation.json
+RANK1_ABLATION_VARIANTS ?=
 
-.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head test-import test-list test-models server-test-models genome-train genome-status genome-candidate genome-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
+.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models server-sync-fast-runner server-test-models server-rank1-ablation genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -70,6 +83,10 @@ evaluate:
 head-to-head:
 	$(VENV)/bin/python scripts/head_to_head.py
 
+submission-build:
+	python3 -I -m py_compile main.py
+	$(VENV)/bin/python scripts/validate_submission.py --agent main.py --output submission_fixed.tar.gz
+
 # Store submission.tar.gz as test/<name>/main.py. Example: make test-import TEST_MODEL=rank1_20260801
 test-import:
 	test -n "$(TEST_MODEL)"
@@ -80,7 +97,7 @@ test-list:
 
 # Evaluate main.py against all test models, or TEST_MODELS="name1 name2".
 test-models:
-	PYTHONPATH=training $(VENV)/bin/python scripts/evaluate_test_models.py --candidate main.py --models-dir "$(TEST_DIR)" $(if $(strip $(TEST_MODELS)),--models $(TEST_MODELS),) --seeds "$(TEST_SEEDS)" --workers "$(TEST_WORKERS)" --output "$(TEST_OUTPUT)"
+	PYTHONPATH=training $(VENV)/bin/python scripts/evaluate_test_models.py --candidate "$(TEST_CANDIDATE)" --models-dir "$(TEST_DIR)" $(if $(strip $(TEST_MODELS)),--models $(TEST_MODELS),) --seeds "$(TEST_SEEDS)" --workers "$(TEST_WORKERS)" --output "$(TEST_OUTPUT)"
 
 server-check:
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; printf "repo=%s\n" "$$PWD"; .venv/bin/python --version; git status --short; nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader; df -h "$(SERVER_DATA)"'
@@ -98,34 +115,72 @@ server-evaluate:
 server-head-to-head:
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(SERVER_DATA)/runs/manual"; .venv/bin/python scripts/head_to_head.py --reference "$(SERVER_REFERENCE)" --seeds 7101 7102 7103 7104 7105 --output "$(SERVER_DATA)/runs/manual/cow_vs_score800.json"'
 
-server-test-models:
+server-sync-fast-runner:
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training"'
+	rsync -az training/fast_kaggriculture.py $(SERVER_HOST):$(SERVER_REPO)/training/
+
+server-test-models: server-sync-fast-runner
 	test -d "$(TEST_DIR)"
 	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/scripts" "$(SERVER_REPO)/training"'
 	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py
+	rsync -az "$(TEST_CANDIDATE)" $(SERVER_HOST):$(SERVER_REPO)/candidate_under_test.py
 	rsync -az scripts/evaluate_test_models.py $(SERVER_HOST):$(SERVER_REPO)/scripts/
-	rsync -az training/fast_kaggriculture.py $(SERVER_HOST):$(SERVER_REPO)/training/
 	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
-	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(SERVER_DATA)/runs/manual"; PYTHONPATH=training .venv/bin/python scripts/evaluate_test_models.py --candidate main.py --models-dir test $(if $(strip $(TEST_MODELS)),--models $(TEST_MODELS),) --seeds "$(TEST_SEEDS)" --workers "$(TEST_WORKERS)" --output "$(SERVER_DATA)/runs/manual/test_models.json"'
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(SERVER_DATA)/runs/manual"; PYTHONPATH=training .venv/bin/python scripts/evaluate_test_models.py --candidate candidate_under_test.py --models-dir test $(if $(strip $(TEST_MODELS)),--models $(TEST_MODELS),) --seeds "$(TEST_SEEDS)" --workers "$(TEST_WORKERS)" --output "$(SERVER_DATA)/runs/manual/test_models.json"'
 	mkdir -p "$(dir $(TEST_OUTPUT))"
 	rsync -az $(SERVER_HOST):$(SERVER_DATA)/runs/manual/test_models.json "$(TEST_OUTPUT)"
 
-server-hybrid-train:
+server-rank1-ablation: server-sync-fast-runner
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(SERVER_DATA)/runs/manual"'
+	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py
+	rsync -az training/ev2_genome.py training/search_ev2_hierarchical.py training/evaluate_rank1_inspired_variants.py $(SERVER_HOST):$(SERVER_REPO)/training/
+	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/evaluate_rank1_inspired_variants.py --seeds "$(RANK1_ABLATION_SEEDS)" --workers "$(STRUCTURED_WORKERS)" $(if $(strip $(RANK1_ABLATION_VARIANTS)),--variants $(RANK1_ABLATION_VARIANTS),) --output "$(SERVER_DATA)/runs/manual/rank1_nishchal_ablation.json"'
+	mkdir -p "$(dir $(RANK1_ABLATION_OUTPUT))"
+	rsync -az $(SERVER_HOST):$(SERVER_DATA)/runs/manual/rank1_nishchal_ablation.json "$(RANK1_ABLATION_OUTPUT)"
+
+server-hybrid-train: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(HYBRID_RUN)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 CUDA_VISIBLE_DEVICES=0 .venv/bin/python training/train_hybrid_ppo.py --output-dir "$(HYBRID_RUN)" --iterations "$(HYBRID_ITERATIONS)" --games-per-iteration "$(HYBRID_GAMES)" --workers "$(HYBRID_WORKERS)" --score800-reference "$(SERVER_REFERENCE)" --device cuda'
 
-server-structured-search:
+server-structured-search: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(STRUCTURED_RUN)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 CUDA_VISIBLE_DEVICES=0 PYTHONPATH=training .venv/bin/python training/search_structured_strategies.py --minutes "$(STRUCTURED_MINUTES)" --population "$(STRUCTURED_POPULATION)" --proposal-multiplier 96 --stage1 12 --stage2 4 --workers "$(STRUCTURED_WORKERS)" --device cuda --output-dir "$(STRUCTURED_RUN)"'
 
-server-structured-gate:
+# Five-minute search after the policy-family/search-space design pass.
+ev2-search: server-sync-fast-runner
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(SERVER_REPO)/test" "$(EV2_SEARCH_RUN)/source"'
+	rsync -az training/ev2_genome.py training/search_ev2_hierarchical.py training/promote_ev2_genome.py $(SERVER_HOST):$(SERVER_REPO)/training/
+	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; cp training/ev2_genome.py training/search_ev2_hierarchical.py training/promote_ev2_genome.py "$(EV2_SEARCH_RUN)/source/"; cp -R test "$(EV2_SEARCH_RUN)/source/"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/search_ev2_hierarchical.py --minutes "$(EV2_SEARCH_MINUTES)" --population "$(EV2_SEARCH_POPULATION)" --workers "$(EV2_SEARCH_WORKERS)" $(if $(strip $(EV2_START_GENOME)),--incumbent-genome "$(EV2_START_GENOME)",) --output-dir "$(EV2_SEARCH_RUN)"'
+	mkdir -p "$(EV2_SEARCH_LOCAL_RUN)"
+	rsync -az $(SERVER_HOST):$(EV2_SEARCH_RUN)/ "$(EV2_SEARCH_LOCAL_RUN)/"
+	mkdir -p "$(SERVER_RESULTS)"
+	printf '%s\n' "$(EV2_SEARCH_LOCAL_RUN)" > "$(LAST_EV2_SEARCH_RUN)"
+	@printf '\nDone. Next: make ev2-candidate\n'
+
+ev2-candidate:
+	test -n "$(EV2_RESULT)"
+	test -f "$(EV2_RESULT)/best_genome.json"
+	$(VENV)/bin/python training/promote_ev2_genome.py --genome "$(EV2_RESULT)/best_genome.json" --base test/0801_ev2/main.py --output candidate_main.py
+	python3 -I -m py_compile candidate_main.py
+	PYTHONPATH=training $(VENV)/bin/python scripts/evaluate_test_models.py --candidate candidate_main.py --models-dir test --models 0801_ev1 0801_ev2 0801_ev3 0801_v1 --seeds 10 --workers 10 --output "$(EV2_RESULT)/candidate_screen.json"
+
+ev2-use: ev2-candidate
+	test -f "$(EV2_RESULT)/main_before_promotion.py" || cp main.py "$(EV2_RESULT)/main_before_promotion.py"
+	cp candidate_main.py main.py
+	$(MAKE) submission-build
+	cp main.py "$(EV2_RESULT)/promoted_main.py"
+
+server-structured-gate: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; test -f "$(STRUCTURED_RUN)/best_genome.json"; found=0; for opponent in test/*/main.py; do test -f "$$opponent" || continue; found=1; name=$$(basename "$$(dirname "$$opponent")"); PYTHONPATH=training .venv/bin/python training/evaluate_strategy_genome.py --genome "$(STRUCTURED_RUN)/best_genome.json" --opponent "$$opponent" --seed-start 9700000 --seeds "$(STRUCTURED_GATE_SEEDS)" --workers "$(STRUCTURED_WORKERS)" --output "$(STRUCTURED_RUN)/gate_test_$${name}_fast.json"; done; test "$$found" = 1'
 
 # One-command structured search: sync, train, validate, gate, and pull only this run.
-genome-train:
+genome-train: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(STRUCTURED_RUN)/source"'
 	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py
 	rsync -az training/strategy_genome.py training/search_structured_strategies.py training/evaluate_strategy_genome.py $(SERVER_HOST):$(SERVER_REPO)/training/
 	test -d "$(TEST_DIR)"
 	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
-	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; cp main.py "$(STRUCTURED_RUN)/source/main.py"; cp training/strategy_genome.py training/search_structured_strategies.py training/evaluate_strategy_genome.py "$(STRUCTURED_RUN)/source/"; cp -R test "$(STRUCTURED_RUN)/source/"; git rev-parse HEAD > "$(STRUCTURED_RUN)/source/git_commit.txt"; git diff > "$(STRUCTURED_RUN)/source/worktree.patch"'
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; cp main.py "$(STRUCTURED_RUN)/source/main.py"; cp training/fast_kaggriculture.py training/strategy_genome.py training/search_structured_strategies.py training/evaluate_strategy_genome.py "$(STRUCTURED_RUN)/source/"; cp -R test "$(STRUCTURED_RUN)/source/"; git rev-parse HEAD > "$(STRUCTURED_RUN)/source/git_commit.txt"; git diff > "$(STRUCTURED_RUN)/source/worktree.patch"'
 	$(MAKE) server-structured-search STRUCTURED_RUN="$(STRUCTURED_RUN)" STRUCTURED_MINUTES="$(STRUCTURED_MINUTES)" STRUCTURED_POPULATION="$(STRUCTURED_POPULATION)" STRUCTURED_WORKERS="$(STRUCTURED_WORKERS)"
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/evaluate_strategy_genome.py --genome "$(STRUCTURED_RUN)/best_genome.json" --opponent main.py --seed-start 9800000 --seeds "$(STRUCTURED_HELDOUT_SEEDS)" --workers "$(STRUCTURED_WORKERS)" --fast-runner --output "$(STRUCTURED_RUN)/heldout_vs_current_fast.json"'
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; PYTHONPATH=training .venv/bin/python training/evaluate_strategy_genome.py --genome "$(STRUCTURED_RUN)/best_genome.json" --opponent main.py --seed-start 9900000 --seeds "$(STRUCTURED_PARITY_SEEDS)" --workers "$(STRUCTURED_WORKERS)" --fast-runner --output "$(STRUCTURED_RUN)/parity_fast.json"; PYTHONPATH=training .venv/bin/python training/evaluate_strategy_genome.py --genome "$(STRUCTURED_RUN)/best_genome.json" --opponent main.py --seed-start 9900000 --seeds "$(STRUCTURED_PARITY_SEEDS)" --workers "$(STRUCTURED_WORKERS)" --no-fast-runner --output "$(STRUCTURED_RUN)/parity_standard.json"'
@@ -160,13 +215,13 @@ genome-use: genome-candidate
 	cp main.py "$(RUN)/promoted_main.py"
 	@printf '\nPromoted %s/best_genome.json to main.py\n' "$(RUN)"
 
-server-counterfactual-generate:
+server-counterfactual-generate: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$$(dirname "$(CF_DATA)")"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python training/generate_branched_counterfactuals.py --agent main.py --opponent main.py --decision-days 8 12 16 20 24 --seed-start 1100000 --seeds "$(CF_SEEDS)" --workers 20 --profiles $(CF_PROFILES) --output "$(CF_DATA)"'
 
 server-counterfactual-train:
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(CF_RUN)"; CUDA_VISIBLE_DEVICES=0 .venv/bin/python training/train_counterfactual_value.py --input "$(CF_DATA)" --profiles $(CF_PROFILES) --output-dir "$(CF_RUN)" --epochs 400 --patience 80 --hidden-size 1024 --hidden-layers 6 --batch-size 1024 --device cuda --amp'
 
-server-counterfactual-evaluate:
+server-counterfactual-evaluate: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python training/evaluate_counterfactual_value.py --checkpoint "$(CF_RUN)/best.pt" --agent main.py --opponent main.py --decision-day "$(CF_DECISION_DAY)" --seed-start 1200000 --seeds 200 --workers 20 --fast-runner --output "$(CF_RUN)/arena_heldout.json"'
 
 server-push-replays:

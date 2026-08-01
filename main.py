@@ -1,2379 +1,1885 @@
-"""Rui Bridge v1: staged cow/sheep agent derived from rank-1 public replays."""
+"""Deterministic scenario-aware economic policy for Kaggriculture."""
 
-import json
-from functools import lru_cache
+from collections import deque
+import math
 
 
-_BASE_CROP_RULES = {
-    "WHEAT": (10, 2, 4, 24, False),
-    "CARROT": (20, 2, 3, 25, False),
-    "TOMATO": (50, 8, 0, 20, True),
-    "STRAWBERRY": (100, 10, 0, 18, True),
-    "MELON": (80, 10, 12, 16, False),
+# Domain constants
+
+CROPS = {
+    "WHEAT": {
+        "seed": 10,
+        "first": 2,
+        "max_day": 4,
+        "max_yield": 6,
+        "ongoing": False,
+        "ripe": 4,
+        "last_plant": 24,
+    },
+    "CARROT": {
+        "seed": 20,
+        "first": 2,
+        "max_day": 3,
+        "max_yield": 4,
+        "ongoing": False,
+        "ripe": 3,
+        "last_plant": 25,
+    },
+    "TOMATO": {
+        "seed": 50,
+        "first": 8,
+        "max_day": 8,
+        "max_yield": 4,
+        "ongoing": True,
+        "ripe": 8,
+        "last_plant": 19,
+    },
+    "STRAWBERRY": {
+        "seed": 100,
+        "first": 10,
+        "max_day": 10,
+        "max_yield": 4,
+        "ongoing": True,
+        "ripe": 10,
+        "last_plant": 18,
+    },
+    "MELON": {
+        "seed": 80,
+        "first": 10,
+        "max_day": 12,
+        "max_yield": 6,
+        "ongoing": False,
+        "ripe": 10,
+        "last_plant": 18,
+    },
 }
-_BASE_MIX = (
-    ("MELON", 13),
-    ("CARROT", 4),
-    ("WHEAT", 4),
-    ("TOMATO", 2),
-    ("STRAWBERRY", 2),
-)
-_BASE_SELL_ORDER = (
-    "MELON",
-    "STRAWBERRY",
-    "TOMATO",
-    "CARROT",
+
+ANIMALS = {
+    "GOOSE": {
+        "cost": 300,
+        "structure": "COOP",
+        "product": "EGG",
+        "first": 4,
+        "interval": 1,
+        "max_held": 4,
+    },
+    "COW": {
+        "cost": 400,
+        "structure": "PASTURE",
+        "product": "MILK",
+        "first": 8,
+        "interval": 2,
+        "max_held": 6,
+    },
+    "SHEEP": {
+        "cost": 500,
+        "structure": "PASTURE",
+        "product": "WOOL",
+        "first": 6,
+        "interval": 3,
+        "max_held": 6,
+    },
+}
+
+PRODUCTS = (
     "WHEAT",
+    "CARROT",
+    "TOMATO",
+    "STRAWBERRY",
+    "MELON",
     "EGG",
     "MILK",
     "WOOL",
+    "FERTILIZER",
 )
-_BASE_ANIMAL_PRODUCTS = {
-    "GOOSE": "EGG",
-    "COW": "MILK",
-    "SHEEP": "WOOL",
+
+MARKET = {
+    "WHEAT": (25, 400, "sqrt", 0.80, "log", 0.20),
+    "CARROT": (35, 450, "log", 0.20, "sqrt", 0.70),
+    "TOMATO": (60, 200, "linear", 0.40, "sqrt", 0.60),
+    "STRAWBERRY": (120, 100, "sqrt", 0.70, "linear", 1.60),
+    "MELON": (250, 300, "log", 0.20, "sq", 3.60),
+    "EGG": (50, 332, "linear", 0.40, "log", 0.20),
+    "MILK": (160, 122, "sqrt", 0.60, "linear", 1.60),
+    "WOOL": (200, 105, "log", 0.20, "sq", 3.20),
+    "FERTILIZER": (100, 200, "linear", 0.40, "linear", 0.40),
+}
+
+SHOPS = {
+    "BAKERY": ("EGG", "WHEAT"),
+    "PIZZA_SHOP": ("MILK", "TOMATO", "WHEAT"),
+    "BRUNCH_SPOT": ("EGG", "WHEAT", "STRAWBERRY"),
+    "YARN_STORE": ("WOOL",),
+    "ICE_CREAM_SHOP": ("STRAWBERRY", "MILK", "WHEAT"),
+    "PET_CAFE": ("CARROT",),
+    "SMOOTHIE_SHOP": ("STRAWBERRY", "MILK"),
+    "FARMERS_MARKET": ("WHEAT", "CARROT", "TOMATO", "STRAWBERRY"),
+}
+
+RESERVE_FRACTION = {
+    "WHEAT": 0.68,
+    "CARROT": 0.55,
+    "TOMATO": 0.50,
+    "STRAWBERRY": 0.48,
+    "MELON": 0.58,
+    "EGG": 0.65,
+    "MILK": 0.42,
+    "WOOL": 0.40,
+    "FERTILIZER": 0.18,
+}
+
+MOVES = (
+    ("NORTH", 0, -1),
+    ("WEST", -1, 0),
+    ("SOUTH", 0, 1),
+    ("EAST", 1, 0),
+)
+
+LAND_PRICES = (1000, 2000, 4000)
+MARKET_I0 = 10000
+TOTAL_DAYS = 30
+MAX_MARKET_ORDERS = 10
+MAX_HANDS = 12
+CORE_HERD = 4
+MID_HERD = 8
+TARGET_HERD = 12
+HERD_EXPANSION_DAY = 7
+HERD_FINAL_DAY = 11
+ANIMAL_PURCHASE_LAST_DAY = 18
+ANIMAL_SLOTS = {"NW": 4, "NE": 5, "SW": 3, "SE": 0}
+CROP_MIX = {
+    "NW": {"MELON": 10, "WHEAT": 4, "CARROT": 2},
+    "NE": {"WHEAT": 4, "CARROT": 1},
+    "SW": {"WHEAT": 4, "CARROT": 1},
+    "SE": {"WHEAT": 5, "CARROT": 2},
+}
+MELON_TILES_MIN = 8
+MELON_TILES_BASE = 10
+MELON_TILES_MAX = 12
+MAX_EXTRA_LAND = 2
+CASH_RESERVE = 250
+LIQUIDATION_TURNS = 38
+SHED_CAPACITY = 100
+TRAVEL_COST = 8.0
+FEED_STOCK_DAYS = 3
+LAND_OPEN_DAYS = (5, 9)
+PRIORITY_BONUS = {
+    -1: 120_000.0,
+    0: 100_000.0,
+    1: 1_500.0,
+    2: 750.0,
+    3: 250.0,
+    4: 0.0,
+    5: -100.0,
 }
 
 
-def _base_plan(board_size, expanded=False):
-    half = max(1, board_size // 2)
-    shed = (half - 1, half - 1)
-    cells = [
-        (x, y)
-        for y in range(half)
-        for x in range(half)
-    ]
-    cells.sort(
-        key=lambda position: (
-            -(
-                abs(position[0] - shed[0])
-                + abs(position[1] - shed[1])
-            ),
-            position[1],
-            position[0],
-        )
+# Configuration, pricing, and routing helpers
+
+def _cfg(config, key, default):
+    if config is None:
+        return default
+    if isinstance(config, dict):
+        return config.get(key, default)
+    return getattr(config, key, default)
+
+
+def _shape(name, value):
+    value = max(0.0, float(value))
+    if name == "linear":
+        return value
+    if name == "sq":
+        return value * value
+    if name == "sqrt":
+        return math.sqrt(value)
+    if name == "log":
+        return math.log1p(value)
+    if name == "log10":
+        return math.log10(1.0 + value)
+    return value
+
+
+def _market_parameters(obs, item):
+    base, throughput, below_fn, below_move, above_fn, above_move = MARKET[item]
+    custom = (((obs or {}).get("market", {}) or {}).get("params", {}) or {}).get(
+        item, {}
     )
-    crops = []
-    for crop, count in _BASE_MIX:
-        crops.extend([crop] * count)
-    plan = dict(zip(cells, crops))
-    if expanded:
-        extra = [
-            (x, y)
-            for y in range(half)
-            for x in range(half, board_size)
-        ]
-        extra.sort(
-            key=lambda position: (
-                abs(position[0] - half)
-                + abs(position[1] - (half - 1)),
-                position[1],
-                position[0],
-            )
-        )
-        plan.update(
-            {position: "WHEAT" for position in extra[:15]}
-        )
-    return plan
-
-
-def _base_task(tile, planned_crop, day, hour, seeds):
-    if tile == "LOCKED":
-        return None
-    if tile is None:
-        last_day = _BASE_CROP_RULES[planned_crop][3]
-        if (
-            hour <= 21
-            and day <= last_day
-            and seeds.get(planned_crop, 0) > 0
-        ):
-            return 3, ["PLANT", planned_crop]
-        return None
-    if not isinstance(tile, dict):
-        return None
-    if tile.get("kind") == "WEED":
-        return 2, ["DIG"]
-    if tile.get("kind") != "PLANT":
-        return None
-
-    crop = tile.get("crop", planned_crop)
-    _, first_day, harvest_day, _, ongoing = (
-        _BASE_CROP_RULES.get(
-            crop, _BASE_CROP_RULES[planned_crop]
-        )
+    return (
+        float(custom.get("base", base)),
+        float(custom.get("T", throughput)),
+        str(custom.get("below_func", below_fn)),
+        float(custom.get("below_target", below_move)),
+        str(custom.get("above_func", above_fn)),
+        float(custom.get("above_target", above_move)),
+        float(custom.get("I0", MARKET_I0)),
     )
-    age = day - tile.get("planted_day", day)
-    amount = tile.get("yield_units", 0)
-    if crop == "MELON" and age >= 10 and amount >= 6:
-        return 0, ["HARVEST"]
-    if not ongoing:
-        if age >= harvest_day and amount > 0:
-            target = (
-                4
-                if crop == "WHEAT"
-                else 3
-                if crop == "CARROT"
-                else 0
-            )
-            if (
-                target
-                and amount < target
-                and not tile.get("watered_today", False)
-            ):
-                return 0, ["WATER"]
-            return 0, ["HARVEST"]
-        if not tile.get("watered_today", False):
-            return 1, ["WATER"]
-        return None
-    if not tile.get("watered_today", False):
-        return 1, ["WATER"]
-    if age >= first_day and amount > 0:
-        return 0, ["HARVEST"]
-    return None
 
 
-def _base_move(source, target):
-    x, y = source
-    target_x, target_y = target
-    if x < target_x:
-        return ["EAST"]
-    if x > target_x:
-        return ["WEST"]
-    if y < target_y:
-        return ["SOUTH"]
-    if y > target_y:
-        return ["NORTH"]
-    return ["PASS"]
+def _price_at(item, inventory, obs=None):
+    (
+        base,
+        throughput,
+        below_fn,
+        below_move,
+        above_fn,
+        above_move,
+        equilibrium,
+    ) = _market_parameters(obs, item)
+    if inventory < equilibrium:
+        amplitude = below_move * base / max(1e-9, _shape(below_fn, throughput))
+        value = base + amplitude * _shape(below_fn, equilibrium - inventory)
+    else:
+        amplitude = above_move * base / max(1e-9, _shape(above_fn, throughput))
+        value = base - amplitude * _shape(above_fn, inventory - equilibrium)
+    return max(1, int(round(value)))
 
 
-def _base_shed_access_tiles(board_size):
+def _town_demand_per_day(obs, item):
+    day = int((obs or {}).get("day", 0) or 0)
+    center = 0 if item == "FERTILIZER" else 2 * (
+        4 if day >= 20 else 2 if day >= 10 else 1
+    )
+    shop = 0
+    for name in (((obs or {}).get("town", {}) or {}).get(
+        "unlocked_shops", []
+    ) or []):
+        products = SHOPS.get(name, ())
+        if item in products:
+            shop += 12 if len(products) == 1 else 6
+    return center + shop
+
+
+def _opponent_visible_supply(obs, item, horizon=1):
+    player = int((obs or {}).get("player", 0) or 0)
+    day = int((obs or {}).get("day", 0) or 0)
+    animal_for = {"EGG": "GOOSE", "MILK": "COW", "WOOL": "SHEEP"}
+    total = 0
+    for index, farm in enumerate((obs or {}).get("farms", []) or []):
+        if index == player:
+            continue
+        for row in farm.get("tiles", []) or []:
+            for tile in row:
+                if not isinstance(tile, dict):
+                    continue
+                if (
+                    item in CROPS
+                    and tile.get("kind") == "PLANT"
+                    and tile.get("crop") == item
+                ):
+                    rule = CROPS[item]
+                    planted = tile.get("planted_day")
+                    planted_day = day if planted is None else int(planted)
+                    age = day - planted_day
+                    held = int(tile.get("yield_units", 0) or 0)
+                    if held > 0 and age >= rule["first"]:
+                        total += held
+                    elif age + horizon >= rule["ripe"]:
+                        total += max(1, min(rule["max_yield"], held + horizon))
+                elif item in animal_for and tile.get("animal") == animal_for[item]:
+                    total += int(tile.get("yield_units", 0) or 0)
+                    if horizon > 0:
+                        total += min(2 * horizon, ANIMALS.get(
+                            tile.get("animal"), {"max_held": 4}
+                        )["max_held"])
+    return total
+
+
+def _distance(a, b):
+    return abs(int(a[0]) - int(b[0])) + abs(int(a[1]) - int(b[1]))
+
+
+def _shed_tiles(board_size, tiles=None):
     half = board_size // 2
-    return [
+    candidates = (
         (half - 1, half - 1),
         (half, half - 1),
         (half - 1, half),
         (half, half),
-    ]
+    )
+    if tiles is None:
+        return candidates
+    accessible = tuple(
+        position
+        for position in candidates
+        if tiles[position[1]][position[0]] != "LOCKED"
+    )
+    return accessible or candidates[:1]
 
 
-def _base_nearest_shed_tile(position, board_size):
+def _nearest_shed(position, board_size, tiles=None):
     return min(
-        _base_shed_access_tiles(board_size),
-        key=lambda target: (
-            abs(position[0] - target[0])
-            + abs(position[1] - target[1]),
-            target[1],
-            target[0],
-        ),
+        _shed_tiles(board_size, tiles),
+        key=lambda target: (_distance(position, target), target[1], target[0]),
     )
 
 
-def _base_final_harvest_tasks(farm, prices):
-    tasks = []
-    for y, row in enumerate(farm["tiles"]):
-        for x, tile in enumerate(row):
+def _bfs_first_step(tiles, source, target):
+    source = (int(source[0]), int(source[1]))
+    target = (int(target[0]), int(target[1]))
+    if source == target:
+        return ["PASS"]
+    board_size = len(tiles)
+    queue = deque([source])
+    parent = {source: None}
+    parent_move = {}
+    while queue:
+        current = queue.popleft()
+        if current == target:
+            break
+        for name, dx, dy in MOVES:
+            nxt = (current[0] + dx, current[1] + dy)
+            if not (0 <= nxt[0] < board_size and 0 <= nxt[1] < board_size):
+                continue
+            if nxt in parent or tiles[nxt[1]][nxt[0]] == "LOCKED":
+                continue
+            parent[nxt] = current
+            parent_move[nxt] = name
+            queue.append(nxt)
+    if target not in parent:
+        return ["PASS"]
+    current = target
+    while parent[current] != source:
+        current = parent[current]
+        if current is None:
+            return ["PASS"]
+    return [parent_move[current]]
+
+
+def _melon_target(obs):
+    prices = ((obs.get("market", {}) or {}).get("prices", {}) or {})
+    price = int(prices.get("MELON", MARKET["MELON"][0]) or MARKET["MELON"][0])
+    opponent_tiles = 0
+    player = int(obs.get("player", 0) or 0)
+    for index, other in enumerate(obs.get("farms", []) or []):
+        if index == player:
+            continue
+        for row in other.get("tiles", []) or []:
+            opponent_tiles += sum(
+                isinstance(tile, dict)
+                and tile.get("kind") == "PLANT"
+                and tile.get("crop") == "MELON"
+                for tile in row
+            )
+    if price >= 300 and opponent_tiles <= 5:
+        return MELON_TILES_MAX
+    if price <= 170 or opponent_tiles >= 12:
+        return MELON_TILES_MIN
+    if opponent_tiles >= 9:
+        return MELON_TILES_BASE - 1
+    return MELON_TILES_BASE
+
+
+def _private_item_total(private, item):
+    total = int((private.get("shed", {}) or {}).get(item, 0) or 0)
+    for inventory in private.get("inventories", []) or []:
+        total += int((inventory or {}).get(item, 0) or 0)
+    return total
+
+
+def _farm_animal_counts(farm):
+    counts = {animal: 0 for animal in ANIMALS}
+    for row in farm.get("tiles", []) or []:
+        for tile in row:
+            if isinstance(tile, dict) and tile.get("animal") in counts:
+                counts[tile["animal"]] += 1
+    return counts
+
+
+def _opponent_animal_counts(obs):
+    player = int(obs.get("player", 0) or 0)
+    counts = {animal: 0 for animal in ANIMALS}
+    for index, farm in enumerate(obs.get("farms", []) or []):
+        if index == player:
+            continue
+        visible = _farm_animal_counts(farm)
+        for animal, count in visible.items():
+            counts[animal] += count
+    return counts
+
+
+def _livestock_score(obs, animal, own_count, opponent_count):
+    rule = ANIMALS[animal]
+    product = rule["product"]
+    prices = ((obs.get("market", {}) or {}).get("prices", {}) or {})
+    price = float(prices.get(product, MARKET[product][0]) or MARKET[product][0])
+    normalized_price = price / float(MARKET[product][0])
+    demand_support = 1.0 + 0.012 * _town_demand_per_day(obs, product)
+    crowding = 1.0 + 0.18 * opponent_count + 0.08 * own_count
+    return normalized_price * demand_support / crowding
+
+
+def _quadrant_of(position, board_size):
+    x, y = position
+    half = board_size // 2
+    return ("N" if y < half else "S") + ("W" if x < half else "E")
+
+
+def _reserved_animal_slots(farm):
+    tiles = farm.get("tiles", []) or []
+    board_size = len(tiles)
+    unlocked = set(farm.get("unlocked_quadrants", []) or ["NW"])
+    sheds = _shed_tiles(board_size, tiles)
+    slots = []
+    by_quadrant = {}
+    for quadrant in ("NW", "NE", "SW", "SE"):
+        if quadrant not in unlocked:
+            continue
+        cells = []
+        for y, row in enumerate(tiles):
+            for x, tile in enumerate(row):
+                if tile == "LOCKED" or _quadrant_of((x, y), board_size) != quadrant:
+                    continue
+                distance = min(_distance((x, y), shed) for shed in sheds)
+                cells.append((distance, y, x))
+        cells.sort()
+        count = min(ANIMAL_SLOTS[quadrant], len(cells))
+        selected = [(x, y) for _, y, x in cells[:count]]
+        by_quadrant[quadrant] = {
+            "reserved": selected,
+            "crops": [(x, y) for _, y, x in cells[count:]],
+        }
+        slots.extend(selected)
+    return slots, by_quadrant
+
+
+def _herd_targets(obs, farm, private, capacity):
+    day = int(obs.get("day", 0) or 0)
+    left = TOTAL_DAYS - day
+    placed = _farm_animal_counts(farm)
+    owned = {
+        animal: placed[animal] + _private_item_total(private, animal)
+        for animal in ("COW", "SHEEP")
+    }
+    if day < HERD_EXPANSION_DAY:
+        stage_target = CORE_HERD
+    elif day < HERD_FINAL_DAY:
+        stage_target = MID_HERD
+    else:
+        stage_target = TARGET_HERD
+    if day > ANIMAL_PURCHASE_LAST_DAY or left < 8:
+        stage_target = sum(owned.values())
+    target_total = min(capacity, max(sum(owned.values()), stage_target))
+
+    targets = {
+        "COW": max(2 if target_total >= CORE_HERD else 0, owned["COW"]),
+        "SHEEP": max(2 if target_total >= CORE_HERD else 0, owned["SHEEP"]),
+    }
+    opponents = _opponent_animal_counts(obs)
+    while sum(targets.values()) < target_total:
+        animal = max(
+            ("COW", "SHEEP"),
+            key=lambda name: (
+                _livestock_score(
+                    obs,
+                    name,
+                    targets[name],
+                    opponents[name],
+                ),
+                -targets[name],
+                name == "COW",
+            ),
+        )
+        targets[animal] += 1
+    return targets
+
+
+def _role_plan(obs, farm):
+    private = obs.get("private", {}) or {}
+    tiles = farm.get("tiles", []) or []
+    animal_slots, zones = _reserved_animal_slots(farm)
+    targets = _herd_targets(obs, farm, private, len(animal_slots))
+    desired_animals = min(len(animal_slots), sum(targets.values()))
+    active_slots = list(animal_slots[:desired_animals])
+    for position in animal_slots:
+        x, y = position
+        tile = tiles[y][x]
+        if isinstance(tile, dict) and "animal" in tile and position not in active_slots:
+            active_slots.append(position)
+
+    assigned = {"COW": 0, "SHEEP": 0}
+    roles = {}
+    core_sequence = ("COW", "COW", "SHEEP", "SHEEP")
+    for index, position in enumerate(active_slots):
+        x, y = position
+        tile = tiles[y][x]
+        actual = tile.get("animal") if isinstance(tile, dict) else None
+        if actual in assigned:
+            animal = actual
+        elif index < len(core_sequence) and assigned[core_sequence[index]] < targets[
+            core_sequence[index]
+        ]:
+            animal = core_sequence[index]
+        else:
+            animal = max(
+                ("COW", "SHEEP"),
+                key=lambda name: (
+                    targets[name] - assigned[name],
+                    _private_item_total(private, name),
+                    name == "COW",
+                ),
+            )
+        roles[position] = ("ANIMAL", animal)
+        assigned[animal] += 1
+
+    melon_target = _melon_target(obs)
+    for quadrant in ("NW", "NE", "SW", "SE"):
+        zone = zones.get(quadrant)
+        if not zone:
+            continue
+        cells = zone["crops"]
+        fixed = dict(CROP_MIX[quadrant])
+        if quadrant == "NW":
+            fixed["MELON"] = min(melon_target, len(cells))
+        strawberry_count = max(0, len(cells) - sum(fixed.values()))
+        sequence = []
+        if quadrant == "NW":
+            sequence.extend(["MELON"] * fixed.get("MELON", 0))
+        sequence.extend(["STRAWBERRY"] * strawberry_count)
+        sequence.extend(["WHEAT"] * fixed.get("WHEAT", 0))
+        sequence.extend(["CARROT"] * fixed.get("CARROT", 0))
+        if quadrant != "NW":
+            sequence.extend(["MELON"] * fixed.get("MELON", 0))
+        for position, crop in zip(cells, sequence):
+            roles[position] = ("CROP", crop)
+    return roles
+
+
+# Observation summaries and job generation
+
+def _inventory_total(inventory, excluded=()):
+    return sum(
+        int(value)
+        for item, value in (inventory or {}).items()
+        if item not in excluded and isinstance(value, (int, float)) and value > 0
+    )
+
+
+def _survey(farm, private, roles=None, day=0):
+    summary = {
+        "animals": 0,
+        "unfed": 0,
+        "at_risk_animals": 0,
+        "at_risk_crops": 0,
+        "open_structures": 0,
+        "structures_todo": 0,
+        "plants": 0,
+        "plantable": 0,
+        "weeds": 0,
+    }
+    for row in farm.get("tiles", []) or []:
+        for tile in row:
             if not isinstance(tile, dict):
                 continue
-            amount = int(tile.get("yield_units", 0))
-            if amount <= 0:
-                continue
-            if tile.get("kind") == "PLANT":
-                product = tile.get("crop")
-            else:
-                product = _BASE_ANIMAL_PRODUCTS.get(
-                    tile.get("animal")
-                )
-            if product in _BASE_SELL_ORDER:
-                value = amount * int(prices.get(product, 1))
-                tasks.append(((x, y), product, value))
-    return tasks
+            if "animal" in tile:
+                summary["animals"] += 1
+                if not tile.get("fed_today", False):
+                    summary["unfed"] += 1
+                if int(tile.get("consecutive_unfed", 0) or 0) >= 1:
+                    summary["at_risk_animals"] += 1
+            elif tile.get("kind") in {"COOP", "PASTURE"}:
+                summary["open_structures"] += 1
+            elif tile.get("kind") == "PLANT":
+                summary["plants"] += 1
+                if int(tile.get("consecutive_unwatered", 0) or 0) >= 1:
+                    summary["at_risk_crops"] += 1
+            elif tile.get("kind") == "WEED":
+                summary["weeds"] += 1
 
-
-def _base_final_day_actions(obs, farm, private):
-    hour = int(obs.get("hour", 0))
-    board_size = len(farm["tiles"])
-    prices = (
-        (obs.get("market", {}) or {}).get("prices", {}) or {}
-    )
-    positions = [farm["farmer"], *farm.get("hands", [])]
-    inventories = private.get("inventories", []) or []
-    tasks = _base_final_harvest_tasks(farm, prices)
-    reserved = set()
-    actions = []
-    shed_tiles = set(_base_shed_access_tiles(board_size))
-    remaining_actions = 24 - hour
-
-    for unit_index, position in enumerate(positions):
-        inventory = (
-            inventories[unit_index]
-            if unit_index < len(inventories)
-            else {}
-        ) or {}
-        carrying = any(
-            int(amount) > 0 for amount in inventory.values()
-        )
-        current = tuple(position)
-        if carrying:
-            target = _base_nearest_shed_tile(
-                current, board_size
-            )
-            actions.append(
-                ["DROP"]
-                if current in shed_tiles
-                else _base_move(current, target)
-            )
-            continue
-
-        candidates = []
-        if hour <= 17:
-            for target, product, value in tasks:
-                if target in reserved:
-                    continue
-                distance = (
-                    abs(current[0] - target[0])
-                    + abs(current[1] - target[1])
-                )
-                return_target = _base_nearest_shed_tile(
-                    target, board_size
-                )
-                return_distance = (
-                    abs(target[0] - return_target[0])
-                    + abs(target[1] - return_target[1])
-                )
-                required = distance + 1 + return_distance + 1
-                if required <= remaining_actions:
-                    candidates.append(
-                        (
-                            -value,
-                            required,
-                            distance,
-                            target[1],
-                            target[0],
-                            target,
-                            product,
-                        )
-                    )
-        if not candidates:
-            actions.append(["PASS"])
-            continue
-        selected = min(candidates)
-        target = selected[-2]
-        reserved.add(target)
-        actions.append(
-            ["HARVEST"]
-            if current == target
-            else _base_move(current, target)
-        )
-    return actions
-
-
-def _base_pending_drop_items(farm, private, actions):
-    board_size = len(farm["tiles"])
-    shed_tiles = set(_base_shed_access_tiles(board_size))
-    positions = [farm["farmer"], *farm.get("hands", [])]
-    inventories = private.get("inventories", []) or []
-    pending = {}
-    for unit_index, action in enumerate(actions):
-        if (
-            not action
-            or action[0] != "DROP"
-            or unit_index >= len(positions)
-            or tuple(positions[unit_index]) not in shed_tiles
-            or unit_index >= len(inventories)
-        ):
-            continue
-        for item, amount in (
-            inventories[unit_index] or {}
-        ).items():
-            if item in _BASE_SELL_ORDER and int(amount) > 0:
-                pending[item] = (
-                    pending.get(item, 0) + int(amount)
-                )
-    return pending
-
-
-class _EmbeddedCropAgent:
-    CROP_RULES = _BASE_CROP_RULES
-    TARGET_HANDS = 6
-    _plan = staticmethod(_base_plan)
-    _task = staticmethod(_base_task)
-    _move = staticmethod(_base_move)
-    _shed_access_tiles = staticmethod(_base_shed_access_tiles)
-    _nearest_shed_tile = staticmethod(
-        _base_nearest_shed_tile
-    )
-    _final_harvest_tasks = staticmethod(
-        _base_final_harvest_tasks
-    )
-    _final_day_actions = staticmethod(
-        _base_final_day_actions
-    )
-    _pending_drop_items = staticmethod(
-        _base_pending_drop_items
-    )
-
-
-crop_agent = _EmbeddedCropAgent()
-
-
-COW_START_DAY = 10
-COW_TARGET = 8
-COW_PURCHASE_BATCH = 3
-COW_HANDS = 11
-COW_FIRST_PURCHASE = True
-WHEAT_TILES = 0
-CASH_CROP = "STRAWBERRY"
-CASH_CROP_TILES = 0
-WHEAT_PICKUP_BATCH = 12
-COW_COST = 400
-SALE_PROCEEDS_FACTOR = 0.5
-SHEEP_TARGET = 8
-SHEEP_COST = 500
-GOOSE_TARGET = 0
-GOOSE_COST = 300
-LAND_TARGET = 2
-LAND_FIRST_DAY = 10
-LAND_SECOND_DAY = 30
-HAND_RAMP_DAY = 10
-HAND_RAMP_TARGET = 11
-HAND_FULL_DAY = 10
-OPENING_ANIMAL = "COW"
-OPENING_ANIMAL_TARGET = 2
-OPENING_REPLANT = True
-USE_LEARNED_MACRO = False
-SETUP_PRIORITY = 2
-CARE_PRIORITY = 3
-FERTILIZER_PRIORITY = 4
-ANIMAL_HARVEST_PRIORITY = 5
-CASH_WATER_PRIORITY = 6
-WHEAT_TASK_PRIORITY = 8
-
-RUI_COW_TARGETS = (
-    (4, 4), (4, 3), (3, 2), (4, 2),
-    (5, 3), (3, 4), (5, 4), (6, 4),
-)
-RUI_SHEEP_TARGETS = (
-    (4, 0), (5, 0), (5, 2), (6, 2),
-    (2, 3), (7, 3), (1, 4), (7, 4),
-)
-RUI_OPENING_PLAN = {
-    (1, 0): "CARROT", (2, 0): "CARROT",
-    (3, 0): "MELON", (4, 0): "MELON",
-    (0, 1): "CARROT", (1, 1): "CARROT",
-    (2, 1): "MELON", (3, 1): "MELON", (4, 1): "MELON",
-    (0, 2): "CARROT", (1, 2): "MELON", (2, 2): "MELON",
-    (3, 2): "MELON", (4, 2): "MELON",
-    (0, 3): "CARROT", (1, 3): "MELON", (2, 3): "MELON",
-    (3, 3): "MELON",
-    (0, 4): "MELON", (1, 4): "MELON", (2, 4): "MELON",
-    (3, 4): "MELON",
-}
-COW_SELL_ORDER = (
-    "MILK",
-    "FERTILIZER",
-    "MELON",
-    "STRAWBERRY",
-    "TOMATO",
-    "CARROT",
-    "WHEAT",
-    "EGG",
-    "WOOL",
-)
-
-
-def _distance(source, target):
-    return (
-        abs(source[0] - target[0])
-        + abs(source[1] - target[1])
-    )
-
-
-@lru_cache(maxsize=None)
-def _top_half_cells(board_size):
-    half = board_size // 2
-    return tuple(
-        (x, y)
-        for y in range(half)
-        for x in range(board_size)
-    )
-
-
-@lru_cache(maxsize=None)
-def _cow_targets_for(board_size, cow_target, sheep_target):
-    shed_tiles = crop_agent._shed_access_tiles(board_size)
-    sheep = set(_sheep_targets_for(board_size, sheep_target))
-    cells = [
-        position
-        for position in _top_half_cells(board_size)
-        if position not in sheep
-    ]
-    cells.sort(
-        key=lambda position: (
-            min(
-                _distance(position, shed)
-                for shed in shed_tiles
-            ),
-            position[1],
-            position[0],
-        )
-    )
-    return tuple(cells[:cow_target])
-
-
-def _cow_targets(board_size):
-    return RUI_COW_TARGETS[:COW_TARGET]
-
-
-@lru_cache(maxsize=None)
-def _sheep_targets_for(board_size, sheep_target):
-    half = board_size // 2
-    preferred = [
-        (half - 1, half - 1),
-        (half - 1, half - 2),
-        (half - 2, 1),
-        (half - 1, 0),
-    ]
-    return tuple(
-        position
-        for position in preferred
-        if 0 <= position[0] < board_size
-        and 0 <= position[1] < board_size
-    )[:sheep_target]
-
-
-def _sheep_targets(board_size):
-    return RUI_SHEEP_TARGETS[:SHEEP_TARGET]
-
-
-def _goose_targets(board_size):
-    occupied = set(_cow_targets(board_size)) | set(_sheep_targets(board_size))
-    cells = [
-        position
-        for position in _top_half_cells(board_size)
-        if position not in occupied
-    ]
-    cells.sort(key=lambda position: (_distance(position, (4, 4)), position[1], position[0]))
-    return tuple(cells[:GOOSE_TARGET])
-
-
-def _target_hands(day):
-    if day >= HAND_FULL_DAY:
-        return COW_HANDS
-    if day >= HAND_RAMP_DAY:
-        return HAND_RAMP_TARGET
-    return crop_agent.TARGET_HANDS
-
-
-@lru_cache(maxsize=None)
-def _wheat_targets_for(
-    board_size, cow_target, sheep_target, wheat_tiles
-):
-    cows = set(
-        _cow_targets_for(
-            board_size, cow_target, sheep_target
-        )
-    )
-    shed_tiles = crop_agent._shed_access_tiles(board_size)
-    cells = [
-        position
-        for position in _top_half_cells(board_size)
-        if position not in cows
-    ]
-    cells.sort(
-        key=lambda position: (
-            min(
-                _distance(position, shed)
-                for shed in shed_tiles
-            ),
-            position[1],
-            position[0],
-        )
-    )
-    return tuple(cells[:wheat_tiles])
-
-
-def _wheat_targets(board_size):
-    return _wheat_targets_for(
-        board_size,
-        COW_TARGET,
-        SHEEP_TARGET,
-        WHEAT_TILES,
-    )
-
-
-@lru_cache(maxsize=None)
-def _cash_crop_targets_for(
-    board_size,
-    cow_target,
-    sheep_target,
-    wheat_tiles,
-    cash_crop_tiles,
-):
-    occupied = (
-        set(_cow_targets_for(board_size, cow_target, sheep_target))
-        | set(_sheep_targets_for(board_size, sheep_target))
-        | set(
-            _wheat_targets_for(
-                board_size, cow_target, sheep_target, wheat_tiles
-            )
-        )
-    )
-    shed_tiles = crop_agent._shed_access_tiles(board_size)
-    cells = [
-        position
-        for position in _top_half_cells(board_size)
-        if position not in occupied
-    ]
-    cells.sort(
-        key=lambda position: (
-            min(_distance(position, shed) for shed in shed_tiles),
-            position[1],
-            position[0],
-        )
-    )
-    return tuple(cells[:cash_crop_tiles])
-
-
-def _cash_crop_targets(board_size):
-    return _cash_crop_targets_for(
-        board_size,
-        COW_TARGET,
-        SHEEP_TARGET,
-        WHEAT_TILES,
-        CASH_CROP_TILES,
-    )
-
-
-def _tile(farm, position):
-    return farm["tiles"][position[1]][position[0]]
-
-
-def _inventory(private, unit_index):
-    inventories = private.get("inventories", []) or []
-    if unit_index >= len(inventories):
-        return {}
-    return inventories[unit_index] or {}
-
-
-def _animal_state(farm, animal=None):
-    animals = {}
-    for y, row in enumerate(farm["tiles"]):
-        for x, tile in enumerate(row):
-            if (
-                isinstance(tile, dict)
-                and tile.get("animal")
-                and (
-                    animal is None
-                    or tile.get("animal") == animal
-                )
+    if roles:
+        for (x, y), (kind, item) in roles.items():
+            tile = farm["tiles"][y][x]
+            if kind == "ANIMAL" and tile is None:
+                summary["structures_todo"] += 1
+            elif (
+                kind == "CROP"
+                and tile is None
+                and day <= CROPS[item]["last_plant"]
             ):
-                animals[(x, y)] = tile
-    return animals
+                summary["plantable"] += 1
 
-
-def _cow_state(farm):
-    return _animal_state(farm, "COW")
-
-
-def _owned_animal(farm, private, animal):
-    deployed = len(_animal_state(farm, animal))
-    shed = int((private.get("shed", {}) or {}).get(animal, 0))
-    carried = sum(
-        int((inventory or {}).get(animal, 0))
-        for inventory in (
-            private.get("inventories", []) or []
-        )
+    summary["wheat_stock"] = int((private.get("shed", {}) or {}).get("WHEAT", 0))
+    summary["animal_stock"] = {
+        animal: int((private.get("shed", {}) or {}).get(animal, 0) or 0)
+        for animal in ANIMALS
+    }
+    summary["shed_load"] = sum(
+        max(0, int(value or 0))
+        for value in (private.get("shed", {}) or {}).values()
     )
-    return deployed + shed + carried
-
-
-def _owned_cows(farm, private):
-    return _owned_animal(farm, private, "COW")
-
-
-def _available_pastures(farm, targets):
-    positions = []
-    for position in targets:
-        tile = _tile(farm, position)
-        if (
-            isinstance(tile, dict)
-            and tile.get("kind") == "PASTURE"
-            and not tile.get("animal")
-        ):
-            positions.append(position)
-    return positions
-
-
-def _setup_tasks(obs, farm, targets, animal="COW"):
-    day = int(obs.get("day", 0))
-    tasks = []
-    for position in targets:
-        tile = _tile(farm, position)
-        if tile == "LOCKED":
-            continue
-        if tile is None:
-            tasks.append((position, ["BUILD_PASTURE"]))
-        elif (
-            isinstance(tile, dict)
-            and tile.get("animal") == animal
-        ):
-            continue
-        elif (
-            isinstance(tile, dict)
-            and tile.get("kind") == "PASTURE"
-            and not tile.get("animal")
-        ):
-            continue
-        elif isinstance(tile, dict) and tile.get("kind") == "PLANT":
-            crop = tile.get("crop")
-            amount = int(tile.get("yield_units", 0))
-            planted_day = int(tile.get("planted_day", day))
-            if (
-                crop == "MELON"
-                and day - planted_day < 10
-            ):
-                continue
-            if amount > 0:
-                tasks.append((position, ["HARVEST"]))
-            else:
-                tasks.append((position, ["DIG"]))
-        else:
-            tasks.append((position, ["DIG"]))
-    return tasks
-
-
-def _wheat_tasks(obs, farm, private, targets):
-    day = int(obs.get("day", 0))
-    seeds = private.get("seeds", {}) or {}
-    tasks = []
-    for position in targets:
-        tile = _tile(farm, position)
-        if tile == "LOCKED":
-            continue
-        if tile is None:
-            if day <= 25 and int(seeds.get("WHEAT", 0)) > 0:
-                tasks.append((position, ["PLANT", "WHEAT"]))
-            continue
-        if not isinstance(tile, dict):
-            continue
-        if tile.get("kind") == "WEED":
-            tasks.append((position, ["DIG"]))
-            continue
-        if tile.get("kind") != "PLANT":
-            continue
-        if tile.get("crop") != "WHEAT":
-            amount = int(tile.get("yield_units", 0))
-            planted_day = int(tile.get("planted_day", day))
-            if (
-                tile.get("crop") == "MELON"
-                and day - planted_day < 10
-            ):
-                continue
-            if amount > 0:
-                tasks.append((position, ["HARVEST"]))
-            continue
-        age = day - int(tile.get("planted_day", day))
-        amount = int(tile.get("yield_units", 0))
-        if age >= 4 and amount > 0:
-            if amount < 4 and not tile.get("watered_today", False):
-                tasks.append((position, ["WATER"]))
-            else:
-                tasks.append((position, ["HARVEST"]))
-        elif not tile.get("watered_today", False):
-            tasks.append((position, ["WATER"]))
-    return tasks
-
-
-def _cash_crop_tasks(obs, farm, excluded):
-    day = int(obs.get("day", 0))
-    tasks = []
-    for y, row in enumerate(farm["tiles"]):
-        for x, tile in enumerate(row):
-            position = (x, y)
-            if (
-                position in excluded
-                or not isinstance(tile, dict)
-                or tile.get("kind") != "PLANT"
-            ):
-                continue
-            crop = tile.get("crop")
-            amount = int(tile.get("yield_units", 0))
-            age = day - int(tile.get("planted_day", day))
-            if crop == "MELON":
-                if age >= 10 and amount > 0:
-                    tasks.append((0, position, ["HARVEST"]))
-                elif not tile.get("watered_today", False):
-                    tasks.append((CASH_WATER_PRIORITY, position, ["WATER"]))
-            elif amount > 0:
-                tasks.append((0, position, ["HARVEST"]))
-    return tasks
-
-
-def _planned_cash_crop_tasks(obs, farm, private, targets):
-    day = int(obs.get("day", 0))
-    seeds = private.get("seeds", {}) or {}
-    tasks = []
-    for position in targets:
-        tile = _tile(farm, position)
-        if tile == "LOCKED":
-            continue
-        if tile is None:
-            if (
-                day <= _BASE_CROP_RULES[CASH_CROP][3]
-                and int(seeds.get(CASH_CROP, 0)) > 0
-            ):
-                tasks.append((7, position, ["PLANT", CASH_CROP]))
-            continue
-        if not isinstance(tile, dict):
-            continue
-        if tile.get("kind") == "WEED":
-            tasks.append((SETUP_PRIORITY, position, ["DIG"]))
-            continue
-        if tile.get("kind") != "PLANT":
-            tasks.append((SETUP_PRIORITY, position, ["DIG"]))
-            continue
-        crop = tile.get("crop")
-        amount = int(tile.get("yield_units", 0))
-        age = day - int(tile.get("planted_day", day))
-        if crop != CASH_CROP:
-            if crop == "MELON" and age < 10:
-                if not tile.get("watered_today", False):
-                    tasks.append((CASH_WATER_PRIORITY, position, ["WATER"]))
-            elif amount > 0:
-                tasks.append((0, position, ["HARVEST"]))
-            else:
-                tasks.append((SETUP_PRIORITY, position, ["DIG"]))
-            continue
-        if not tile.get("watered_today", False):
-            tasks.append((CASH_WATER_PRIORITY, position, ["WATER"]))
-        elif amount > 0:
-            tasks.append((0, position, ["HARVEST"]))
-    return tasks
-
-
-def _opening_animal_count(day):
-    if OPENING_ANIMAL == "SHEEP":
-        return min(2, SHEEP_TARGET) if day < 6 else SHEEP_TARGET
-    return min(OPENING_ANIMAL_TARGET, COW_TARGET)
-
-
-def _opening_animal_targets(board_size):
-    if OPENING_ANIMAL == "SHEEP":
-        return _sheep_targets(board_size)
-    return _cow_targets(board_size)[:OPENING_ANIMAL_TARGET]
-
-
-def _opening_plan(board_size):
-    plan = dict(RUI_OPENING_PLAN)
-    for position in _opening_animal_targets(board_size):
-        plan.pop(position, None)
-    return plan
-
-
-def _opening_actions(obs, farm, private):
-    day = int(obs.get("day", 0))
-    board_size = len(farm["tiles"])
-    target_count = _opening_animal_count(day)
-    animal_targets = _opening_animal_targets(board_size)[:target_count]
-    plan = _opening_plan(board_size)
-    positions = [farm["farmer"], *farm.get("hands", [])]
-    opening_animals = _animal_state(farm, OPENING_ANIMAL)
-    empty_pastures = _available_pastures(
-        farm, animal_targets
-    )
-    setup_tasks = _setup_tasks(
-        obs, farm, animal_targets, OPENING_ANIMAL
-    )
-    crop_tasks = []
-    seeds = private.get("seeds", {}) or {}
-    for position, crop in plan.items():
-        tile = _tile(farm, position)
-        if tile is None and day > 0 and not OPENING_REPLANT:
-            continue
-        result = crop_agent._task(
-            tile,
-            crop,
-            day,
-            int(obs.get("hour", 0)),
-            seeds,
-        )
-        if result is not None:
-            priority, action = result
-            crop_tasks.append(
-                (8 + priority, position, action)
+    summary["carried_load"] = 0
+    for inventory in private.get("inventories", []) or []:
+        summary["wheat_stock"] += int((inventory or {}).get("WHEAT", 0))
+        for animal in ANIMALS:
+            summary["animal_stock"][animal] += int(
+                (inventory or {}).get(animal, 0) or 0
             )
-
-    shed = private.get("shed", {}) or {}
-    wheat_shed = int(shed.get("WHEAT", 0))
-    animal_shed = int(shed.get(OPENING_ANIMAL, 0))
-    seed_budget = dict(seeds)
-    reserved = set()
-    actions = []
-
-    for unit_index, position_value in enumerate(positions):
-        position = tuple(position_value)
-        inventory = _inventory(private, unit_index)
-        carried_animal = int(inventory.get(OPENING_ANIMAL, 0))
-        carried_wheat = int(inventory.get("WHEAT", 0))
-        tasks = []
-
-        if carried_animal > 0:
-            for target in empty_pastures:
-                tasks.append(
-                    (
-                        0,
-                        target,
-                        ["PLACE", OPENING_ANIMAL],
-                        ("PLACE_OPENING_ANIMAL", target),
-                    )
-                )
-        elif carried_wheat > 0:
-            for target, animal in opening_animals.items():
-                if not animal.get("fed_today", False):
-                    tasks.append(
-                        (
-                            1,
-                            target,
-                            ["FEED"],
-                            ("FEED", target),
-                        )
-                    )
-
-        unfed = [
-            target
-            for target, animal in opening_animals.items()
-            if not animal.get("fed_today", False)
-            and ("FEED", target) not in reserved
-        ]
-        if (
-            carried_wheat <= 0
-            and unfed
-            and wheat_shed > 0
-        ):
-            target = crop_agent._nearest_shed_tile(
-                position, board_size
-            )
-            amount = min(WHEAT_PICKUP_BATCH, wheat_shed)
-            tasks.append(
-                (
-                    2,
-                    target,
-                    ["PICKUP", "WHEAT", amount],
-                    ("PICKUP_WHEAT", unit_index),
-                )
-            )
-
-        for target, animal in opening_animals.items():
-            if not animal.get("cared_today", False):
-                tasks.append(
-                    (
-                        3,
-                        target,
-                        ["CARE"],
-                        ("CARE", target),
-                    )
-                )
-            if animal.get("fertilizer_available", False):
-                tasks.append(
-                    (
-                        4,
-                        target,
-                        ["COLLECT_FERTILIZER"],
-                        ("FERTILIZER", target),
-                    )
-                )
-            if int(animal.get("yield_units", 0)) > 0:
-                tasks.append(
-                    (
-                        5,
-                        target,
-                        ["HARVEST"],
-                        ("ANIMAL_PRODUCT", target),
-                    )
-                )
-
-        if (
-            carried_animal <= 0
-            and animal_shed > 0
-            and empty_pastures
-        ):
-            target = crop_agent._nearest_shed_tile(
-                position, board_size
-            )
-            tasks.append(
-                (
-                    6,
-                    target,
-                    ["PICKUP", OPENING_ANIMAL, 1],
-                    ("PICKUP_OPENING_ANIMAL", unit_index),
-                )
-            )
-
-        for target, action in setup_tasks:
-            tasks.append(
-                (
-                    7,
-                    target,
-                    action,
-                    ("FIELD", target),
-                )
-            )
-        for priority, target, action in crop_tasks:
-            if (
-                action[0] != "PLANT"
-                or seed_budget.get(action[1], 0) > 0
-            ):
-                tasks.append(
-                    (
-                        priority,
-                        target,
-                        action,
-                        ("FIELD", target),
-                    )
-                )
-
-        selected = _choose_task(position, tasks, reserved)
-        if selected is None:
-            actions.append(["PASS"])
-            continue
-        _, distance, _, _, target, action, reservation = selected
-        reserved.add(reservation)
-        if distance:
-            actions.append(crop_agent._move(position, target))
-            continue
-        actions.append(action)
-        if action[0] == "PICKUP":
-            if action[1] == "WHEAT":
-                wheat_shed -= int(action[2])
-            elif action[1] == OPENING_ANIMAL:
-                animal_shed -= 1
-        elif action[0] == "PLANT":
-            seed_budget[action[1]] = (
-                seed_budget.get(action[1], 0) - 1
-            )
-    return actions
+        summary["carried_load"] += _inventory_total(inventory)
+    return summary
 
 
-def _choose_task(position, tasks, reserved):
-    # This is called for every unit on almost every hour.  Keeping only the
-    # current minimum avoids allocating and then scanning a large candidate
-    # list while preserving Python's exact tuple ordering semantics.
-    selected = None
-    source_x, source_y = position
-    for priority, target, action, reservation in tasks:
-        if reservation in reserved:
-            continue
-        candidate = (
-            priority,
-            abs(source_x - target[0]) + abs(source_y - target[1]),
-            target[1],
-            target[0],
-            target,
-            action,
-            reservation,
-        )
-        if selected is None or candidate < selected:
-            selected = candidate
-    return selected
-
-
-def _cow_actions(obs, farm, private, animals=None):
-    board_size = len(farm["tiles"])
-    positions = [farm["farmer"], *farm.get("hands", [])]
-    cow_targets = _cow_targets(board_size)
-    sheep_targets = _sheep_targets(board_size)
-    goose_targets = _goose_targets(board_size)
-    wheat_targets = _wheat_targets(board_size)
-    cash_crop_targets = _cash_crop_targets(board_size)
-    if animals is None:
-        animals = _animal_state(farm)
-    empty_cow_pastures = _available_pastures(
-        farm, cow_targets
-    )
-    empty_sheep_pastures = _available_pastures(
-        farm, sheep_targets
-    )
-    empty_goose_pastures = _available_pastures(
-        farm, goose_targets
-    )
-    setup_tasks = _setup_tasks(
-        obs, farm, cow_targets, "COW"
-    )
-    sheep_setup_tasks = _setup_tasks(
-        obs, farm, sheep_targets, "SHEEP"
-    )
-    goose_setup_tasks = _setup_tasks(
-        obs, farm, goose_targets, "GOOSE"
-    )
-    wheat_tasks = _wheat_tasks(
-        obs, farm, private, wheat_targets
-    )
-    planned_cash_crop_tasks = _planned_cash_crop_tasks(
-        obs, farm, private, cash_crop_targets
-    )
-    cash_crop_tasks = _cash_crop_tasks(
-        obs,
-        farm,
-        set(cow_targets)
-        | set(sheep_targets)
-        | set(goose_targets)
-        | set(wheat_targets)
-        | set(cash_crop_targets),
-    )
-    shed = private.get("shed", {}) or {}
-    wheat_shed = int(shed.get("WHEAT", 0))
-    cow_shed = int(shed.get("COW", 0))
-    sheep_shed = int(shed.get("SHEEP", 0))
-    goose_shed = int(shed.get("GOOSE", 0))
-    reserved = set()
-    actions = []
-    seeds = private.get("seeds", {}) or {}
-    wheat_seed_budget = int(seeds.get("WHEAT", 0))
-    cash_crop_seed_budget = int(seeds.get(CASH_CROP, 0))
-
-    animal_service_tasks = []
-    for target, animal in animals.items():
-        if not animal.get("cared_today", False):
-            animal_service_tasks.append(
-                (CARE_PRIORITY, target, ["CARE"], ("CARE", target))
-            )
-        if animal.get("fertilizer_available", False):
-            animal_service_tasks.append(
-                (
-                    FERTILIZER_PRIORITY,
-                    target,
-                    ["COLLECT_FERTILIZER"],
-                    ("FERTILIZER", target),
-                )
-            )
-        if int(animal.get("yield_units", 0)) > 0:
-            animal_service_tasks.append(
-                (
-                    ANIMAL_HARVEST_PRIORITY,
-                    target,
-                    ["HARVEST"],
-                    ("ANIMAL_PRODUCT", target),
-                )
-            )
-
-    field_tasks = []
-    for target, action in setup_tasks:
-        field_tasks.append(
-            (
-                0 if action[0] == "HARVEST" else SETUP_PRIORITY,
-                target,
-                action,
-                ("FIELD", target),
-            )
-        )
-    for target, action in sheep_setup_tasks:
-        field_tasks.append(
-            (
-                0 if action[0] == "HARVEST" else SETUP_PRIORITY,
-                target,
-                action,
-                ("FIELD", target),
-            )
-        )
-    for target, action in goose_setup_tasks:
-        field_tasks.append(
-            (
-                0 if action[0] == "HARVEST" else SETUP_PRIORITY,
-                target,
-                action,
-                ("FIELD", target),
-            )
-        )
-    for priority, target, action in cash_crop_tasks:
-        field_tasks.append(
-            (priority, target, action, ("FIELD", target))
-        )
-    cash_crop_nonplant_tasks = []
-    cash_crop_plant_tasks = []
-    for priority, target, action in planned_cash_crop_tasks:
-        task = (priority, target, action, ("FIELD", target))
-        if action[0] == "PLANT":
-            cash_crop_plant_tasks.append(task)
-        else:
-            cash_crop_nonplant_tasks.append(task)
-    wheat_nonplant_tasks = []
-    wheat_plant_tasks = []
-    for target, action in wheat_tasks:
-        task = (WHEAT_TASK_PRIORITY, target, action, ("FIELD", target))
-        if action[0] == "PLANT":
-            wheat_plant_tasks.append(task)
-        else:
-            wheat_nonplant_tasks.append(task)
-
-    for unit_index, position_value in enumerate(positions):
-        position = tuple(position_value)
-        inventory = _inventory(private, unit_index)
-        carried_cows = int(inventory.get("COW", 0))
-        carried_sheep = int(inventory.get("SHEEP", 0))
-        carried_geese = int(inventory.get("GOOSE", 0))
-        carried_wheat = int(inventory.get("WHEAT", 0))
-        tasks = []
-
-        if carried_cows > 0:
-            for target in empty_cow_pastures:
-                tasks.append(
-                    (
-                        0,
-                        target,
-                        ["PLACE", "COW"],
-                        ("PLACE_COW", target),
-                    )
-                )
-        elif carried_sheep > 0:
-            for target in empty_sheep_pastures:
-                tasks.append(
-                    (
-                        0,
-                        target,
-                        ["PLACE", "SHEEP"],
-                        ("PLACE_SHEEP", target),
-                    )
-                )
-        elif carried_geese > 0:
-            for target in empty_goose_pastures:
-                tasks.append(
-                    (
-                        0,
-                        target,
-                        ["PLACE", "GOOSE"],
-                        ("PLACE_GOOSE", target),
-                    )
-                )
-        elif carried_wheat > 0:
-            for target, animal in animals.items():
-                if not animal.get("fed_today", False):
-                    tasks.append(
-                        (
-                            1,
-                            target,
-                            ["FEED"],
-                            ("FEED", target),
-                        )
-                    )
-
-        has_unfed_animal = any(
-            not animal.get("fed_today", False)
-            and ("FEED", target) not in reserved
-            for target, animal in animals.items()
-        )
-        if (
-            carried_wheat <= 0
-            and has_unfed_animal
-            and wheat_shed > 0
-        ):
-            target = crop_agent._nearest_shed_tile(
-                position, board_size
-            )
-            amount = min(WHEAT_PICKUP_BATCH, wheat_shed)
-            tasks.append(
-                (
-                    2,
-                    target,
-                    ["PICKUP", "WHEAT", amount],
-                    ("PICKUP_WHEAT", unit_index),
-                )
-            )
-
-        tasks.extend(animal_service_tasks)
-
-        if (
-            carried_cows <= 0
-            and cow_shed > 0
-            and empty_cow_pastures
-        ):
-            target = crop_agent._nearest_shed_tile(
-                position, board_size
-            )
-            tasks.append(
-                (
-                    2,
-                    target,
-                    ["PICKUP", "COW", 1],
-                    ("PICKUP_COW", unit_index),
-                )
-            )
-        if (
-            carried_sheep <= 0
-            and sheep_shed > 0
-            and empty_sheep_pastures
-        ):
-            target = crop_agent._nearest_shed_tile(
-                position, board_size
-            )
-            tasks.append(
-                (
-                    2,
-                    target,
-                    ["PICKUP", "SHEEP", 1],
-                    ("PICKUP_SHEEP", unit_index),
-                )
-            )
-        if (
-            carried_geese <= 0
-            and goose_shed > 0
-            and empty_goose_pastures
-        ):
-            target = crop_agent._nearest_shed_tile(position, board_size)
-            tasks.append(
-                (
-                    2,
-                    target,
-                    ["PICKUP", "GOOSE", 1],
-                    ("PICKUP_GOOSE", unit_index),
-                )
-            )
-
-        tasks.extend(field_tasks)
-        tasks.extend(cash_crop_nonplant_tasks)
-        tasks.extend(wheat_nonplant_tasks)
-        if wheat_seed_budget > 0:
-            tasks.extend(wheat_plant_tasks)
-        if cash_crop_seed_budget > 0:
-            tasks.extend(cash_crop_plant_tasks)
-
-        selected = _choose_task(
-            position, tasks, reserved
-        )
-        if selected is None:
-            actions.append(["PASS"])
-            continue
-
-        _, distance, _, _, target, action, reservation = selected
-        reserved.add(reservation)
-        if distance:
-            actions.append(
-                crop_agent._move(position, target)
-            )
-            continue
-
-        actions.append(action)
-        if action[0] == "PICKUP":
-            if action[1] == "WHEAT":
-                wheat_shed -= int(action[2])
-            elif action[1] == "COW":
-                cow_shed -= 1
-            elif action[1] == "SHEEP":
-                sheep_shed -= 1
-            elif action[1] == "GOOSE":
-                goose_shed -= 1
-        elif action[0] == "PLANT":
-            if action[1] == "WHEAT":
-                wheat_seed_budget -= 1
-            elif action[1] == CASH_CROP:
-                cash_crop_seed_budget -= 1
-
-    return actions
-
-
-def _opening_market_actions(obs, farm, private):
-    day = int(obs.get("day", 0))
-    hour = int(obs.get("hour", 0))
-    board_size = len(farm["tiles"])
-    shed = private.get("shed", {}) or {}
-    seeds = private.get("seeds", {}) or {}
-    prices = (
-        (obs.get("market", {}) or {}).get("prices", {}) or {}
-    )
-    money = float(farm.get("money", 0))
-    orders = []
-
-    for item in COW_SELL_ORDER:
-        amount = int(shed.get(item, 0))
-        if amount > 0 and len(orders) < 10:
-            orders.append(["SELL", item, amount])
-            money += (
-                amount
-                * float(prices.get(item, 1))
-                * SALE_PROCEEDS_FACTOR
-            )
-
-    target_animals = _opening_animal_count(day)
-    animals_missing = max(
-        0,
-        target_animals
-        - _owned_animal(farm, private, OPENING_ANIMAL),
-    )
-    animal_cost = COW_COST if OPENING_ANIMAL == "COW" else SHEEP_COST
-    animals_to_buy = min(
-        animals_missing,
-        int(max(0, money - 100) // animal_cost),
-    )
-    if animals_to_buy > 0 and len(orders) < 10:
-        orders.append(
-            ["BUY_ANIMAL", OPENING_ANIMAL, animals_to_buy]
-        )
-        money -= animals_to_buy * animal_cost
-
-    wheat_carried = sum(
-        int((inventory or {}).get("WHEAT", 0))
-        for inventory in (
-            private.get("inventories", []) or []
-        )
-    )
-    wheat_stock = int(shed.get("WHEAT", 0)) + wheat_carried
-    wheat_target = max(10, target_animals * 4)
-    wheat_missing = max(0, wheat_target - wheat_stock)
-    wheat_price = int(prices.get("WHEAT", 25))
-    wheat_amount = min(
-        wheat_missing,
-        int(max(0, money - 100) // max(1, wheat_price)),
-    )
-    if wheat_amount > 0 and len(orders) < 10:
-        orders.append(
-            ["BUY_PRODUCT", "WHEAT", wheat_amount]
-        )
-        money -= wheat_amount * wheat_price
-
-    plan = _opening_plan(board_size)
-    needs = {}
-    for position, crop in plan.items():
-        tile = _tile(farm, position)
-        if (
-            tile is None
-            and day <= crop_agent.CROP_RULES[crop][3]
-        ):
-            needs[crop] = needs.get(crop, 0) + 1
-    for crop in (
-        "MELON",
-        "CARROT",
-        "WHEAT",
-        "TOMATO",
-        "STRAWBERRY",
-    ):
-        wanted = max(
-            0,
-            needs.get(crop, 0) - int(seeds.get(crop, 0)),
-        )
-        cost = crop_agent.CROP_RULES[crop][0]
-        amount = min(
-            wanted,
-            int(max(0, money - 100) // cost),
-        )
-        if amount > 0 and len(orders) < 10:
-            orders.append(["BUY_SEED", crop, amount])
-            money -= amount * cost
-
-    if day < COW_START_DAY and hour <= 5:
-        missing_hands = max(
-            0,
-            _target_hands(day)
-            - len(farm.get("hands", [])),
-        )
-        while missing_hands and len(orders) < 10:
-            orders.append(["HIRE"])
-            missing_hands -= 1
-    return orders
-
-
-def _cow_market_actions(obs, farm, private, animals=None):
-    day = int(obs.get("day", 0))
-    hour = int(obs.get("hour", 0))
-    shed = private.get("shed", {}) or {}
-    orders = []
-    money = float(farm.get("money", 0))
-    prices = (
-        (obs.get("market", {}) or {}).get("prices", {}) or {}
-    )
-
-    for item in COW_SELL_ORDER:
-        amount = int(shed.get(item, 0))
-        if amount > 0 and len(orders) < 10:
-            orders.append(["SELL", item, amount])
-            money += (
-                amount
-                * float(prices.get(item, 1))
-                * SALE_PROCEEDS_FACTOR
-            )
-
+def _policy_phase(obs, farm, private, summary):
+    day = int(obs.get("day", 0) or 0)
+    step = int(obs.get("step", day * 24 + int(obs.get("hour", 0) or 0)) or 0)
+    actions_left = max(0, 719 - step)
+    if actions_left <= LIQUIDATION_TURNS:
+        return "LIQUIDATE"
+    workers = 1 + len(farm.get("hands", []) or [])
     if (
-        day < 29
-        and len(farm.get("unlocked_quadrants", [])) < LAND_TARGET
-        and day >= (
-            LAND_FIRST_DAY
-            if len(farm.get("unlocked_quadrants", [])) < 2
-            else LAND_SECOND_DAY
-        )
-        and len(orders) < 10
-        and money >= 1000
+        summary["at_risk_animals"] + summary["at_risk_crops"] > workers
+        or summary["shed_load"] + summary["carried_load"] >= 95
     ):
-        orders.append(["BUY_LAND"])
-        money -= 1000
+        return "CRISIS"
+    if day <= 4:
+        return "BOOTSTRAP"
+    if day <= 21:
+        return "COMPOUND"
+    return "REALIZE"
 
-    if animals is None:
-        cows_owned = _owned_cows(farm, private)
-        sheep_owned = _owned_animal(farm, private, "SHEEP")
-        geese_owned = _owned_animal(farm, private, "GOOSE")
-    else:
-        shed_counts = private.get("shed", {}) or {}
-        inventories = private.get("inventories", []) or []
-        deployed_cows = 0
-        deployed_sheep = 0
-        deployed_geese = 0
-        for animal in animals.values():
-            kind = animal.get("animal")
-            if kind == "COW":
-                deployed_cows += 1
-            elif kind == "SHEEP":
-                deployed_sheep += 1
-            elif kind == "GOOSE":
-                deployed_geese += 1
-        cows_owned = (
-            deployed_cows
-            + int(shed_counts.get("COW", 0))
-            + sum(
-                int((inventory or {}).get("COW", 0))
-                for inventory in inventories
+
+def _add_job(
+    jobs,
+    priority,
+    value,
+    target,
+    action,
+    need=None,
+    reason="",
+    latest_hour=23,
+):
+    jobs.append(
+        {
+            "priority": int(priority),
+            "value": float(value),
+            "target": tuple(target),
+            "action": list(action),
+            "need": need,
+            "reason": str(reason),
+            "latest_hour": int(latest_hour),
+        }
+    )
+
+
+def _animal_produces_tonight(tile, rule, day):
+    next_day = int(day) + 1
+    placed_day = int(tile.get("placed_day", day) or 0)
+    days_since_first = next_day - placed_day - int(rule["first"])
+    return (
+        days_since_first >= 0
+        and days_since_first % int(rule["interval"]) == 0
+    )
+
+
+def _crop_jobs(obs, jobs, tile, target, day, liquidation):
+    crop = tile.get("crop")
+    rule = CROPS.get(crop)
+    if rule is None:
+        return
+    prices = ((obs.get("market", {}) or {}).get("prices", {}) or {})
+    price = float(prices.get(crop, MARKET[crop][0]) or MARKET[crop][0])
+    age = day - int(tile.get("planted_day", day))
+    amount = int(tile.get("yield_units", 0) or 0)
+    watered = bool(tile.get("watered_today", False))
+    drought = int(tile.get("consecutive_unwatered", 0) or 0)
+    critical = drought >= 1
+
+    if liquidation:
+        if amount > 0 and age >= rule["first"]:
+            _add_job(
+                jobs,
+                0,
+                amount * price,
+                target,
+                ("HARVEST",),
+                reason="terminal_harvest",
             )
-        )
-        sheep_owned = (
-            deployed_sheep
-            + int(shed_counts.get("SHEEP", 0))
-            + sum(
-                int((inventory or {}).get("SHEEP", 0))
-                for inventory in inventories
-            )
-        )
-        geese_owned = (
-            deployed_geese
-            + int(shed_counts.get("GOOSE", 0))
-            + sum(
-                int((inventory or {}).get("GOOSE", 0))
-                for inventory in inventories
-            )
-        )
-    wheat_carried = sum(
-        int((inventory or {}).get("WHEAT", 0))
-        for inventory in (
-            private.get("inventories", []) or []
-        )
-    )
-    wheat_stock = int(shed.get("WHEAT", 0)) + wheat_carried
-    animal_count = cows_owned + sheep_owned + geese_owned
-    wheat_target = max(
-        12,
-        min(
-            COW_TARGET + SHEEP_TARGET + GOOSE_TARGET,
-            animal_count + 4,
-        )
-        * 2,
-    )
-    wheat_missing = max(0, wheat_target - wheat_stock)
-    wheat_price = int(
-        ((obs.get("market", {}) or {}).get("prices", {}) or {}).get(
-            "WHEAT", 25
-        )
-    )
-    wheat_amount = min(
-        wheat_missing,
-        int(max(0, money - 200) // max(1, wheat_price)),
-    )
-    if wheat_amount > 0 and len(orders) < 10:
-        orders.append(
-            ["BUY_PRODUCT", "WHEAT", wheat_amount]
-        )
-        money -= wheat_amount * wheat_price
-
-    cows_missing = max(0, COW_TARGET - cows_owned)
-    if COW_FIRST_PURCHASE:
-        cows_to_buy = min(
-            cows_missing,
-            COW_PURCHASE_BATCH,
-            int(max(0, money - 200) // COW_COST),
-        )
-        if cows_to_buy > 0 and len(orders) < 10:
-            orders.append(
-                ["BUY_ANIMAL", "COW", cows_to_buy]
-            )
-            money -= cows_to_buy * COW_COST
-
-    sheep_missing = max(0, SHEEP_TARGET - sheep_owned)
-    sheep_to_buy = min(
-        sheep_missing,
-        int(max(0, money - 200) // SHEEP_COST),
-    )
-    if sheep_to_buy > 0 and len(orders) < 10:
-        orders.append(
-            ["BUY_ANIMAL", "SHEEP", sheep_to_buy]
-        )
-        money -= sheep_to_buy * SHEEP_COST
-
-    if not COW_FIRST_PURCHASE:
-        cows_to_buy = min(
-            cows_missing,
-            COW_PURCHASE_BATCH,
-            int(max(0, money - 200) // COW_COST),
-        )
-        if cows_to_buy > 0 and len(orders) < 10:
-            orders.append(
-                ["BUY_ANIMAL", "COW", cows_to_buy]
-            )
-            money -= cows_to_buy * COW_COST
-
-    geese_missing = max(0, GOOSE_TARGET - geese_owned)
-    geese_to_buy = min(
-        geese_missing,
-        int(max(0, money - 200) // GOOSE_COST),
-    )
-    if geese_to_buy > 0 and len(orders) < 10:
-        orders.append(["BUY_ANIMAL", "GOOSE", geese_to_buy])
-        money -= geese_to_buy * GOOSE_COST
-
-    wheat_targets = _wheat_targets(len(farm["tiles"]))
-    empty_wheat = sum(
-        _tile(farm, position) is None
-        for position in wheat_targets
-    )
-    seeds = private.get("seeds", {}) or {}
-    seeds_missing = max(
-        0,
-        empty_wheat - int(seeds.get("WHEAT", 0)),
-    )
-    seed_amount = min(
-        seeds_missing,
-        int(max(0, money - 100) // 10),
-    )
-    if seed_amount > 0 and len(orders) < 10:
-        orders.append(
-            ["BUY_SEED", "WHEAT", seed_amount]
-        )
-        money -= seed_amount * 10
-
-    cash_crop_targets = _cash_crop_targets(len(farm["tiles"]))
-    planted_cash_crop = sum(
-        isinstance(_tile(farm, position), dict)
-        and _tile(farm, position).get("kind") == "PLANT"
-        and _tile(farm, position).get("crop") == CASH_CROP
-        for position in cash_crop_targets
-    )
-    cash_crop_missing = max(
-        0,
-        len(cash_crop_targets)
-        - planted_cash_crop
-        - int(seeds.get(CASH_CROP, 0)),
-    )
-    cash_crop_cost = _BASE_CROP_RULES[CASH_CROP][0]
-    cash_crop_amount = min(
-        cash_crop_missing,
-        int(max(0, money - 100) // cash_crop_cost),
-    )
-    if cash_crop_amount > 0 and len(orders) < 10:
-        orders.append(
-            ["BUY_SEED", CASH_CROP, cash_crop_amount]
-        )
-        money -= cash_crop_amount * cash_crop_cost
-
-    if day < 29 and hour <= 5:
-        missing_hands = max(
-            0,
-            _target_hands(day) - len(farm.get("hands", [])),
-        )
-        while missing_hands and len(orders) < 10:
-            orders.append(["HIRE"])
-            missing_hands -= 1
-    elif day == 29 and hour <= 3:
-        final_tasks = len(
-            crop_agent._final_harvest_tasks(
-                farm, prices
-            )
-        )
-        target_hands = min(
-            COW_HANDS,
-            max(0, final_tasks - 1),
-        )
-        missing_hands = max(
-            0,
-            target_hands - len(farm.get("hands", [])),
-        )
-        while missing_hands and len(orders) < 10:
-            orders.append(["HIRE"])
-            missing_hands -= 1
-    return orders
-
-
-def _apply_learned_macro_profile(obs):
-    """Choose the day-8 livestock profile from public market state.
-
-    The small decision tree was fitted on server-generated counterfactual
-    matches.  Resetting on day 0 also keeps repeated local Arena games
-    independent when the same imported module is reused.
-    """
-    global COW_TARGET, WHEAT_TILES
-
-    if not USE_LEARNED_MACRO:
         return
 
-    day = int(obs.get("day", 0))
-    hour = int(obs.get("hour", 0))
-    if day == 0 and hour == 0:
-        COW_TARGET = 16
-        WHEAT_TILES = 3
-    if day != COW_START_DAY or hour != 0:
+    if critical and not watered:
+        protected = max(amount, rule["max_yield"] * 0.7) * price
+        _add_job(
+            jobs,
+            0,
+            protected,
+            target,
+            ("WATER",),
+            reason="critical_water",
+        )
         return
 
-    market = obs.get("market", {}) or {}
-    inventory = market.get("inventory", {}) or {}
-    prices = market.get("prices", {}) or {}
-    carrot_inventory = int(inventory.get("CARROT", 10_000))
-    wheat_price = int(prices.get("WHEAT", 25))
+    if rule["ongoing"]:
+        if amount >= rule["max_yield"] - 1 or (amount > 0 and day >= 27):
+            _add_job(
+                jobs,
+                2,
+                amount * price,
+                target,
+                ("HARVEST",),
+                reason="ongoing_harvest",
+            )
+        elif not watered and age >= rule["first"] - 1:
+            _add_job(
+                jobs,
+                3,
+                price,
+                target,
+                ("WATER",),
+                reason="ongoing_water",
+            )
+        return
 
-    WHEAT_TILES = 2
-    COW_TARGET = (
-        16
-        if carrot_inventory > 9_975 and wheat_price <= 34
-        else 15
+    ripe = age >= rule["ripe"] and amount > 0
+    in_growth_window = (rule["max_day"] + 1) // 2 <= age <= rule["max_day"]
+    if ripe:
+        if in_growth_window and not watered and amount < rule["max_yield"]:
+            _add_job(
+                jobs,
+                1,
+                price,
+                target,
+                ("WATER",),
+                reason="final_growth_water",
+            )
+        else:
+            _add_job(
+                jobs,
+                2,
+                amount * price,
+                target,
+                ("HARVEST",),
+                reason="ripe_harvest",
+            )
+    elif in_growth_window and not watered:
+        _add_job(
+            jobs,
+            3,
+            price,
+            target,
+            ("WATER",),
+            reason="yield_water",
+        )
+
+
+def _field_jobs(obs, farm, private, roles, liquidation):
+    day = int(obs.get("day", 0) or 0)
+    hour = int(obs.get("hour", 0) or 0)
+    left = TOTAL_DAYS - day
+    tiles = farm["tiles"]
+    seeds = dict(private.get("seeds", {}) or {})
+    prices = ((obs.get("market", {}) or {}).get("prices", {}) or {})
+    jobs = []
+    planned_roles = dict(roles)
+    for y, row in enumerate(tiles):
+        for x, tile in enumerate(row):
+            if not isinstance(tile, dict) or (x, y) in planned_roles:
+                continue
+            if tile.get("kind") == "PLANT" and tile.get("crop") in CROPS:
+                planned_roles[(x, y)] = ("CROP", tile["crop"])
+            elif tile.get("animal") in ANIMALS:
+                planned_roles[(x, y)] = ("ANIMAL", tile["animal"])
+
+    for target, role in planned_roles.items():
+        x, y = target
+        tile = tiles[y][x]
+        role_kind, role_item = role
+
+        if tile is None:
+            if liquidation:
+                continue
+            if role_kind == "ANIMAL":
+                animal_rule = ANIMALS[role_item]
+                if left >= animal_rule["first"] + 2:
+                    _add_job(
+                        jobs,
+                        3,
+                        420,
+                        target,
+                        ("BUILD_" + animal_rule["structure"],),
+                        reason="build_" + animal_rule["structure"].lower(),
+                        latest_hour=22,
+                    )
+            elif (
+                hour <= 22
+                and day <= CROPS[role_item]["last_plant"]
+                and seeds.get(role_item, 0) > 0
+            ):
+                rule = CROPS[role_item]
+                expected = 4 if role_item == "WHEAT" else rule["max_yield"]
+                price = float(
+                    prices.get(role_item, MARKET[role_item][0])
+                    or MARKET[role_item][0]
+                )
+                value = max(40, 0.65 * expected * price - rule["seed"])
+                _add_job(
+                    jobs,
+                    4,
+                    value,
+                    target,
+                    ("PLANT", role_item),
+                    reason="plant_" + role_item,
+                    latest_hour=22,
+                )
+            continue
+
+        if not isinstance(tile, dict):
+            continue
+        kind = tile.get("kind")
+        if role_kind == "ANIMAL" and kind in {"WEED", "PLANT"}:
+            if not liquidation:
+                _add_job(
+                    jobs,
+                    2,
+                    500,
+                    target,
+                    ("DIG",),
+                    reason="clear_animal_slot",
+                    latest_hour=22,
+                )
+            continue
+        if kind == "WEED":
+            if not liquidation:
+                _add_job(
+                    jobs,
+                    4,
+                    120 if left > 5 else 10,
+                    target,
+                    ("DIG",),
+                    reason="dig_weed",
+                    latest_hour=22,
+                )
+            continue
+        if kind == "PLANT":
+            _crop_jobs(obs, jobs, tile, target, day, liquidation)
+            continue
+        if (
+            role_kind == "ANIMAL"
+            and kind == ANIMALS[role_item]["structure"]
+            and "animal" not in tile
+        ):
+            if not liquidation:
+                _add_job(
+                    jobs,
+                    1,
+                    900,
+                    target,
+                    ("PLACE", role_item),
+                    need=role_item,
+                    reason="place_" + role_item.lower(),
+                )
+            continue
+        if (
+            role_kind == "ANIMAL"
+            and kind in {"COOP", "PASTURE"}
+            and kind != ANIMALS[role_item]["structure"]
+            and "animal" not in tile
+        ):
+            if not liquidation:
+                _add_job(
+                    jobs,
+                    3,
+                    250,
+                    target,
+                    ("DIG",),
+                    reason="replace_incompatible_structure",
+                )
+            continue
+        if "animal" not in tile:
+            continue
+        if liquidation:
+            if int(tile.get("yield_units", 0) or 0) > 0:
+                product = ANIMALS.get(
+                    tile.get("animal"), ANIMALS["GOOSE"]
+                )["product"]
+                value = int(tile.get("yield_units", 0) or 0) * float(
+                    prices.get(product, MARKET[product][0])
+                    or MARKET[product][0]
+                )
+                _add_job(
+                    jobs,
+                    0,
+                    value,
+                    target,
+                    ("HARVEST",),
+                    reason="terminal_animal",
+                )
+            if tile.get("fertilizer_available", False):
+                _add_job(
+                    jobs,
+                    0,
+                    float(
+                        prices.get("FERTILIZER", MARKET["FERTILIZER"][0])
+                        or MARKET["FERTILIZER"][0]
+                    ),
+                    target,
+                    ("COLLECT_FERTILIZER",),
+                    reason="terminal_fertilizer",
+                )
+            continue
+        if not tile.get("fed_today", False):
+            risk = int(tile.get("consecutive_unfed", 0) or 0) >= 1
+            _add_job(
+                jobs,
+                0 if risk else 1,
+                900 if risk else 260,
+                target,
+                ("FEED",),
+                need="WHEAT",
+                reason="critical_feed" if risk else "feed",
+            )
+        held = int(tile.get("yield_units", 0) or 0)
+        animal_rule = ANIMALS.get(tile.get("animal"), ANIMALS["GOOSE"])
+        product = animal_rule["product"]
+        pending_care = int(tile.get("pending_care_bonus", 0) or 0)
+        produces_tonight = _animal_produces_tonight(
+            tile, animal_rule, day
+        )
+        production_gain = 1 + pending_care if produces_tonight else 0
+        if held > 0 and (
+            held >= 3
+            or held + production_gain >= animal_rule["max_held"]
+            or day >= 27
+        ):
+            _add_job(
+                jobs,
+                2,
+                held
+                * float(
+                    prices.get(product, MARKET[product][0])
+                    or MARKET[product][0]
+                ),
+                target,
+                ("HARVEST",),
+                reason="animal_harvest",
+            )
+        if tile.get("fertilizer_available", False):
+            _add_job(
+                jobs,
+                2,
+                float(
+                    prices.get("FERTILIZER", MARKET["FERTILIZER"][0])
+                    or MARKET["FERTILIZER"][0]
+                ),
+                target,
+                ("COLLECT_FERTILIZER",),
+                reason="fertilizer",
+            )
+        if (
+            not tile.get("cared_today", False)
+            and day <= 27
+            and held
+            + (0 if produces_tonight else pending_care)
+            + 1
+            < animal_rule["max_held"]
+            and float(
+                prices.get(product, MARKET[product][0])
+                or MARKET[product][0]
+            ) >= 20
+        ):
+            _add_job(
+                jobs,
+                3,
+                float(
+                    prices.get(product, MARKET[product][0])
+                    or MARKET[product][0]
+                ),
+                target,
+                ("CARE",),
+                reason="care",
+            )
+    return jobs
+
+
+def _terminal_feasible(position, target, tiles, actions_left):
+    board_size = len(tiles)
+    return (
+        _distance(position, target)
+        + 1
+        + min(
+            _distance(target, shed)
+            for shed in _shed_tiles(board_size, tiles)
+        )
+        + 1
+        <= actions_left
     )
 
 
-RUI_DAY0_SCRIPT = json.loads(r'''{"0":{"farmer":["PASS"],"hands":[],"market":[["HIRE"],["HIRE"],["HIRE"],["HIRE"],["HIRE"],["HIRE"],["BUY_SEED","MELON",16],["BUY_SEED","CARROT",6],["BUY_ANIMAL","COW",2]]},"1":{"farmer":["BUILD_PASTURE"],"hands":[["WEST"],["NORTH"],["PASS"],["NORTH"],["WEST"],["NORTH"]],"market":[["BUY_PRODUCT","WHEAT",5]]},"2":{"farmer":["PICKUP","COW",1],"hands":[["NORTH"],["WEST"],["PASS"],["BUILD_PASTURE"],["NORTH"],["WEST"]],"market":[]},"3":{"farmer":["PLACE","COW"],"hands":[["SOUTH"],["PLANT","MELON"],["PASS"],["NORTH"],["WEST"],["WEST"]],"market":[]},"4":{"farmer":["PICKUP","WHEAT",3],"hands":[["PICKUP","COW",1],["WATER"],["PASS"],["PLANT","MELON"],["PLANT","MELON"],["PLANT","MELON"]],"market":[]},"5":{"farmer":["FEED"],"hands":[["NORTH"],["EAST"],["PASS"],["WATER"],["WATER"],["WATER"]],"market":[]},"6":{"farmer":["CARE"],"hands":[["PLACE","COW"],["WEST"],["PASS"],["NORTH"],["NORTH"],["NORTH"]],"market":[["BUY_PRODUCT","WHEAT",1]]},"7":{"farmer":["NORTH"],"hands":[["CARE"],["WEST"],["PASS"],["PLANT","MELON"],["PLANT","MELON"],["PLANT","MELON"]],"market":[]},"8":{"farmer":["FEED"],"hands":[["NORTH"],["WEST"],["PASS"],["WATER"],["WATER"],["WATER"]],"market":[]},"9":{"farmer":["WEST"],"hands":[["WEST"],["PLANT","MELON"],["PASS"],["NORTH"],["NORTH"],["NORTH"]],"market":[["BUY_PRODUCT","WHEAT",1]]},"10":{"farmer":["WEST"],"hands":[["WEST"],["WATER"],["PASS"],["PLANT","MELON"],["PLANT","MELON"],["PLANT","MELON"]],"market":[]},"11":{"farmer":["WEST"],"hands":[["WATER"],["WEST"],["PASS"],["WATER"],["WATER"],["NORTH"]],"market":[]},"12":{"farmer":["PLANT","MELON"],"hands":[["WEST"],["PLANT","MELON"],["PASS"],["WEST"],["WEST"],["PLANT","MELON"]],"market":[]},"13":{"farmer":["WATER"],"hands":[["PLANT","MELON"],["WATER"],["PASS"],["PLANT","MELON"],["WATER"],["WEST"]],"market":[]},"14":{"farmer":["WEST"],"hands":[["WATER"],["NORTH"],["PASS"],["WATER"],["NORTH"],["PLANT","CARROT"]],"market":[]},"15":{"farmer":["PLANT","CARROT"],"hands":[["WEST"],["NORTH"],["PASS"],["WEST"],["PLANT","CARROT"],["WATER"]],"market":[]},"16":{"farmer":["WATER"],"hands":[["PLANT","CARROT"],["NORTH"],["PASS"],["WATER"],["WEST"],["EAST"]],"market":[]},"17":{"farmer":["EAST"],"hands":[["WATER"],["PLANT","CARROT"],["PASS"],["SOUTH"],["PLANT","CARROT"],["SOUTH"]],"market":[]},"18":{"farmer":["EAST"],"hands":[["EAST"],["WATER"],["PASS"],["SOUTH"],["WATER"],["EAST"]],"market":[]},"19":{"farmer":["EAST"],"hands":[["EAST"],["EAST"],["PASS"],["EAST"],["SOUTH"],["SOUTH"]],"market":[]},"20":{"farmer":["EAST"],"hands":[["EAST"],["EAST"],["PASS"],["SOUTH"],["EAST"],["EAST"]],"market":[]},"21":{"farmer":["SOUTH"],"hands":[["SOUTH"],["SOUTH"],["PASS"],["EAST"],["SOUTH"],["SOUTH"]],"market":[]},"22":{"farmer":["PASS"],"hands":[["EAST"],["EAST"],["PASS"],["SOUTH"],["EAST"],["PASS"]],"market":[]},"23":{"farmer":["PASS"],"hands":[["SOUTH"],["SOUTH"],["PASS"],["PASS"],["SOUTH"],["PASS"]],"market":[]}}''')
+# Duplicate-target-aware field assignment
 
+def _unit_actions(obs, config, farm, private, roles):
+    tiles = farm["tiles"]
+    board_size = len(tiles)
+    day = int(obs.get("day", 0) or 0)
+    hour = int(obs.get("hour", 0) or 0)
+    step = int(obs.get("step", day * 24 + hour) or 0)
+    final_step = int(_cfg(config, "episodeSteps", 720)) - 2
+    actions_left = max(0, final_step - step + 1)
+    liquidation = actions_left <= LIQUIDATION_TURNS
 
-def agent(obs):
-    day = int(obs.get("day", 0))
-    if day == 0:
-        return RUI_DAY0_SCRIPT[str(int(obs.get("hour", 0)))]
-    _apply_learned_macro_profile(obs)
-    farms = obs.get("farms", []) or []
-    player = int(obs.get("player", 0))
-    if player >= len(farms):
-        return {
-            "farmer": ["PASS"],
-            "hands": [],
-            "market": [],
-        }
-    farm = farms[player]
-    private = obs.get("private", {}) or {}
+    positions = [farm["farmer"], *(farm.get("hands", []) or [])]
+    inventories = [dict(inv or {}) for inv in private.get("inventories", []) or []]
+    while len(inventories) < len(positions):
+        inventories.append({})
 
-    if day < COW_START_DAY:
-        actions = _opening_actions(obs, farm, private)
-        return {
-            "farmer": actions[0] if actions else ["PASS"],
-            "hands": actions[1:],
-            "market": _opening_market_actions(
-                obs, farm, private
-            ),
-        }
+    summary = _survey(farm, private, roles, day)
+    jobs = _field_jobs(obs, farm, private, roles, liquidation)
+    seed_budget = dict(private.get("seeds", {}) or {})
+    actions = [["PASS"] for _ in positions]
 
-    if day >= 29:
-        actions = crop_agent._final_day_actions(
-            obs, farm, private
+    feed_jobs = [job for job in jobs if job["need"] == "WHEAT"]
+    shed_wheat = int((private.get("shed", {}) or {}).get("WHEAT", 0) or 0)
+    carried_wheat = sum(int(inv.get("WHEAT", 0) or 0) for inv in inventories)
+
+    missions = []
+    for job in jobs:
+        mission = dict(job)
+        mission.update({"kind": "FIELD"})
+        missions.append(mission)
+
+    wheat_missing = max(0, len(feed_jobs) - carried_wheat)
+    wheat_pickups = min(
+        len(positions),
+        int(math.ceil(min(wheat_missing, shed_wheat) / 6.0)),
+    )
+    wheat_remaining = min(wheat_missing, shed_wheat)
+    critical_feed = any(job["priority"] == 0 for job in feed_jobs)
+    for _ in range(wheat_pickups):
+        amount = min(6, wheat_remaining)
+        wheat_remaining -= amount
+        missions.append(
+            {
+                "kind": "PICKUP",
+                "item": "WHEAT",
+                "amount": amount,
+                "priority": 0 if critical_feed else 1,
+                "value": 900 if critical_feed else 500,
+                "target": None,
+            }
         )
-        pending = crop_agent._pending_drop_items(
-            farm, private, actions
+
+    for animal in ANIMALS:
+        place_jobs = [job for job in jobs if job["need"] == animal]
+        shed_animals = int(
+            (private.get("shed", {}) or {}).get(animal, 0) or 0
         )
-        market = _cow_market_actions(obs, farm, private)
-        for item, amount in pending.items():
-            for order in market:
-                if order[0] == "SELL" and order[1] == item:
-                    order[2] += amount
-                    break
+        carried_animals = sum(
+            int(inv.get(animal, 0) or 0) for inv in inventories
+        )
+        pickup_count = min(
+            max(0, len(place_jobs) - carried_animals),
+            shed_animals,
+            2,
+            len(positions),
+        )
+        for _ in range(pickup_count):
+            missions.append(
+                {
+                    "kind": "PICKUP",
+                    "item": animal,
+                    "amount": 1,
+                    "priority": 1,
+                    "value": 900,
+                    "target": None,
+                }
+            )
+
+    market_prices = ((obs.get("market", {}) or {}).get("prices", {}) or {})
+    pressure = summary["shed_load"] + summary["carried_load"]
+    cash_needed = (
+        day < 22
+        and float(farm.get("money", 0) or 0) < 500
+    )
+    for index, inventory in enumerate(inventories):
+        cash_units = sum(
+            max(0, int(inventory.get(item, 0) or 0)) for item in PRODUCTS
+        )
+        if cash_units <= 0:
+            continue
+        cash_value = sum(
+            max(0, int(inventory.get(item, 0) or 0))
+            * float(market_prices.get(item, MARKET[item][0]) or MARKET[item][0])
+            for item in PRODUCTS
+        )
+        has_feed_mission = (
+            int(inventory.get("WHEAT", 0) or 0) > 0 and bool(feed_jobs)
+        )
+        should_drop = (
+            liquidation
+            or pressure >= 80
+            or cash_units >= 20
+            or cash_value >= 2500
+            or (cash_needed and cash_value >= 400)
+            or (
+                tuple(positions[index]) in _shed_tiles(board_size, tiles)
+                and not has_feed_mission
+                and cash_needed
+            )
+        )
+        if should_drop:
+            missions.append(
+                {
+                    "kind": "DROP",
+                    "eligible": index,
+                    "priority": -1 if liquidation else 2,
+                    "value": max(120.0, 0.22 * cash_value),
+                    "target": None,
+                }
+            )
+
+    pairs = []
+    for worker_index, raw_position in enumerate(positions):
+        position = (int(raw_position[0]), int(raw_position[1]))
+        inventory = inventories[worker_index]
+        for mission_index, mission in enumerate(missions):
+            kind = mission["kind"]
+            if kind == "DROP" and mission["eligible"] != worker_index:
+                continue
+            if kind == "FIELD":
+                need = mission.get("need")
+                if need is not None and int(inventory.get(need, 0) or 0) <= 0:
+                    continue
+                target = mission["target"]
+                distance = _distance(position, target)
+                if hour + distance > mission.get("latest_hour", 23):
+                    continue
+                if liquidation and not _terminal_feasible(
+                    position, target, tiles, actions_left
+                ):
+                    continue
             else:
-                if len(market) < 10:
-                    market.append(["SELL", item, amount])
-        return {
-            "farmer": actions[0] if actions else ["PASS"],
-            "hands": actions[1:],
-            "market": market,
-        }
+                target = _nearest_shed(position, board_size, tiles)
+                distance = _distance(position, target)
+                if kind == "PICKUP" and int(
+                    inventory.get(mission["item"], 0) or 0
+                ) > 0:
+                    continue
 
-    animals = _animal_state(farm)
-    actions = _cow_actions(obs, farm, private, animals)
+            priority = int(mission["priority"])
+            score = (
+                PRIORITY_BONUS.get(priority, -1000.0 * priority)
+                + float(mission["value"])
+                - TRAVEL_COST * distance
+            )
+            pairs.append(
+                (
+                    -score,
+                    distance,
+                    worker_index,
+                    mission_index,
+                    target[1],
+                    target[0],
+                    target,
+                )
+            )
+
+    used_workers = set()
+    used_missions = set()
+    used_targets = set()
+    shed_capacity = int(_cfg(config, "shedCapacity", SHED_CAPACITY))
+    drop_room = max(0, shed_capacity - summary["shed_load"])
+    for _, distance, worker_index, mission_index, _, _, target in sorted(pairs):
+        if worker_index in used_workers or mission_index in used_missions:
+            continue
+        mission = missions[mission_index]
+        target_key = target
+        if mission["kind"] == "FIELD":
+            operation = mission["action"][0]
+            if liquidation and operation in {"HARVEST", "COLLECT_FERTILIZER"}:
+                target_key = (target, operation)
+            if target_key in used_targets:
+                continue
+
+        action = None
+        plant_crop = None
+        if mission["kind"] == "FIELD":
+            planned = mission["action"]
+            if planned[0] == "PLANT":
+                plant_crop = planned[1]
+                if int(seed_budget.get(plant_crop, 0) or 0) <= 0:
+                    continue
+            action = (
+                list(planned)
+                if distance == 0
+                else _bfs_first_step(tiles, positions[worker_index], target)
+            )
+        elif mission["kind"] == "PICKUP":
+            action = (
+                ["PICKUP", mission["item"], int(mission["amount"])]
+                if distance == 0
+                else _bfs_first_step(tiles, positions[worker_index], target)
+            )
+        else:
+            inventory = inventories[worker_index]
+            product_counts = {
+                item: max(0, int(inventory.get(item, 0) or 0))
+                for item in PRODUCTS
+                if int(inventory.get(item, 0) or 0) > 0
+            }
+            if distance:
+                action = _bfs_first_step(
+                    tiles, positions[worker_index], target
+                )
+            else:
+                cash_units = sum(product_counts.values())
+                noncash = _inventory_total(inventory) - cash_units
+                if cash_units <= 0 or drop_room <= 0:
+                    continue
+                if noncash <= 0 and cash_units <= drop_room:
+                    action = ["DROP"]
+                    drop_room -= cash_units
+                else:
+                    item = max(
+                        product_counts,
+                        key=lambda name: (
+                            float(
+                                market_prices.get(name, MARKET[name][0])
+                                or MARKET[name][0]
+                            ),
+                            name,
+                        ),
+                    )
+                    quantity = min(product_counts[item], drop_room)
+                    if quantity <= 0:
+                        continue
+                    action = ["PLACE", item, quantity]
+                    drop_room -= quantity
+
+        if not action or (action == ["PASS"] and distance > 0):
+            continue
+        if plant_crop is not None:
+            seed_budget[plant_crop] -= 1
+        if mission["kind"] == "FIELD":
+            used_targets.add(target_key)
+        actions[worker_index] = action
+        used_workers.add(worker_index)
+        used_missions.add(mission_index)
+
     return {
         "farmer": actions[0] if actions else ["PASS"],
         "hands": actions[1:],
-        "market": _cow_market_actions(
-            obs, farm, private, animals
-        ),
+        "liquidation": liquidation,
     }
 
 
-# --- BEGIN FROZEN STRATEGY GENOME ---
-# Generated by training/promote_strategy_genome.py from best_genome.json.
-# The compiler and values are embedded; no project files are imported at runtime.
-from dataclasses import asdict, dataclass, replace
-from typing import Any
+# Market and capital allocation
 
-LAYOUT_FAMILIES = ("rui", "rank1", "compact", "rows", "checker")
-CASH_LAYOUTS = ("near", "far")
-OPENING_MODES = ("rui_scripted", "generic", "mixed")
-OPENING_ANIMALS = ("COW", "SHEEP")
-LIVESTOCK_POLICIES = ("fixed", "market")
-STRATEGY_FAMILIES = (
-    "legacy",
-    "crop_rotation",
-    "land_expansion",
-    "market_livestock",
-    "hybrid",
-)
-SERVICE_ORDERS = (
-    "care_fertilizer_harvest",
-    "care_harvest_fertilizer",
-    "harvest_care_fertilizer",
-    "fertilizer_care_harvest",
-)
-
-RUI_COW_ORDER = (
-    (4, 4), (4, 3), (3, 2), (4, 2), (5, 3), (3, 4),
-    (5, 4), (6, 4), (5, 2), (6, 2), (7, 3), (2, 3),
-)
-RUI_SHEEP_ORDER = (
-    (4, 0), (5, 0), (5, 2), (6, 2),
-    (2, 3), (7, 3), (1, 4), (7, 4),
-)
-RANK1_COW_ORDER = (
-    (3, 4), (4, 4), (5, 4), (5, 3), (3, 5), (4, 5),
-    (7, 3), (4, 6), (6, 0), (9, 4), (5, 0), (6, 1),
-)
-RANK1_SHEEP_ORDER = (
-    (4, 2), (4, 3), (5, 3), (4, 6), (5, 2), (3, 5),
-    (4, 5), (8, 4), (6, 0), (7, 0), (6, 3), (6, 4),
-)
+def _fib(index):
+    a, b = 1, 1
+    for _ in range(index):
+        a, b = b, a + b
+    return a
 
 
-@dataclass(frozen=True)
-class StrategyGenome:
-    strategy_family: str = "legacy"
-    opening_mode: str = "rui_scripted"
-    opening_animal: str = "COW"
-    opening_animals: int = 2
-    opening_hands: int = 6
-    opening_cows: int = 2
-    opening_sheep: int = 2
-    transition_day: int = 10
-    cow_count: int = 8
-    sheep_count: int = 8
-    goose_count: int = 0
-    wheat_tiles: int = 0
-    cash_tiles: int = 0
-    mature_hands: int = 11
-    hand_ramp_day: int = 10
-    hand_ramp_target: int = 11
-    hand_full_day: int = 10
-    land_target: int = 2
-    land_first_day: int = 10
-    land_second_day: int = 29
-    livestock_policy: str = "fixed"
-    adaptive_day: int = 7
-    price_gap: int = 15
-    cow_heavy_cows: int = 10
-    cow_heavy_sheep: int = 2
-    sheep_heavy_cows: int = 4
-    sheep_heavy_sheep: int = 8
-    adaptive_goose_count: int = 3
-    purchase_batch: int = 3
-    cow_first: bool = True
-    replant: bool = True
-    wheat_pickup_batch: int = 12
-    sale_factor: float = 0.50
-    layout_family: str = "rui"
-    cash_layout: str = "near"
-    mirror: bool = False
-    service_order: str = "care_fertilizer_harvest"
-    second_transition_day: int = 20
-    late_cow_count: int = 8
-    late_sheep_count: int = 8
-    late_goose_count: int = 0
-    late_wheat_tiles: int = 0
-    late_cash_tiles: int = 0
-    late_hands: int = 11
-    late_service_order: str = "care_fertilizer_harvest"
-    third_transition_day: int = 28
-    end_cow_count: int = 8
-    end_sheep_count: int = 8
-    end_goose_count: int = 0
-    end_wheat_tiles: int = 0
-    end_cash_tiles: int = 0
-    end_hands: int = 11
-    end_service_order: str = "care_fertilizer_harvest"
-
-    def normalized(self) -> "StrategyGenome":
-        values = asdict(self)
-        values["strategy_family"] = _choice(
-            values["strategy_family"], STRATEGY_FAMILIES
-        )
-        values["opening_mode"] = _choice(values["opening_mode"], OPENING_MODES)
-        values["opening_animal"] = _choice(values["opening_animal"], OPENING_ANIMALS)
-        values["livestock_policy"] = _choice(
-            values["livestock_policy"], LIVESTOCK_POLICIES
-        )
-        values["layout_family"] = _choice(values["layout_family"], LAYOUT_FAMILIES)
-        values["cash_layout"] = _choice(values["cash_layout"], CASH_LAYOUTS)
-        values["service_order"] = _choice(values["service_order"], SERVICE_ORDERS)
-        values["late_service_order"] = _choice(
-            values["late_service_order"], SERVICE_ORDERS
-        )
-        values["end_service_order"] = _choice(
-            values["end_service_order"], SERVICE_ORDERS
-        )
-        values["opening_animals"] = _clip_int(values["opening_animals"], 1, 4)
-        values["opening_hands"] = _clip_int(values["opening_hands"], 4, 8)
-        values["opening_cows"] = _clip_int(values["opening_cows"], 1, 4)
-        values["opening_sheep"] = _clip_int(values["opening_sheep"], 0, 4)
-        values["transition_day"] = _clip_int(values["transition_day"], 7, 12)
-        values["cow_count"] = _clip_int(values["cow_count"], 6, 16)
-        values["sheep_count"] = _clip_int(values["sheep_count"], 2, 12)
-        values["goose_count"] = _clip_int(values["goose_count"], 0, 6)
-        values["wheat_tiles"] = _clip_int(values["wheat_tiles"], 0, 16)
-        values["cash_tiles"] = _clip_int(values["cash_tiles"], 0, 40)
-        values["mature_hands"] = _clip_int(values["mature_hands"], 8, 13)
-        values["hand_ramp_day"] = _clip_int(values["hand_ramp_day"], 0, 12)
-        values["hand_ramp_target"] = _clip_int(
-            values["hand_ramp_target"], values["opening_hands"], 12
-        )
-        values["hand_full_day"] = _clip_int(
-            values["hand_full_day"], values["hand_ramp_day"], 12
-        )
-        values["land_target"] = _clip_int(values["land_target"], 1, 4)
-        values["land_first_day"] = _clip_int(values["land_first_day"], 6, 14)
-        values["land_second_day"] = _clip_int(
-            values["land_second_day"], values["land_first_day"], 29
-        )
-        values["adaptive_day"] = _clip_int(values["adaptive_day"], 6, 12)
-        values["price_gap"] = _clip_int(values["price_gap"], 0, 40)
-        values["cow_heavy_cows"] = _clip_int(values["cow_heavy_cows"], 6, 16)
-        values["cow_heavy_sheep"] = _clip_int(values["cow_heavy_sheep"], 0, 6)
-        values["sheep_heavy_cows"] = _clip_int(values["sheep_heavy_cows"], 2, 8)
-        values["sheep_heavy_sheep"] = _clip_int(values["sheep_heavy_sheep"], 6, 12)
-        values["adaptive_goose_count"] = _clip_int(
-            values["adaptive_goose_count"], 0, 4
-        )
-        values["purchase_batch"] = _clip_int(values["purchase_batch"], 1, 6)
-        values["wheat_pickup_batch"] = _clip_int(values["wheat_pickup_batch"], 4, 20)
-        values["sale_factor"] = round(
-            max(0.30, min(0.90, float(values["sale_factor"]))), 2
-        )
-        values["second_transition_day"] = _clip_int(
-            values["second_transition_day"],
-            values["transition_day"] + 3,
-            26,
-        )
-        values["late_cow_count"] = _clip_int(values["late_cow_count"], 4, 16)
-        values["late_sheep_count"] = _clip_int(values["late_sheep_count"], 0, 12)
-        values["late_goose_count"] = _clip_int(values["late_goose_count"], 0, 6)
-        values["late_wheat_tiles"] = _clip_int(values["late_wheat_tiles"], 0, 20)
-        values["late_cash_tiles"] = _clip_int(values["late_cash_tiles"], 0, 40)
-        values["late_hands"] = _clip_int(values["late_hands"], 6, 13)
-        values["third_transition_day"] = _clip_int(
-            values["third_transition_day"], values["second_transition_day"] + 2, 28
-        )
-        values["end_cow_count"] = _clip_int(values["end_cow_count"], 2, 16)
-        values["end_sheep_count"] = _clip_int(values["end_sheep_count"], 0, 12)
-        values["end_goose_count"] = _clip_int(values["end_goose_count"], 0, 6)
-        values["end_wheat_tiles"] = _clip_int(values["end_wheat_tiles"], 0, 20)
-        values["end_cash_tiles"] = _clip_int(values["end_cash_tiles"], 0, 30)
-        values["end_hands"] = _clip_int(values["end_hands"], 6, 13)
-        values["cow_first"] = bool(values["cow_first"])
-        values["replant"] = bool(values["replant"])
-        values["mirror"] = bool(values["mirror"])
-
-        if values["opening_mode"] == "rui_scripted":
-            values.update(
-                opening_animal="COW",
-                opening_animals=2,
-                opening_hands=6,
-                mirror=False,
-            )
-
-        if values["opening_mode"] == "mixed":
-            values.update(opening_animal="COW", opening_animals=values["opening_cows"])
-
-        capacity = max(23, values["land_target"] * 25 - 2)
-        for names in (
-            ("cow_count", "sheep_count", "goose_count", "wheat_tiles", "cash_tiles"),
-            (
-                "late_cow_count", "late_sheep_count", "late_goose_count",
-                "late_wheat_tiles", "late_cash_tiles",
-            ),
-            (
-                "end_cow_count", "end_sheep_count", "end_goose_count",
-                "end_wheat_tiles", "end_cash_tiles",
-            ),
-        ):
-            overflow = sum(values[name] for name in names) - capacity
-            for name in reversed(names):
-                if overflow <= 0:
+def _pending_drop(private, field, capacity=SHED_CAPACITY):
+    pending = {}
+    inventories = list(private.get("inventories", []) or [])
+    actions = [field["farmer"], *field["hands"]]
+    room = max(
+        0,
+        int(capacity)
+        - sum(
+            max(0, int(value or 0))
+            for value in (private.get("shed", {}) or {}).values()
+        ),
+    )
+    for index, action in enumerate(actions):
+        if index >= len(inventories) or not action or room <= 0:
+            continue
+        inventory = inventories[index] or {}
+        if action[0] == "DROP":
+            for item, count in inventory.items():
+                accepted = min(max(0, int(count or 0)), room)
+                if item in PRODUCTS and accepted > 0:
+                    pending[item] = pending.get(item, 0) + accepted
+                room -= accepted
+                if room <= 0:
                     break
-                floor = 2 if name in ("sheep_count",) else 0
-                removable = max(0, values[name] - floor)
-                removed = min(removable, overflow)
-                values[name] -= removed
-                overflow -= removed
-        return StrategyGenome(**values)
-
-    def to_dict(self) -> dict[str, Any]:
-        return asdict(self.normalized())
-
-    def key(self) -> str:
-        values = self.to_dict()
-        active = active_field_names(self)
-        defaults = StrategyGenome().to_dict()
-        for name in values:
-            if name not in active:
-                values[name] = defaults[name]
-        return "|".join(f"{name}={values[name]}" for name in values)
+        elif action[0] == "PLACE" and len(action) >= 2:
+            item = action[1]
+            requested = int(action[2]) if len(action) >= 3 else 1
+            accepted = min(
+                max(0, requested),
+                max(0, int(inventory.get(item, 0) or 0)),
+                room,
+            )
+            if item in PRODUCTS and accepted > 0:
+                pending[item] = pending.get(item, 0) + accepted
+            room -= accepted
+    return pending
 
 
-def rank1_seed_genome() -> StrategyGenome:
-    """A searchable anchor distilled from the current rank-1 public games."""
-    return StrategyGenome(
-        strategy_family="hybrid",
-        opening_mode="mixed",
-        opening_hands=6,
-        opening_cows=2,
-        opening_sheep=2,
-        transition_day=7,
-        cow_count=6,
-        sheep_count=5,
-        goose_count=0,
-        wheat_tiles=9,
-        cash_tiles=16,
-        mature_hands=12,
-        hand_ramp_day=1,
-        hand_ramp_target=8,
-        hand_full_day=9,
-        land_target=3,
-        land_first_day=7,
-        land_second_day=10,
-        livestock_policy="market",
-        adaptive_day=7,
-        price_gap=15,
-        purchase_batch=2,
-        layout_family="rank1",
-        cash_layout="near",
-        second_transition_day=20,
-        late_cow_count=6,
-        late_sheep_count=5,
-        late_goose_count=1,
-        late_wheat_tiles=10,
-        late_cash_tiles=20,
-        late_hands=12,
-        third_transition_day=26,
-        end_cow_count=6,
-        end_sheep_count=5,
-        end_goose_count=1,
-        end_wheat_tiles=6,
-        end_cash_tiles=4,
-        end_hands=10,
-        end_service_order="harvest_care_fertilizer",
-    ).normalized()
+def _post_field_storage(private, field, capacity=SHED_CAPACITY):
+    shed = {
+        item: max(0, int(count or 0))
+        for item, count in (private.get("shed", {}) or {}).items()
+    }
+    inventories = [
+        {
+            item: max(0, int(count or 0))
+            for item, count in (inventory or {}).items()
+            if int(count or 0) > 0
+        }
+        for inventory in (private.get("inventories", []) or [])
+    ]
+    actions = [field.get("farmer", ["PASS"]), *field.get("hands", [])]
+
+    while len(inventories) < len(actions):
+        inventories.append({})
+
+    for index, action in enumerate(actions):
+        if not action:
+            continue
+        inventory = inventories[index]
+        operation = action[0]
+        if operation == "DROP":
+            for item, count in list(inventory.items()):
+                room = max(0, int(capacity) - sum(shed.values()))
+                accepted = min(max(0, int(count or 0)), room)
+                if accepted > 0:
+                    shed[item] = shed.get(item, 0) + accepted
+                del inventory[item]
+        elif operation == "PLACE" and len(action) >= 2:
+            item = action[1]
+            if item not in PRODUCTS:
+                continue
+            requested = int(action[2]) if len(action) >= 3 else 1
+            accepted = min(
+                max(0, requested),
+                max(0, int(inventory.get(item, 0) or 0)),
+                max(0, int(capacity) - sum(shed.values())),
+            )
+            if accepted > 0:
+                inventory[item] -= accepted
+                if inventory[item] == 0:
+                    del inventory[item]
+                shed[item] = shed.get(item, 0) + accepted
+        elif operation == "PICKUP" and len(action) >= 2:
+            item = action[1]
+            requested = int(action[2]) if len(action) >= 3 else 1
+            picked = min(
+                max(0, requested),
+                max(0, int(shed.get(item, 0) or 0)),
+            )
+            if picked > 0:
+                shed[item] -= picked
+                inventory[item] = inventory.get(item, 0) + picked
+        elif (
+            operation == "FEED"
+            and int(inventory.get("WHEAT", 0) or 0) > 0
+        ):
+            inventory["WHEAT"] -= 1
+            if inventory["WHEAT"] == 0:
+                del inventory["WHEAT"]
+
+    return shed, inventories
 
 
-def _choice(value: Any, choices: tuple[str, ...]) -> str:
-    return str(value) if str(value) in choices else choices[0]
+def _sell_quantity(item, have, inventory, day, shed_load, obs=None):
+    left = TOTAL_DAYS - day
+    if left <= 1:
+        return have
+    base = _market_parameters(obs, item)[0]
+    reserve = base * RESERVE_FRACTION[item]
+    if left <= 7:
+        reserve *= max(0.0, (left - 1) / 6.0)
+    if shed_load >= 0.75:
+        reserve *= 0.55
+
+    opponent_supply = _opponent_visible_supply(obs, item, horizon=1)
+    town_demand = _town_demand_per_day(obs, item)
+    if opponent_supply > town_demand:
+        reserve *= max(0.72, 1.0 - 0.015 * (opponent_supply - town_demand))
+    projected_inventory = inventory + opponent_supply - town_demand
+    future_price = _price_at(item, projected_inventory, obs)
+    threshold = reserve
+    if shed_load < 0.75 and left > 7:
+        threshold = max(threshold, 0.88 * future_price)
+
+    quantity = 0
+    while (
+        quantity < have
+        and _price_at(item, inventory + quantity, obs) >= threshold
+    ):
+        quantity += 1
+    if left <= 12:
+        forced = int(math.ceil(have / float(max(1, left - 1))))
+        quantity = max(quantity, min(have, forced))
+    return quantity
 
 
-def _clip_int(value: Any, low: int, high: int) -> int:
-    return max(low, min(high, int(value)))
+def _seed_needs(obs, farm, private, roles):
+    day = int(obs.get("day", 0) or 0)
+    seeds = private.get("seeds", {}) or {}
+    needs = {}
+    for (x, y), (kind, item) in roles.items():
+        if (
+            kind == "CROP"
+            and (
+                farm["tiles"][y][x] is None
+                or (
+                    isinstance(farm["tiles"][y][x], dict)
+                    and farm["tiles"][y][x].get("kind") == "WEED"
+                )
+            )
+            and day <= CROPS[item]["last_plant"]
+        ):
+            needs[item] = needs.get(item, 0) + 1
+    return {
+        crop: max(0, count - int(seeds.get(crop, 0) or 0))
+        for crop, count in needs.items()
+    }
 
 
-def _unique(sequence: list[tuple[int, int]]) -> list[tuple[int, int]]:
-    seen = set()
-    result = []
-    for item in sequence:
-        if item not in seen:
-            seen.add(item)
-            result.append(item)
+def _target_hands(obs, farm, private, roles):
+    day = int(obs.get("day", 0) or 0)
+    summary = _survey(farm, private, roles, day)
+    due_jobs = len(_field_jobs(obs, farm, private, roles, liquidation=False))
+    active_roles = (
+        summary["plants"]
+        + summary["animals"]
+        + summary["plantable"]
+        + summary["structures_todo"]
+    )
+    floor = 10 if day <= 27 and active_roles > 0 else 4
+    risk_load = 2 * (
+        summary["at_risk_animals"] + summary["at_risk_crops"]
+    )
+    demand_target = int(math.ceil((due_jobs + risk_load) / 7.0))
+    return max(4, min(MAX_HANDS, max(floor, demand_target)))
+
+
+def _market_actions(obs, config, farm, private, roles, field):
+    day = int(obs.get("day", 0) or 0)
+    hour = int(obs.get("hour", 0) or 0)
+    left = TOTAL_DAYS - day
+    money = float(farm.get("money", 0) or 0)
+    shed_capacity = int(_cfg(config, "shedCapacity", SHED_CAPACITY))
+    shed, post_field_inventories = _post_field_storage(
+        private, field, shed_capacity
+    )
+    market_inventory = dict(
+        ((obs.get("market", {}) or {}).get("inventory", {}) or {})
+    )
+    max_orders = int(_cfg(config, "maxMarketOrdersPerTurn", MAX_MARKET_ORDERS))
+    summary = _survey(farm, private, roles, day)
+    phase = _policy_phase(obs, farm, private, summary)
+    orders = []
+    occupancy = sum(max(0, int(value or 0)) for value in shed.values())
+    shed_load = occupancy / float(max(1, shed_capacity))
+    animal_pipeline = summary["animals"] + sum(
+        summary["animal_stock"].values()
+    )
+    feed_floor = animal_pipeline * FEED_STOCK_DAYS
+    total_wheat = int(shed.get("WHEAT", 0) or 0) + sum(
+        int(inventory.get("WHEAT", 0) or 0)
+        for inventory in post_field_inventories
+    )
+
+    sells = []
+    for item in PRODUCTS:
+        have = int(shed.get(item, 0) or 0)
+        if item == "WHEAT" and left > 2:
+            have = min(have, max(0, total_wheat - feed_floor))
+        if have <= 0:
+            continue
+        raw_inventory = market_inventory.get(item)
+        inventory = MARKET_I0 if raw_inventory is None else int(raw_inventory)
+        quantity = _sell_quantity(
+            item, have, inventory, day, shed_load, obs
+        )
+        if quantity <= 0:
+            continue
+        proceeds = sum(
+            _price_at(item, inventory + offset, obs)
+            for offset in range(quantity)
+        )
+        sells.append((proceeds, item, quantity))
+    sells.sort(reverse=True)
+    for proceeds, item, quantity in sells:
+        if len(orders) >= max_orders:
+            break
+        orders.append(["SELL", item, quantity])
+        money += 0.85 * proceeds
+        occupancy = max(0, occupancy - quantity)
+        shed[item] = max(0, int(shed.get(item, 0) or 0) - quantity)
+        raw_inventory = market_inventory.get(item)
+        inventory = MARKET_I0 if raw_inventory is None else int(raw_inventory)
+        market_inventory[item] = inventory + quantity
+
+    if field["liquidation"] or left <= 1:
+        if day >= 29 and hour <= 1:
+            terminal_jobs = _field_jobs(
+                obs, farm, private, roles, liquidation=True
+            )
+            target = min(8, len(terminal_jobs))
+            hires = int(farm.get("hires_today", 0) or 0)
+            while hires < target and len(orders) < max_orders:
+                cost = _fib(hires)
+                if money < cost + 20:
+                    break
+                orders.append(["HIRE"])
+                money -= cost
+                hires += 1
+        return orders[:max_orders]
+
+    placed = _farm_animal_counts(farm)
+    role_targets = {animal: 0 for animal in ANIMALS}
+    for kind, item in roles.values():
+        if kind == "ANIMAL" and item in role_targets:
+            role_targets[item] += 1
+    owned = {
+        animal: placed[animal] + _private_item_total(private, animal)
+        for animal in ANIMALS
+    }
+    animal_capital_open = phase in {"BOOTSTRAP", "COMPOUND"} or (
+        phase == "CRISIS"
+        and summary["at_risk_animals"] == 0
+        and summary["shed_load"] + summary["carried_load"] < 95
+        and summary["open_structures"] > 0
+        and animal_pipeline
+        < summary["animals"] + summary["open_structures"]
+    )
+    if (
+        animal_capital_open
+        and day <= ANIMAL_PURCHASE_LAST_DAY
+        and left >= 8
+    ):
+        purchase_order = sorted(
+            ("COW", "SHEEP"),
+            key=lambda animal: (
+                _livestock_score(
+                    obs,
+                    animal,
+                    owned[animal],
+                    _opponent_animal_counts(obs)[animal],
+                ),
+                role_targets[animal] - owned[animal],
+                animal == "COW",
+            ),
+            reverse=True,
+        )
+        for animal in purchase_order:
+            if len(orders) >= max_orders:
+                break
+            missing = max(0, role_targets[animal] - owned[animal])
+            if missing <= 0:
+                continue
+            operating_reserve = 80 if sum(owned.values()) < CORE_HERD else 220
+            quantity = min(
+                missing,
+                2,
+                max(0, shed_capacity - occupancy),
+                max(
+                    0,
+                    int(
+                        (money - operating_reserve)
+                        // ANIMALS[animal]["cost"]
+                    ),
+                ),
+            )
+            if quantity > 0:
+                orders.append(["BUY_ANIMAL", animal, quantity])
+                money -= quantity * ANIMALS[animal]["cost"]
+                occupancy += quantity
+                owned[animal] += quantity
+
+    total_wheat = int(shed.get("WHEAT", 0) or 0) + sum(
+        int(inventory.get("WHEAT", 0) or 0)
+        for inventory in post_field_inventories
+    )
+    planned_herd = sum(owned.values())
+    desired_wheat = max(
+        planned_herd * FEED_STOCK_DAYS,
+        8 if planned_herd > 0 else 0,
+    )
+    if (
+        desired_wheat > total_wheat
+        and len(orders) < max_orders
+        and planned_herd > 0
+    ):
+        raw_inventory = market_inventory.get("WHEAT")
+        inventory = MARKET_I0 if raw_inventory is None else int(raw_inventory)
+        emergency_reserve = 0 if summary["at_risk_animals"] else 80
+        quantity = 0
+        cost = 0
+        limit = min(
+            desired_wheat - total_wheat,
+            max(0, shed_capacity - occupancy),
+        )
+        for offset in range(limit):
+            unit = _price_at("WHEAT", inventory - offset - 1, obs)
+            if money - cost - unit < emergency_reserve:
+                break
+            cost += unit
+            quantity += 1
+        if quantity > 0:
+            orders.append(["BUY_PRODUCT", "WHEAT", quantity])
+            money -= cost
+            occupancy += quantity
+
+    extra_land = max(0, len(farm.get("unlocked_quadrants", ["NW"])) - 1)
+    if (
+        phase in {"BOOTSTRAP", "COMPOUND"}
+        and extra_land < MAX_EXTRA_LAND
+        and day >= LAND_OPEN_DAYS[extra_land]
+        and left >= 12
+        and len(orders) < max_orders
+    ):
+        cost = LAND_PRICES[extra_land]
+        reserve = 300 if extra_land == 0 else 500
+        if money >= cost + reserve:
+            orders.append(["BUY_LAND"])
+            money -= cost
+
+    needs = _seed_needs(obs, farm, private, roles)
+    seed_reserve = 80 if day <= 4 else 150
+    seed_order = (
+        ("MELON",)
+        if day == 0
+        else ("MELON", "WHEAT", "STRAWBERRY", "CARROT", "TOMATO")
+    )
+    for crop in seed_order:
+        if len(orders) >= max_orders or needs.get(crop, 0) <= 0:
+            continue
+        cost = CROPS[crop]["seed"]
+        quantity = min(
+            needs[crop],
+            25,
+            max(0, int((money - seed_reserve) // cost)),
+        )
+        if quantity > 0:
+            orders.append(["BUY_SEED", crop, quantity])
+            money -= quantity * cost
+
+    if hour <= 2:
+        target_hands = _target_hands(obs, farm, private, roles)
+        hires = int(farm.get("hires_today", 0) or 0)
+        while hires < target_hands and len(orders) < max_orders:
+            cost = _fib(hires)
+            if money < max(20, 3 * cost):
+                break
+            orders.append(["HIRE"])
+            money -= cost
+            hires += 1
+
+    return orders[:max_orders]
+
+
+def _decide(obs, config=None):
+    farms = obs.get("farms", []) or []
+    player = int(obs.get("player", 0) or 0)
+    if not (0 <= player < len(farms)):
+        return {"farmer": ["PASS"], "hands": [], "market": []}
+    farm = farms[player]
+    private = obs.get("private", {}) or {}
+    roles = _role_plan(obs, farm)
+    field = _unit_actions(obs, config, farm, private, roles)
+    return {
+        "farmer": field["farmer"],
+        "hands": field["hands"],
+        "market": _market_actions(obs, config, farm, private, roles, field),
+    }
+
+
+def agent(obs, config=None):
+    try:
+        return _decide(obs, config)
+    except Exception:
+        farms = obs.get("farms", []) if hasattr(obs, "get") else []
+        player = int(obs.get("player", 0)) if hasattr(obs, "get") else 0
+        hand_count = (
+            len(farms[player].get("hands", []) or [])
+            if 0 <= player < len(farms)
+            else 0
+        )
+        return {
+            "farmer": ["PASS"],
+            "hands": [["PASS"] for _ in range(hand_count)],
+            "market": [],
+        }
+
+
+# Frozen by training/promote_ev2_genome.py.
+_FROZEN_EV2_GENOME = {'family': 'fertilized',
+ 'max_hands': 12,
+ 'liquidation_turns': 34,
+ 'travel_cost': 9.0,
+ 'core_herd': 4,
+ 'mid_herd': 8,
+ 'target_herd': 12,
+ 'herd_expansion_day': 7,
+ 'herd_final_day': 11,
+ 'animal_purchase_last_day': 18,
+ 'feed_stock_days': 3,
+ 'animal_slots_nw': 4,
+ 'animal_slots_ne': 5,
+ 'animal_slots_sw': 3,
+ 'animal_slots_se': 0,
+ 'wheat_nw': 4,
+ 'carrot_nw': 2,
+ 'wheat_ne': 4,
+ 'carrot_ne': 1,
+ 'melon_ne': 0,
+ 'wheat_sw': 4,
+ 'carrot_sw': 1,
+ 'melon_sw': 0,
+ 'wheat_se': 6,
+ 'carrot_se': 2,
+ 'melon_se': 0,
+ 'melon_tiles_min': 7,
+ 'melon_tiles_base': 10,
+ 'melon_tiles_max': 12,
+ 'max_extra_land': 2,
+ 'first_land_day': 5,
+ 'second_land_day': 9,
+ 'third_land_day': 14,
+ 'reserve_wheat': 0.68,
+ 'reserve_carrot': 0.55,
+ 'reserve_tomato': 0.5,
+ 'reserve_strawberry': 0.48,
+ 'reserve_melon': 0.58,
+ 'reserve_egg': 0.65,
+ 'reserve_milk': 0.42,
+ 'reserve_wool': 0.4,
+ 'reserve_fertilizer': 0.08,
+ 'fertilizer_use': 1,
+ 'fertilizer_min_gain': 25,
+ 'fertilizer_max_jobs': 4,
+ 'fertilizer_priority': 1}
+MAX_HANDS = 12
+LIQUIDATION_TURNS = 34
+TRAVEL_COST = 9.0
+CORE_HERD = 4
+MID_HERD = 8
+TARGET_HERD = 12
+HERD_EXPANSION_DAY = 7
+HERD_FINAL_DAY = 11
+ANIMAL_PURCHASE_LAST_DAY = 18
+FEED_STOCK_DAYS = 3
+ANIMAL_SLOTS = {'NW': 4, 'NE': 5, 'SW': 3, 'SE': 0}
+CROP_MIX = {'NW': {'MELON': 10, 'WHEAT': 4, 'CARROT': 2},
+ 'NE': {'MELON': 0, 'WHEAT': 4, 'CARROT': 1},
+ 'SW': {'MELON': 0, 'WHEAT': 4, 'CARROT': 1},
+ 'SE': {'MELON': 0, 'WHEAT': 6, 'CARROT': 2}}
+MELON_TILES_MIN = 7
+MELON_TILES_BASE = 10
+MELON_TILES_MAX = 12
+MAX_EXTRA_LAND = 2
+LAND_OPEN_DAYS = (5, 9, 14)
+RESERVE_FRACTION = {'WHEAT': 0.68,
+ 'CARROT': 0.55,
+ 'TOMATO': 0.5,
+ 'STRAWBERRY': 0.48,
+ 'MELON': 0.58,
+ 'EGG': 0.65,
+ 'MILK': 0.42,
+ 'WOOL': 0.4,
+ 'FERTILIZER': 0.08}
+FERTILIZER_USE = 1
+FERTILIZER_MIN_GAIN = 25
+FERTILIZER_MAX_JOBS = 4
+FERTILIZER_PRIORITY = 1
+_EV2_BASE_AGENT = agent
+_EV2_FIELD_JOBS_BASE = _field_jobs
+_EV2_UNIT_ACTIONS_BASE = _unit_actions
+
+
+def _profitable_fertilizer_gain(obs, tile):
+    if not isinstance(tile, dict) or tile.get("kind") != "PLANT":
+        return 0.0
+    day = int(obs.get("day", 0) or 0)
+    if day >= 27 or int(tile.get("fertilized_until_day", -1) or -1) >= day:
+        return 0.0
+    crop = tile.get("crop")
+    planted = int(tile.get("planted_day", day) or day)
+    age = day - planted
+    held = int(tile.get("yield_units", 0) or 0)
+    prices = ((obs.get("market", {}) or {}).get("prices", {}) or {})
+    crop_price = float(prices.get(crop, 0) or 0)
+    fertilizer_price = float(prices.get("FERTILIZER", 100) or 100)
+    bonus_units = 0
+    if crop == "MELON" and 5 <= age <= 11 and held < 6:
+        active = sum(1 for future_age in (age, age + 1, age + 2)
+                     if 6 <= future_age <= 12)
+        bonus_units = min(max(0, 6 - held), active)
+    elif crop == "STRAWBERRY" and age >= 8:
+        for offset in (0, 1, 2):
+            since_first = day + offset + 1 - planted - 10
+            if since_first >= 0 and since_first % 2 == 0:
+                production_index = since_first // 2 + 1
+                if production_index <= 4:
+                    bonus_units += 1
+    gain = bonus_units * crop_price - fertilizer_price
+    return gain if gain >= FERTILIZER_MIN_GAIN else 0.0
+
+
+def _field_jobs(obs, farm, private, roles, liquidation):
+    jobs = _EV2_FIELD_JOBS_BASE(obs, farm, private, roles, liquidation)
+    day = int(obs.get("day", 0) or 0)
+    hour = int(obs.get("hour", 0) or 0)
+    stock = int((private.get("shed", {}) or {}).get("FERTILIZER", 0) or 0)
+    stock += sum(int((inventory or {}).get("FERTILIZER", 0) or 0)
+                 for inventory in private.get("inventories", []) or [])
+    if liquidation or stock <= 0 or day >= 27 or hour > 17:
+        return jobs
+    urgent = {tuple(job["target"]) for job in jobs
+              if int(job.get("priority", 9)) <= 1}
+    candidates = []
+    tiles = farm.get("tiles", []) or []
+    for target, role in roles.items():
+        if role[0] != "CROP" or tuple(target) in urgent:
+            continue
+        x, y = target
+        tile = tiles[y][x]
+        if (not isinstance(tile, dict)
+                or int(tile.get("consecutive_unwatered", 0) or 0) >= 1):
+            continue
+        gain = _profitable_fertilizer_gain(obs, tile)
+        if gain > 0:
+            candidates.append((gain, tuple(target)))
+    limit = min(stock, FERTILIZER_MAX_JOBS)
+    for gain, target in sorted(candidates,
+                               key=lambda pair: (-pair[0], pair[1][1], pair[1][0]))[:limit]:
+        _add_job(jobs, FERTILIZER_PRIORITY, gain, target, ("FERTILIZE",),
+                 need="FERTILIZER", reason="profitable_fertilizer",
+                 latest_hour=17)
+    return jobs
+
+
+def _unit_actions(obs, config, farm, private, roles):
+    result = _EV2_UNIT_ACTIONS_BASE(obs, config, farm, private, roles)
+    shed_stock = int((private.get("shed", {}) or {}).get("FERTILIZER", 0) or 0)
+    carried = sum(int((inventory or {}).get("FERTILIZER", 0) or 0)
+                  for inventory in private.get("inventories", []) or [])
+    if shed_stock <= 0 or carried > 0:
+        return result
+    jobs = _field_jobs(obs, farm, private, roles, False)
+    if not any(job.get("reason") == "profitable_fertilizer" for job in jobs):
+        return result
+    positions = [farm.get("farmer", [0, 0]), *(farm.get("hands", []) or [])]
+    actions = [result.get("farmer", ["PASS"]), *(result.get("hands", []) or [])]
+    tiles = farm.get("tiles", []) or []
+    board_size = len(tiles)
+    options = []
+    for index, (position, action) in enumerate(zip(positions, actions)):
+        if action != ["PASS"]:
+            continue
+        shed = _nearest_shed(position, board_size, tiles)
+        options.append((_distance(position, shed), index, shed))
+    if not options:
+        return result
+    _, index, shed = min(options)
+    position = positions[index]
+    action = (["PICKUP", "FERTILIZER", 1]
+              if tuple(position) == tuple(shed)
+              else _bfs_first_step(tiles, position, shed))
+    if index == 0:
+        result["farmer"] = action
+    else:
+        result["hands"][index - 1] = action
     return result
 
 
-def layout_targets(
-    genome: StrategyGenome, board_size: int = 10, phase: str = "middle"
-) -> dict[str, tuple[tuple[int, int], ...]]:
-    genome = genome.normalized()
-    if phase == "opening":
-        cow_count = genome.opening_cows
-        sheep_count = genome.opening_sheep
-        goose_count = 0
-        wheat_tiles = 1
-        cash_tiles = 1
-    elif phase == "late":
-        cow_count = genome.late_cow_count
-        sheep_count = genome.late_sheep_count
-        goose_count = genome.late_goose_count
-        wheat_tiles = genome.late_wheat_tiles
-        cash_tiles = genome.late_cash_tiles
-    elif phase == "end":
-        cow_count = genome.end_cow_count
-        sheep_count = genome.end_sheep_count
-        goose_count = genome.end_goose_count
-        wheat_tiles = genome.end_wheat_tiles
-        cash_tiles = genome.end_cash_tiles
-    else:
-        cow_count = genome.cow_count
-        sheep_count = genome.sheep_count
-        goose_count = genome.goose_count
-        wheat_tiles = genome.wheat_tiles
-        cash_tiles = genome.cash_tiles
-    half = board_size // 2
-    quadrants = (
-        [(x, y) for y in range(half) for x in range(half)],
-        [(x, y) for y in range(half) for x in range(half, board_size)],
-        [(x, y) for y in range(half, board_size) for x in range(half)],
-        [(x, y) for y in range(half, board_size) for x in range(half, board_size)],
-    )
-    cells = [
-        position
-        for quadrant in quadrants[: genome.land_target]
-        for position in quadrant
-    ]
-    shed = ((half - 1, half - 1), (half, half - 1))
-
-    def distance(position: tuple[int, int]) -> int:
-        return min(
-            abs(position[0] - target[0]) + abs(position[1] - target[1])
-            for target in shed
-        )
-
-    compact = sorted(cells, key=lambda p: (distance(p), -p[1], p[0]))
-    far = sorted(cells, key=lambda p: (-distance(p), p[1], p[0]))
-    rows = sorted(cells, key=lambda p: (-p[1], abs(p[0] - half), p[0]))
-    checker = sorted(
-        cells,
-        key=lambda p: ((p[0] + p[1]) % 2, distance(p), -p[1], p[0]),
-    )
-
-    if genome.layout_family == "rui":
-        cow_order = _unique(list(RUI_COW_ORDER) + compact)
-        sheep_order = _unique(list(RUI_SHEEP_ORDER) + far)
-    elif genome.layout_family == "rank1":
-        cow_order = _unique(list(RANK1_COW_ORDER) + compact)
-        sheep_order = _unique(list(RANK1_SHEEP_ORDER) + compact)
-    elif genome.layout_family == "rows":
-        cow_order, sheep_order = rows, far
-    elif genome.layout_family == "checker":
-        cow_order, sheep_order = checker, list(reversed(checker))
-    else:
-        cow_order, sheep_order = compact, far
-
-    available = set(cells)
-    cow_order = [position for position in cow_order if position in available]
-    sheep_order = [position for position in sheep_order if position in available]
-
-    if genome.opening_mode == "rui_scripted":
-        cow_order = _unique([(4, 4), (4, 3)] + cow_order)
-
-    cows = cow_order[:cow_count]
-    occupied = set(cows)
-    sheep = [position for position in sheep_order if position not in occupied][
-        :sheep_count
-    ]
-    occupied.update(sheep)
-    goose = [position for position in compact if position not in occupied][
-        :goose_count
-    ]
-    occupied.update(goose)
-    remaining_near = [position for position in compact if position not in occupied]
-    remaining_far = [position for position in far if position not in occupied]
-    wheat = tuple(remaining_near[:wheat_tiles])
-    occupied.update(wheat)
-    crop_order = remaining_near if genome.cash_layout == "near" else remaining_far
-    cash = tuple(
-        position for position in crop_order if position not in occupied
-    )[:cash_tiles]
-
-    def mirrored(values: tuple[tuple[int, int], ...] | list[tuple[int, int]]):
-        result = tuple(values)
-        if genome.mirror:
-            return tuple((board_size - 1 - x, y) for x, y in result)
-        return result
-
-    return {
-        "cows": mirrored(cows),
-        "sheep": mirrored(sheep),
-        "geese": mirrored(goose),
-        "wheat": mirrored(wheat),
-        "cash": mirrored(cash),
-    }
+def kaggle_agent(obs, config=None):
+    return _EV2_BASE_AGENT(obs, config)
 
 
-def configure_module(module: Any, genome: StrategyGenome):
-    """Compile a genome into an independently loaded `main.py` module."""
-    # A promoted main.py contains a standalone frozen-genome wrapper.  Search
-    # must unwrap it first, otherwise the previous winner would overwrite each
-    # newly evaluated genome on every agent call.
-    if hasattr(module, "_agent_before_frozen_genome"):
-        module.agent = module._agent_before_frozen_genome
-    if hasattr(module, "_opening_plan_before_frozen_genome"):
-        module._opening_plan = module._opening_plan_before_frozen_genome
-    genome = genome.normalized()
-    module.COW_START_DAY = genome.transition_day
-    module.COW_PURCHASE_BATCH = genome.purchase_batch
-    module.COW_FIRST_PURCHASE = genome.cow_first
-    module.WHEAT_PICKUP_BATCH = genome.wheat_pickup_batch
-    module.SALE_PROCEEDS_FACTOR = genome.sale_factor
-    module.OPENING_ANIMAL = genome.opening_animal
-    module.OPENING_ANIMAL_TARGET = genome.opening_animals
-    module.OPENING_REPLANT = genome.replant
-    module.USE_LEARNED_MACRO = False
-    module.LAND_TARGET = genome.land_target
-    module.LAND_FIRST_DAY = genome.land_first_day
-    module.LAND_SECOND_DAY = genome.land_second_day
-    module.HAND_RAMP_DAY = genome.hand_ramp_day
-    module.HAND_RAMP_TARGET = genome.hand_ramp_target
-    module.HAND_FULL_DAY = genome.hand_full_day
-    module.crop_agent.TARGET_HANDS = genome.opening_hands
-
-    phase_state: dict[str, Any] = {
-        "name": None,
-        "profile": None,
-        "targets": layout_targets(genome, phase="opening"),
-        "target_key": None,
-    }
-    module._cow_targets = lambda _size: phase_state["targets"]["cows"]
-    module._sheep_targets = lambda _size: phase_state["targets"]["sheep"]
-    module._goose_targets = lambda _size: phase_state["targets"]["geese"]
-    module._wheat_targets = lambda _size: phase_state["targets"]["wheat"]
-    module._cash_crop_targets = lambda _size: phase_state["targets"]["cash"]
-
-    def phase_values(day: int) -> tuple[str, dict[str, Any]]:
-        if day < genome.transition_day:
-            return "opening", {
-                "cows": genome.opening_cows,
-                "sheep": genome.opening_sheep,
-                "geese": 0,
-                "wheat": 1,
-                "cash": 1,
-                "hands": genome.opening_hands,
-                "order": genome.service_order,
-            }
-        if day >= genome.third_transition_day:
-            return "end", {
-                "cows": genome.end_cow_count,
-                "sheep": genome.end_sheep_count,
-                "geese": genome.end_goose_count,
-                "wheat": genome.end_wheat_tiles,
-                "cash": genome.end_cash_tiles,
-                "hands": genome.end_hands,
-                "order": genome.end_service_order,
-            }
-        if day >= genome.second_transition_day:
-            return "late", {
-                "cows": genome.late_cow_count,
-                "sheep": genome.late_sheep_count,
-                "geese": genome.late_goose_count,
-                "wheat": genome.late_wheat_tiles,
-                "cash": genome.late_cash_tiles,
-                "hands": genome.late_hands,
-                "order": genome.late_service_order,
-            }
-        return "middle", {
-            "cows": genome.cow_count,
-            "sheep": genome.sheep_count,
-            "geese": genome.goose_count,
-            "wheat": genome.wheat_tiles,
-            "cash": genome.cash_tiles,
-            "hands": genome.mature_hands,
-            "order": genome.service_order,
-        }
-
-    def select_market_profile(obs: dict[str, Any]) -> str | None:
-        day = int(obs.get("day", 0))
-        if day == 0:
-            phase_state["profile"] = None
-        if genome.livestock_policy != "market" or day < genome.adaptive_day:
-            return None
-        if phase_state["profile"] is None:
-            prices = ((obs.get("market", {}) or {}).get("prices", {}) or {})
-            milk = int(prices.get("MILK", 200))
-            wool = int(prices.get("WOOL", 220))
-            egg = int(prices.get("EGG", 50))
-            if wool - milk >= genome.price_gap:
-                phase_state["profile"] = "sheep"
-            elif milk <= 200 and egg >= 52:
-                phase_state["profile"] = "goose"
-            else:
-                phase_state["profile"] = "cow"
-        return str(phase_state["profile"])
-
-    def apply_phase(obs: dict[str, Any]) -> None:
-        day = int(obs.get("day", 0))
-        phase, values = phase_values(day)
-        profile = select_market_profile(obs)
-        if profile == "cow":
-            values.update(
-                cows=genome.cow_heavy_cows,
-                sheep=genome.cow_heavy_sheep,
-                geese=0,
-            )
-        elif profile == "sheep":
-            values.update(
-                cows=genome.sheep_heavy_cows,
-                sheep=genome.sheep_heavy_sheep,
-                geese=0,
-            )
-        elif profile == "goose":
-            values.update(
-                cows=max(3, genome.sheep_heavy_cows),
-                sheep=max(4, min(6, genome.sheep_heavy_sheep)),
-                geese=genome.adaptive_goose_count,
-            )
-
-        module.COW_TARGET = values["cows"]
-        module.SHEEP_TARGET = values["sheep"]
-        module.GOOSE_TARGET = values["geese"]
-        module.WHEAT_TILES = values["wheat"]
-        module.CASH_CROP_TILES = values["cash"]
-        module.COW_HANDS = values["hands"]
-        order = values["order"].split("_")
-        priorities = {name: index + 3 for index, name in enumerate(order)}
-        module.CARE_PRIORITY = priorities["care"]
-        module.FERTILIZER_PRIORITY = priorities["fertilizer"]
-        module.ANIMAL_HARVEST_PRIORITY = priorities["harvest"]
-
-        target_key = (
-            phase,
-            values["cows"], values["sheep"], values["geese"],
-            values["wheat"], values["cash"],
-        )
-        if target_key != phase_state["target_key"]:
-            adjusted = genome
-            if phase == "opening":
-                adjusted = replace(
-                    adjusted,
-                    opening_cows=values["cows"],
-                    opening_sheep=values["sheep"],
-                )
-            elif phase == "middle":
-                adjusted = replace(
-                    adjusted,
-                    cow_count=values["cows"], sheep_count=values["sheep"],
-                    goose_count=values["geese"], wheat_tiles=values["wheat"],
-                    cash_tiles=values["cash"],
-                )
-            elif phase == "late":
-                adjusted = replace(
-                    adjusted,
-                    late_cow_count=values["cows"],
-                    late_sheep_count=values["sheep"],
-                    late_goose_count=values["geese"],
-                    late_wheat_tiles=values["wheat"],
-                    late_cash_tiles=values["cash"],
-                )
-            else:
-                adjusted = replace(
-                    adjusted,
-                    end_cow_count=values["cows"],
-                    end_sheep_count=values["sheep"],
-                    end_goose_count=values["geese"],
-                    end_wheat_tiles=values["wheat"],
-                    end_cash_tiles=values["cash"],
-                )
-            phase_state["targets"] = layout_targets(adjusted, phase=phase)
-            phase_state["target_key"] = target_key
-        phase_state["name"] = phase
-
-    original_agent = module.agent
-
-    def generic_opening_plan(board_size: int):
-        plan = module.crop_agent._plan(board_size, False)
-        for position in module._opening_animal_targets(board_size):
-            plan.pop(position, None)
-        return plan
-
-    if genome.opening_mode == "generic":
-        module._opening_plan = generic_opening_plan
-
-    def phased_agent(obs: dict[str, Any]):
-        day = int(obs.get("day", 0))
-        apply_phase(obs)
-        if genome.opening_mode == "mixed" and day < genome.transition_day:
-            farms = obs.get("farms", []) or []
-            player = int(obs.get("player", 0))
-            if player >= len(farms):
-                return {"farmer": ["PASS"], "hands": [], "market": []}
-            farm = farms[player]
-            private = obs.get("private", {}) or {}
-            actions = module._cow_actions(obs, farm, private)
-            return {
-                "farmer": actions[0] if actions else ["PASS"],
-                "hands": actions[1:],
-                "market": module._cow_market_actions(obs, farm, private),
-            }
-        if genome.opening_mode == "rui_scripted" or day > 0:
-            return original_agent(obs)
-        farms = obs.get("farms", []) or []
-        player = int(obs.get("player", 0))
-        if player >= len(farms):
-            return {"farmer": ["PASS"], "hands": [], "market": []}
-        farm = farms[player]
-        private = obs.get("private", {}) or {}
-        actions = module._opening_actions(obs, farm, private)
-        return {
-            "farmer": actions[0] if actions else ["PASS"],
-            "hands": actions[1:],
-            "market": module._opening_market_actions(obs, farm, private),
-        }
-
-    return phased_agent
-
-_FROZEN_GENOME = {'strategy_family': 'hybrid',
- 'opening_mode': 'rui_scripted',
- 'opening_animal': 'COW',
- 'opening_animals': 2,
- 'opening_hands': 6,
- 'opening_cows': 4,
- 'opening_sheep': 2,
- 'transition_day': 10,
- 'cow_count': 8,
- 'sheep_count': 8,
- 'goose_count': 0,
- 'wheat_tiles': 0,
- 'cash_tiles': 0,
- 'mature_hands': 11,
- 'hand_ramp_day': 1,
- 'hand_ramp_target': 6,
- 'hand_full_day': 10,
- 'land_target': 2,
- 'land_first_day': 6,
- 'land_second_day': 29,
- 'livestock_policy': 'fixed',
- 'adaptive_day': 10,
- 'price_gap': 40,
- 'cow_heavy_cows': 9,
- 'cow_heavy_sheep': 6,
- 'sheep_heavy_cows': 4,
- 'sheep_heavy_sheep': 8,
- 'adaptive_goose_count': 0,
- 'purchase_batch': 6,
- 'cow_first': True,
- 'replant': True,
- 'wheat_pickup_batch': 10,
- 'sale_factor': 0.85,
- 'layout_family': 'rui',
- 'cash_layout': 'far',
- 'mirror': False,
- 'service_order': 'care_fertilizer_harvest',
- 'second_transition_day': 14,
- 'late_cow_count': 8,
- 'late_sheep_count': 8,
- 'late_goose_count': 0,
- 'late_wheat_tiles': 20,
- 'late_cash_tiles': 0,
- 'late_hands': 10,
- 'late_service_order': 'care_harvest_fertilizer',
- 'third_transition_day': 28,
- 'end_cow_count': 2,
- 'end_sheep_count': 8,
- 'end_goose_count': 0,
- 'end_wheat_tiles': 0,
- 'end_cash_tiles': 0,
- 'end_hands': 7,
- 'end_service_order': 'harvest_care_fertilizer'}
-_opening_plan_before_frozen_genome = _opening_plan
-_agent_before_frozen_genome = agent
-
-
-class _FrozenModuleProxy:
-    def __getattr__(self, name):
-        return globals()[name]
-
-    def __setattr__(self, name, value):
-        globals()[name] = value
-
-
-agent = configure_module(_FrozenModuleProxy(), StrategyGenome(**_FROZEN_GENOME))
-# --- END FROZEN STRATEGY GENOME ---
+agent = kaggle_agent
