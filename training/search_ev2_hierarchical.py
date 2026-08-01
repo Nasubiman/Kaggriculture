@@ -38,6 +38,8 @@ DEFAULT_OPPONENTS = (
     "0801_ev2",
     "0801_ev3",
     "0801_v1",
+    "0801_ev4",
+    "0801_ev5",
 )
 _ENGINE_PATH = ""
 _OPPONENT_PATHS: dict[str, str] = {}

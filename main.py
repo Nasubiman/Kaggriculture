@@ -1700,7 +1700,7 @@ def agent(obs, config=None):
 # Frozen by training/promote_ev2_genome.py.
 _FROZEN_EV2_GENOME = {'family': 'fertilized',
  'max_hands': 12,
- 'liquidation_turns': 34,
+ 'liquidation_turns': 22,
  'travel_cost': 9.0,
  'core_herd': 5,
  'mid_herd': 9,
@@ -1745,7 +1745,7 @@ _FROZEN_EV2_GENOME = {'family': 'fertilized',
  'fertilizer_max_jobs': 4,
  'fertilizer_priority': 1}
 MAX_HANDS = 12
-LIQUIDATION_TURNS = 34
+LIQUIDATION_TURNS = 22
 TRAVEL_COST = 9.0
 CORE_HERD = 5
 MID_HERD = 9

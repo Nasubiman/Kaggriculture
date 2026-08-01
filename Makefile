@@ -47,8 +47,16 @@ EV2_RESULT ?= $(shell test -f "$(LAST_EV2_SEARCH_RUN)" && cat "$(LAST_EV2_SEARCH
 RANK1_ABLATION_SEEDS ?= 20
 RANK1_ABLATION_OUTPUT ?= reports/rank1_nishchal_ablation.json
 RANK1_ABLATION_VARIANTS ?=
+RANK2_ABLATION_SEEDS ?= 20
+RANK2_ABLATION_OUTPUT ?= reports/rank2_radiant_ablation.json
+RANK2_ABLATION_VARIANTS ?=
+EV45_ABLATION_SEEDS ?= 20
+EV45_ABLATION_SEED_START ?= 9810000
+EV45_ABLATION_OUTPUT ?= reports/ev45_ablation.json
+EV45_ABLATION_VARIANTS ?=
+EV45_ABLATION_OPPONENTS ?= 0801_ev1 0801_ev2 0801_ev3 0801_v1 0801_ev4 0801_ev5
 
-.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models server-sync-fast-runner server-test-models server-rank1-ablation genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
+.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models server-sync-fast-runner server-test-models server-rank1-ablation server-rank2-ablation server-ev45-ablation genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -138,6 +146,24 @@ server-rank1-ablation: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/evaluate_rank1_inspired_variants.py --seeds "$(RANK1_ABLATION_SEEDS)" --workers "$(STRUCTURED_WORKERS)" $(if $(strip $(RANK1_ABLATION_VARIANTS)),--variants $(RANK1_ABLATION_VARIANTS),) --output "$(SERVER_DATA)/runs/manual/rank1_nishchal_ablation.json"'
 	mkdir -p "$(dir $(RANK1_ABLATION_OUTPUT))"
 	rsync -az $(SERVER_HOST):$(SERVER_DATA)/runs/manual/rank1_nishchal_ablation.json "$(RANK1_ABLATION_OUTPUT)"
+
+server-rank2-ablation: server-sync-fast-runner
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(SERVER_DATA)/runs/manual"'
+	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py
+	rsync -az training/ev2_genome.py training/search_ev2_hierarchical.py training/evaluate_rank2_inspired_variants.py $(SERVER_HOST):$(SERVER_REPO)/training/
+	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/evaluate_rank2_inspired_variants.py --seeds "$(RANK2_ABLATION_SEEDS)" --workers "$(STRUCTURED_WORKERS)" $(if $(strip $(RANK2_ABLATION_VARIANTS)),--variants $(RANK2_ABLATION_VARIANTS),) --output "$(SERVER_DATA)/runs/manual/rank2_radiant_ablation.json"'
+	mkdir -p "$(dir $(RANK2_ABLATION_OUTPUT))"
+	rsync -az $(SERVER_HOST):$(SERVER_DATA)/runs/manual/rank2_radiant_ablation.json "$(RANK2_ABLATION_OUTPUT)"
+
+server-ev45-ablation: server-sync-fast-runner
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(SERVER_DATA)/runs/manual"'
+	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py
+	rsync -az training/ev2_genome.py training/search_ev2_hierarchical.py training/evaluate_ev45_variants.py $(SERVER_HOST):$(SERVER_REPO)/training/
+	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/evaluate_ev45_variants.py --opponents $(EV45_ABLATION_OPPONENTS) --seeds "$(EV45_ABLATION_SEEDS)" --seed-start "$(EV45_ABLATION_SEED_START)" --workers "$(STRUCTURED_WORKERS)" $(if $(strip $(EV45_ABLATION_VARIANTS)),--variants $(EV45_ABLATION_VARIANTS),) --output "$(SERVER_DATA)/runs/manual/ev45_ablation.json"'
+	mkdir -p "$(dir $(EV45_ABLATION_OUTPUT))"
+	rsync -az $(SERVER_HOST):$(SERVER_DATA)/runs/manual/ev45_ablation.json "$(EV45_ABLATION_OUTPUT)"
 
 server-hybrid-train: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(HYBRID_RUN)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 CUDA_VISIBLE_DEVICES=0 .venv/bin/python training/train_hybrid_ppo.py --output-dir "$(HYBRID_RUN)" --iterations "$(HYBRID_ITERATIONS)" --games-per-iteration "$(HYBRID_GAMES)" --workers "$(HYBRID_WORKERS)" --score800-reference "$(SERVER_REFERENCE)" --device cuda'
