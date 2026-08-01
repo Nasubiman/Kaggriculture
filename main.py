@@ -1702,14 +1702,14 @@ _FROZEN_EV2_GENOME = {'family': 'fertilized',
  'max_hands': 12,
  'liquidation_turns': 34,
  'travel_cost': 9.0,
- 'core_herd': 4,
- 'mid_herd': 8,
- 'target_herd': 12,
- 'herd_expansion_day': 7,
+ 'core_herd': 5,
+ 'mid_herd': 9,
+ 'target_herd': 13,
+ 'herd_expansion_day': 5,
  'herd_final_day': 11,
  'animal_purchase_last_day': 18,
  'feed_stock_days': 3,
- 'animal_slots_nw': 4,
+ 'animal_slots_nw': 5,
  'animal_slots_ne': 5,
  'animal_slots_sw': 3,
  'animal_slots_se': 0,
@@ -1747,14 +1747,14 @@ _FROZEN_EV2_GENOME = {'family': 'fertilized',
 MAX_HANDS = 12
 LIQUIDATION_TURNS = 34
 TRAVEL_COST = 9.0
-CORE_HERD = 4
-MID_HERD = 8
-TARGET_HERD = 12
-HERD_EXPANSION_DAY = 7
+CORE_HERD = 5
+MID_HERD = 9
+TARGET_HERD = 13
+HERD_EXPANSION_DAY = 5
 HERD_FINAL_DAY = 11
 ANIMAL_PURCHASE_LAST_DAY = 18
 FEED_STOCK_DAYS = 3
-ANIMAL_SLOTS = {'NW': 4, 'NE': 5, 'SW': 3, 'SE': 0}
+ANIMAL_SLOTS = {'NW': 5, 'NE': 5, 'SW': 3, 'SE': 0}
 CROP_MIX = {'NW': {'MELON': 10, 'WHEAT': 4, 'CARROT': 2},
  'NE': {'MELON': 0, 'WHEAT': 4, 'CARROT': 1},
  'SW': {'MELON': 0, 'WHEAT': 4, 'CARROT': 1},

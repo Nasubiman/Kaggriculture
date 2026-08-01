@@ -70,8 +70,9 @@ wheat field or thirteen-hand ceiling is harmful inside the current ev2 engine.
 The leader's choices form a coordinated policy; isolated imitation is not
 equivalent to copying the whole engine.
 
-The herd candidate is suitable for promotion after an explicit adoption
-decision. `main.py` was not changed by this verification pass.
+The herd candidate was promoted to `main.py` after the explicit adoption
+decision. The previous fertilizer-v2 main is retained as
+`server-results/rank1_nishchal_herd_100/main_before_promotion.py`.
 
 Supporting artifacts:
 
