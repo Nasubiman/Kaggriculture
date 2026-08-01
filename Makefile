@@ -88,8 +88,23 @@ SCHEDULE_ELITE_COUNT ?= 6
 SCHEDULE_FINALISTS ?= 3
 LAST_SCHEDULE_SEARCH_RUN := $(SERVER_RESULTS)/LATEST_SCHEDULE_SEARCH_RUN
 SCHEDULE_RESULT ?= $(shell test -f "$(LAST_SCHEDULE_SEARCH_RUN)" && cat "$(LAST_SCHEDULE_SEARCH_RUN)")
+TRAJECTORY_SEARCH_NAME ?= trajectory_$(shell date +%Y%m%d_%H%M%S)
+TRAJECTORY_SEARCH_RUN ?= $(SERVER_DATA)/runs/$(TRAJECTORY_SEARCH_NAME)
+TRAJECTORY_SEARCH_LOCAL_RUN ?= $(SERVER_RESULTS)/$(TRAJECTORY_SEARCH_NAME)
+TRAJECTORY_SEARCH_OPPONENTS ?= 0801_ev4 0801_ev5 0801_v2 0801_ev6
+TRAJECTORY_SEARCH_WORKERS ?= 20
+TRAJECTORY_SEARCH_POPULATION ?= 72
+TRAJECTORY_STAGE0_SEEDS ?= 4
+TRAJECTORY_STAGE1_SEEDS ?= 16
+TRAJECTORY_STAGE2_SEEDS ?= 32
+TRAJECTORY_FINAL_SEEDS ?= 100
+TRAJECTORY_STAGE1_COUNT ?= 24
+TRAJECTORY_ELITE_COUNT ?= 8
+TRAJECTORY_FINALISTS ?= 4
+LAST_TRAJECTORY_SEARCH_RUN := $(SERVER_RESULTS)/LATEST_TRAJECTORY_SEARCH_RUN
+TRAJECTORY_RESULT ?= $(shell test -f "$(LAST_TRAJECTORY_SEARCH_RUN)" && cat "$(LAST_TRAJECTORY_SEARCH_RUN)")
 
-.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search schedule-search schedule-status schedule-candidate schedule-use genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
+.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search schedule-search schedule-status schedule-candidate schedule-use trajectory-search trajectory-status trajectory-candidate trajectory-use genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -255,6 +270,40 @@ schedule-use: schedule-candidate
 	$(MAKE) submission-build
 	cp main.py "$(SCHEDULE_RESULT)/promoted_main.py"
 	@printf '\nPromoted accepted schedule to main.py\n'
+
+# Search explicit board geometry and five swappable action-order segments.
+trajectory-search: server-sync-fast-runner
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(TRAJECTORY_SEARCH_RUN)/source"'
+	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py
+	rsync -az training/trajectory_genome.py training/search_trajectory.py training/promote_trajectory.py $(SERVER_HOST):$(SERVER_REPO)/training/
+	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; cp main.py training/trajectory_genome.py training/search_trajectory.py training/promote_trajectory.py "$(TRAJECTORY_SEARCH_RUN)/source/"; cp -R test "$(TRAJECTORY_SEARCH_RUN)/source/"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/search_trajectory.py --base main.py --models-dir test --opponents $(TRAJECTORY_SEARCH_OPPONENTS) --workers "$(TRAJECTORY_SEARCH_WORKERS)" --population "$(TRAJECTORY_SEARCH_POPULATION)" --stage0-seeds "$(TRAJECTORY_STAGE0_SEEDS)" --stage1-seeds "$(TRAJECTORY_STAGE1_SEEDS)" --stage2-seeds "$(TRAJECTORY_STAGE2_SEEDS)" --final-seeds "$(TRAJECTORY_FINAL_SEEDS)" --stage1-count "$(TRAJECTORY_STAGE1_COUNT)" --elite-count "$(TRAJECTORY_ELITE_COUNT)" --finalists "$(TRAJECTORY_FINALISTS)" --output-dir "$(TRAJECTORY_SEARCH_RUN)"'
+	mkdir -p "$(TRAJECTORY_SEARCH_LOCAL_RUN)"
+	rsync -az $(SERVER_HOST):$(TRAJECTORY_SEARCH_RUN)/ "$(TRAJECTORY_SEARCH_LOCAL_RUN)/"
+	mkdir -p "$(SERVER_RESULTS)"
+	printf '%s\n' "$(TRAJECTORY_SEARCH_LOCAL_RUN)" > "$(LAST_TRAJECTORY_SEARCH_RUN)"
+	@printf '\nDone. Next: make trajectory-status\n'
+
+trajectory-status:
+	test -n "$(TRAJECTORY_RESULT)"
+	test -f "$(TRAJECTORY_RESULT)/decision.json"
+	$(VENV)/bin/python -c 'import json; d=json.load(open("$(TRAJECTORY_RESULT)/decision.json")); s=d["selected"]; print("accepted=",d["accepted"]); print("reason=",d["reason"]); print("selected=",s["label"]); print("delta=",round(s["mean_delta"],1),"lower95=",round(s["lower_95_delta"],1),"worst=",round(s["worst_opponent_delta"],1))'
+
+trajectory-candidate:
+	test -n "$(TRAJECTORY_RESULT)"
+	test -f "$(TRAJECTORY_RESULT)/best_trajectory.json"
+	test -f "$(TRAJECTORY_RESULT)/source/main.py"
+	PYTHONPATH=training $(VENV)/bin/python training/promote_trajectory.py --trajectory "$(TRAJECTORY_RESULT)/best_trajectory.json" --base "$(TRAJECTORY_RESULT)/source/main.py" --output candidate_main.py
+	$(VENV)/bin/python -m py_compile candidate_main.py
+	@printf 'Candidate ready: candidate_main.py\n'
+
+trajectory-use: trajectory-candidate
+	$(VENV)/bin/python -c 'import json; d=json.load(open("$(TRAJECTORY_RESULT)/decision.json")); assert d["accepted"], "trajectory acceptance gate was not met"'
+	test -f "$(TRAJECTORY_RESULT)/main_before_promotion.py" || cp main.py "$(TRAJECTORY_RESULT)/main_before_promotion.py"
+	cp candidate_main.py main.py
+	$(MAKE) submission-build
+	cp main.py "$(TRAJECTORY_RESULT)/promoted_main.py"
+	@printf '\nPromoted accepted trajectory to main.py\n'
 
 server-hybrid-train: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(HYBRID_RUN)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 CUDA_VISIBLE_DEVICES=0 .venv/bin/python training/train_hybrid_ppo.py --output-dir "$(HYBRID_RUN)" --iterations "$(HYBRID_ITERATIONS)" --games-per-iteration "$(HYBRID_GAMES)" --workers "$(HYBRID_WORKERS)" --score800-reference "$(SERVER_REFERENCE)" --device cuda'
