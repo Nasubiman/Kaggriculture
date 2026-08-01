@@ -15,6 +15,11 @@ TEST_CANDIDATE ?= main.py
 TEST_SEEDS ?= 100
 TEST_WORKERS ?= 20
 TEST_OUTPUT ?= reports/test_models.json
+TEST_MATRIX_MODELS ?=
+TEST_MATRIX_SEEDS ?= 50
+TEST_MATRIX_SEED_START ?= 9850000
+TEST_MATRIX_WORKERS ?= 20
+TEST_MATRIX_OUTPUT ?= reports/test_matrix
 HYBRID_RUN ?= $(SERVER_DATA)/runs/hybrid_ppo_manual
 HYBRID_ITERATIONS ?= 20
 HYBRID_GAMES ?= 60
@@ -55,8 +60,21 @@ EV45_ABLATION_SEED_START ?= 9810000
 EV45_ABLATION_OUTPUT ?= reports/ev45_ablation.json
 EV45_ABLATION_VARIANTS ?=
 EV45_ABLATION_OPPONENTS ?= 0801_ev1 0801_ev2 0801_ev3 0801_v1 0801_ev4 0801_ev5
+PAIRED_SEARCH_NAME ?= paired_coordinates_$(shell date +%Y%m%d_%H%M%S)
+PAIRED_SEARCH_RUN ?= $(SERVER_DATA)/runs/$(PAIRED_SEARCH_NAME)
+PAIRED_SEARCH_LOCAL_RUN ?= $(SERVER_RESULTS)/$(PAIRED_SEARCH_NAME)
+PAIRED_SEARCH_OPPONENTS ?= 0801_ev4 0801_ev5 0801_v2
+PAIRED_SEARCH_WORKERS ?= 20
+PAIRED_STAGE0_SEEDS ?= 4
+PAIRED_STAGE1_SEEDS ?= 16
+PAIRED_STAGE2_SEEDS ?= 24
+PAIRED_FINAL_SEEDS ?= 100
+PAIRED_STAGE1_COUNT ?= 20
+PAIRED_TOP_FIELDS ?= 5
+PAIRED_FINALISTS ?= 3
+LAST_PAIRED_SEARCH_RUN := $(SERVER_RESULTS)/LATEST_PAIRED_SEARCH_RUN
 
-.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models server-sync-fast-runner server-test-models server-rank1-ablation server-rank2-ablation server-ev45-ablation genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
+.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -107,6 +125,10 @@ test-list:
 test-models:
 	PYTHONPATH=training $(VENV)/bin/python scripts/evaluate_test_models.py --candidate "$(TEST_CANDIDATE)" --models-dir "$(TEST_DIR)" $(if $(strip $(TEST_MODELS)),--models $(TEST_MODELS),) --seeds "$(TEST_SEEDS)" --workers "$(TEST_WORKERS)" --output "$(TEST_OUTPUT)"
 
+# Round-robin all test models. Outputs JSON, Markdown, and CSV matrices.
+test-matrix:
+	PYTHONPATH=training $(VENV)/bin/python scripts/evaluate_test_matrix.py --models-dir "$(TEST_DIR)" $(if $(strip $(TEST_MATRIX_MODELS)),--models $(TEST_MATRIX_MODELS),) --seeds "$(TEST_MATRIX_SEEDS)" --seed-start "$(TEST_MATRIX_SEED_START)" --workers "$(TEST_MATRIX_WORKERS)" --output-dir "$(TEST_MATRIX_OUTPUT)"
+
 server-check:
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; printf "repo=%s\n" "$$PWD"; .venv/bin/python --version; git status --short; nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader; df -h "$(SERVER_DATA)"'
 
@@ -138,6 +160,15 @@ server-test-models: server-sync-fast-runner
 	mkdir -p "$(dir $(TEST_OUTPUT))"
 	rsync -az $(SERVER_HOST):$(SERVER_DATA)/runs/manual/test_models.json "$(TEST_OUTPUT)"
 
+server-test-matrix: server-sync-fast-runner
+	test -d "$(TEST_DIR)"
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/scripts" "$(SERVER_REPO)/training" "$(SERVER_DATA)/runs/manual/test_matrix"'
+	rsync -az scripts/evaluate_test_matrix.py $(SERVER_HOST):$(SERVER_REPO)/scripts/
+	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(SERVER_DATA)/runs/manual/test_matrix"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python scripts/evaluate_test_matrix.py --models-dir test $(if $(strip $(TEST_MATRIX_MODELS)),--models $(TEST_MATRIX_MODELS),) --seeds "$(TEST_MATRIX_SEEDS)" --seed-start "$(TEST_MATRIX_SEED_START)" --workers "$(TEST_MATRIX_WORKERS)" --output-dir "$(SERVER_DATA)/runs/manual/test_matrix"'
+	mkdir -p "$(TEST_MATRIX_OUTPUT)"
+	rsync -az $(SERVER_HOST):$(SERVER_DATA)/runs/manual/test_matrix/ "$(TEST_MATRIX_OUTPUT)/"
+
 server-rank1-ablation: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(SERVER_DATA)/runs/manual"'
 	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py
@@ -164,6 +195,18 @@ server-ev45-ablation: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/evaluate_ev45_variants.py --opponents $(EV45_ABLATION_OPPONENTS) --seeds "$(EV45_ABLATION_SEEDS)" --seed-start "$(EV45_ABLATION_SEED_START)" --workers "$(STRUCTURED_WORKERS)" $(if $(strip $(EV45_ABLATION_VARIANTS)),--variants $(EV45_ABLATION_VARIANTS),) --output "$(SERVER_DATA)/runs/manual/ev45_ablation.json"'
 	mkdir -p "$(dir $(EV45_ABLATION_OUTPUT))"
 	rsync -az $(SERVER_HOST):$(SERVER_DATA)/runs/manual/ev45_ablation.json "$(EV45_ABLATION_OUTPUT)"
+
+paired-search: server-sync-fast-runner
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(PAIRED_SEARCH_RUN)/source"'
+	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py
+	rsync -az training/ev2_genome.py training/search_paired_coordinates.py $(SERVER_HOST):$(SERVER_REPO)/training/
+	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; cp main.py training/ev2_genome.py training/search_paired_coordinates.py "$(PAIRED_SEARCH_RUN)/source/"; cp -R test "$(PAIRED_SEARCH_RUN)/source/"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/search_paired_coordinates.py --incumbent main.py --engine test/0801_ev4/main.py --opponents $(PAIRED_SEARCH_OPPONENTS) --workers "$(PAIRED_SEARCH_WORKERS)" --stage0-seeds "$(PAIRED_STAGE0_SEEDS)" --stage1-seeds "$(PAIRED_STAGE1_SEEDS)" --stage2-seeds "$(PAIRED_STAGE2_SEEDS)" --final-seeds "$(PAIRED_FINAL_SEEDS)" --stage1-count "$(PAIRED_STAGE1_COUNT)" --top-fields "$(PAIRED_TOP_FIELDS)" --finalists "$(PAIRED_FINALISTS)" --output-dir "$(PAIRED_SEARCH_RUN)"'
+	mkdir -p "$(PAIRED_SEARCH_LOCAL_RUN)"
+	rsync -az $(SERVER_HOST):$(PAIRED_SEARCH_RUN)/ "$(PAIRED_SEARCH_LOCAL_RUN)/"
+	mkdir -p "$(SERVER_RESULTS)"
+	printf '%s\n' "$(PAIRED_SEARCH_LOCAL_RUN)" > "$(LAST_PAIRED_SEARCH_RUN)"
+	@printf '\nDone. Results: %s\n' "$(PAIRED_SEARCH_LOCAL_RUN)"
 
 server-hybrid-train: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(HYBRID_RUN)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 CUDA_VISIBLE_DEVICES=0 .venv/bin/python training/train_hybrid_ppo.py --output-dir "$(HYBRID_RUN)" --iterations "$(HYBRID_ITERATIONS)" --games-per-iteration "$(HYBRID_GAMES)" --workers "$(HYBRID_WORKERS)" --score800-reference "$(SERVER_REFERENCE)" --device cuda'

@@ -1,4 +1,11 @@
-"""Deterministic scenario-aware economic policy for Kaggriculture."""
+# Derived from the public Kaggle notebook "Scenario-Aware Economic Policy"
+# by Pilkwang Kim: https://www.kaggle.com/code/pilkwang/
+# kaggriculture-scenario-aware-economic-policy
+"""Kaggriculture C05 experiment with faster mid-season herd expansion.
+
+This preserves C04's fifteen-animal final target while raising the intermediate
+herd target from eight to ten animals between days seven and ten.
+"""
 
 from collections import deque
 import math
@@ -141,12 +148,12 @@ TOTAL_DAYS = 30
 MAX_MARKET_ORDERS = 10
 MAX_HANDS = 12
 CORE_HERD = 4
-MID_HERD = 8
-TARGET_HERD = 12
+MID_HERD = 11
+TARGET_HERD = 15
 HERD_EXPANSION_DAY = 7
 HERD_FINAL_DAY = 11
 ANIMAL_PURCHASE_LAST_DAY = 18
-ANIMAL_SLOTS = {"NW": 4, "NE": 5, "SW": 3, "SE": 0}
+ANIMAL_SLOTS = {"NW": 4, "NE": 7, "SW": 4, "SE": 0}
 CROP_MIX = {
     "NW": {"MELON": 10, "WHEAT": 4, "CARROT": 2},
     "NE": {"WHEAT": 4, "CARROT": 1},
@@ -158,7 +165,7 @@ MELON_TILES_BASE = 10
 MELON_TILES_MAX = 12
 MAX_EXTRA_LAND = 2
 CASH_RESERVE = 250
-LIQUIDATION_TURNS = 38
+LIQUIDATION_TURNS = 22
 SHED_CAPACITY = 100
 TRAVEL_COST = 8.0
 FEED_STOCK_DAYS = 3
@@ -461,8 +468,8 @@ def _herd_targets(obs, farm, private, capacity):
     target_total = min(capacity, max(sum(owned.values()), stage_target))
 
     targets = {
-        "COW": max(2 if target_total >= CORE_HERD else 0, owned["COW"]),
-        "SHEEP": max(2 if target_total >= CORE_HERD else 0, owned["SHEEP"]),
+        "COW": max(3 if target_total >= CORE_HERD else 0, owned["COW"]),
+        "SHEEP": max(1 if target_total >= CORE_HERD else 0, owned["SHEEP"]),
     }
     opponents = _opponent_animal_counts(obs)
     while sum(targets.values()) < target_total:
@@ -498,7 +505,7 @@ def _role_plan(obs, farm):
 
     assigned = {"COW": 0, "SHEEP": 0}
     roles = {}
-    core_sequence = ("COW", "COW", "SHEEP", "SHEEP")
+    core_sequence = ("COW", "COW", "COW", "SHEEP")
     for index, position in enumerate(active_slots):
         x, y = position
         tile = tiles[y][x]
@@ -1714,7 +1721,7 @@ _FROZEN_EV2_GENOME = {'family': 'fertilized',
  'animal_slots_sw': 3,
  'animal_slots_se': 0,
  'wheat_nw': 4,
- 'carrot_nw': 2,
+ 'carrot_nw': 1,
  'wheat_ne': 4,
  'carrot_ne': 1,
  'melon_ne': 0,
@@ -1729,7 +1736,7 @@ _FROZEN_EV2_GENOME = {'family': 'fertilized',
  'melon_tiles_max': 12,
  'max_extra_land': 2,
  'first_land_day': 5,
- 'second_land_day': 9,
+ 'second_land_day': 10,
  'third_land_day': 14,
  'reserve_wheat': 0.68,
  'reserve_carrot': 0.55,
@@ -1742,7 +1749,7 @@ _FROZEN_EV2_GENOME = {'family': 'fertilized',
  'reserve_fertilizer': 0.08,
  'fertilizer_use': 1,
  'fertilizer_min_gain': 25,
- 'fertilizer_max_jobs': 4,
+ 'fertilizer_max_jobs': 5,
  'fertilizer_priority': 1}
 MAX_HANDS = 12
 LIQUIDATION_TURNS = 22
@@ -1755,7 +1762,7 @@ HERD_FINAL_DAY = 11
 ANIMAL_PURCHASE_LAST_DAY = 18
 FEED_STOCK_DAYS = 3
 ANIMAL_SLOTS = {'NW': 5, 'NE': 5, 'SW': 3, 'SE': 0}
-CROP_MIX = {'NW': {'MELON': 10, 'WHEAT': 4, 'CARROT': 2},
+CROP_MIX = {'NW': {'MELON': 10, 'WHEAT': 4, 'CARROT': 1},
  'NE': {'MELON': 0, 'WHEAT': 4, 'CARROT': 1},
  'SW': {'MELON': 0, 'WHEAT': 4, 'CARROT': 1},
  'SE': {'MELON': 0, 'WHEAT': 6, 'CARROT': 2}}
@@ -1763,7 +1770,7 @@ MELON_TILES_MIN = 7
 MELON_TILES_BASE = 10
 MELON_TILES_MAX = 12
 MAX_EXTRA_LAND = 2
-LAND_OPEN_DAYS = (5, 9, 14)
+LAND_OPEN_DAYS = (5, 10, 14)
 RESERVE_FRACTION = {'WHEAT': 0.68,
  'CARROT': 0.55,
  'TOMATO': 0.5,
@@ -1775,7 +1782,7 @@ RESERVE_FRACTION = {'WHEAT': 0.68,
  'FERTILIZER': 0.08}
 FERTILIZER_USE = 1
 FERTILIZER_MIN_GAIN = 25
-FERTILIZER_MAX_JOBS = 4
+FERTILIZER_MAX_JOBS = 5
 FERTILIZER_PRIORITY = 1
 _EV2_BASE_AGENT = agent
 _EV2_FIELD_JOBS_BASE = _field_jobs
