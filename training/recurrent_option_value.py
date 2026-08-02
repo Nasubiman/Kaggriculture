@@ -1,33 +1,30 @@
 #!/usr/bin/env python3
-"""Recurrent conservative option-value model for Kaggriculture.
+"""Conservative recurrent value model for selecting whole farm schedules.
 
-The low-level scripted agent remains responsible for all legal 720-turn play.
-This model is used only at sparse strategic decision points.  It consumes a
-history of public/private summary features and scores coherent, validated
-strategy options by their expected final-margin advantage over KEEP.
+The 720-turn execution engine remains deterministic.  This model is not a raw
+turn policy and is not intended to switch freely between incompatible plans.
+It scores complete, versioned schedule options at game start or at explicitly
+validated re-entry checkpoints.  A separate repair model handles local drift.
 
-Why this is not a direct PPO policy:
-- the opponent's shed, seeds, and inventories are hidden, so one snapshot is
-  not Markov;
-- terminal money is the true objective and intermediate cash is a poor proxy
-  for productive assets;
-- existing branched counterfactual data gives much stronger supervision than
-  sparse on-policy daily rewards;
-- the incumbent is already strong, so uncertain interventions should abstain.
+The model consumes sparse history snapshots because the opponent's private
+shed, seeds, and carried inventories are hidden.  Each ensemble head predicts
+terminal-margin advantage relative to KEEP, and inference abstains unless the
+lower confidence bound is convincingly positive.
 """
 
 from __future__ import annotations
 
-import math
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
 import torch
 from torch import nn
+from torch.nn import functional as F
 
 
-MODEL_VERSION = 1
+MODEL_VERSION = 2
+ARCHITECTURE = "recurrent_schedule_value_v2"
 
 
 @dataclass(frozen=True)
@@ -53,6 +50,8 @@ class OptionValueConfig:
             raise ValueError("keep_index must be non-negative")
         if self.uncertainty_scale < 0:
             raise ValueError("uncertainty_scale must be non-negative")
+        if self.dropout < 0 or self.dropout >= 1:
+            raise ValueError("dropout must be in [0, 1)")
 
 
 class ResidualMLP(nn.Module):
@@ -71,22 +70,12 @@ class ResidualMLP(nn.Module):
 
 
 class RecurrentOptionValueNet(nn.Module):
-    """Scores coherent options from a belief state over decision history.
+    """Score complete schedule options from a belief over sparse history.
 
-    Inputs
-    ------
-    state_history:
-        ``(batch, time, state_dim)`` snapshots at sparse decision points.
-    lengths:
-        ``(batch,)`` valid sequence lengths. Padding must be at the end.
-    option_features:
-        ``(options, option_dim)`` or ``(batch, options, option_dim)``.
-
-    Output
-    ------
-    Per-head advantages with shape ``(heads, batch, options)``.  Values are
-    defined relative to KEEP by subtracting the selected KEEP score from every
-    option, so KEEP is exactly zero for every head.
+    ``state_history`` has shape ``(batch, time, state_dim)`` and padding is at
+    the end. ``option_features`` may be shared across the batch or supplied per
+    sample.  Output shape is ``(heads, batch, options)``.  KEEP is exactly zero
+    for every head by construction.
     """
 
     def __init__(self, config: OptionValueConfig) -> None:
@@ -118,7 +107,6 @@ class RecurrentOptionValueNet(nn.Module):
             nn.Linear(h, h),
             nn.SiLU(),
         )
-        # Each head receives [belief, option, belief*option, |belief-option|].
         joint_dim = 4 * h
         self.heads = nn.ModuleList(
             nn.Sequential(
@@ -178,7 +166,10 @@ class RecurrentOptionValueNet(nn.Module):
                 state_history.shape[0], -1, -1
             )
         if option_features.ndim != 3:
-            raise ValueError("option_features must have shape (options, dim) or (batch, options, dim)")
+            raise ValueError(
+                "option_features must have shape (options, dim) or "
+                "(batch, options, dim)"
+            )
         if option_features.shape[0] != state_history.shape[0]:
             raise ValueError("option batch does not match state batch")
         if option_features.shape[-1] != self.config.option_dim:
@@ -211,11 +202,7 @@ class RecurrentOptionValueNet(nn.Module):
         option_features: torch.Tensor,
         valid_mask: torch.Tensor | None = None,
     ) -> dict[str, torch.Tensor]:
-        """Conservatively choose an option, abstaining to KEEP when uncertain.
-
-        The lower-confidence score is ``mean - uncertainty_scale * std``.
-        Non-KEEP options must additionally exceed ``minimum_advantage``.
-        """
+        """Choose a schedule only when its conservative advantage is positive."""
         per_head = self(state_history, lengths, option_features)
         mean = per_head.mean(dim=0)
         std = per_head.std(dim=0, unbiased=False)
@@ -223,6 +210,8 @@ class RecurrentOptionValueNet(nn.Module):
         if valid_mask is not None:
             if valid_mask.shape != mean.shape:
                 raise ValueError("valid_mask must match (batch, options)")
+            if not torch.all(valid_mask[:, self.config.keep_index]):
+                raise ValueError("KEEP must always be valid")
             lower = lower.masked_fill(~valid_mask, -torch.inf)
         lower[:, self.config.keep_index] = 0.0
         action = lower.argmax(dim=-1)
@@ -243,9 +232,85 @@ class RecurrentOptionValueNet(nn.Module):
     def metadata(self) -> dict[str, Any]:
         return {
             "model_version": MODEL_VERSION,
-            "architecture": "recurrent_conservative_option_value_v1",
+            "architecture": ARCHITECTURE,
             "config": asdict(self.config),
         }
+
+
+def counterfactual_value_loss(
+    per_head_advantages: torch.Tensor,
+    target_advantages: torch.Tensor,
+    *,
+    valid_mask: torch.Tensor | None = None,
+    bootstrap_mask: torch.Tensor | None = None,
+    ranking_weight: float = 0.25,
+    false_positive_weight: float = 0.5,
+) -> dict[str, torch.Tensor]:
+    """Loss for full-information counterfactual schedule outcomes.
+
+    ``per_head_advantages`` is ``(heads, batch, options)`` and targets are
+    terminal-margin advantages over KEEP.  ``bootstrap_mask`` has shape
+    ``(heads, batch)`` and lets each ensemble member train on a different
+    resample.  Harmful schedules predicted as profitable receive an asymmetric
+    false-positive penalty because such mistakes are costlier than abstention.
+    """
+    if per_head_advantages.ndim != 3:
+        raise ValueError("per_head_advantages must have shape (heads, batch, options)")
+    heads, batch, options = per_head_advantages.shape
+    if target_advantages.shape != (batch, options):
+        raise ValueError("target_advantages must match (batch, options)")
+    if valid_mask is None:
+        valid_mask = torch.ones_like(target_advantages, dtype=torch.bool)
+    if valid_mask.shape != target_advantages.shape:
+        raise ValueError("valid_mask must match target_advantages")
+    if bootstrap_mask is None:
+        bootstrap_mask = torch.ones(
+            heads, batch, dtype=torch.bool, device=per_head_advantages.device
+        )
+    if bootstrap_mask.shape != (heads, batch):
+        raise ValueError("bootstrap_mask must have shape (heads, batch)")
+
+    expanded_target = target_advantages.unsqueeze(0).expand_as(per_head_advantages)
+    active = bootstrap_mask.unsqueeze(-1) & valid_mask.unsqueeze(0)
+    if not torch.any(active):
+        raise ValueError("loss has no active samples")
+
+    regression_values = F.smooth_l1_loss(
+        per_head_advantages, expanded_target, reduction="none"
+    )
+    regression = regression_values[active].mean()
+
+    pred_diff = per_head_advantages.unsqueeze(-1) - per_head_advantages.unsqueeze(-2)
+    target_diff = target_advantages.unsqueeze(-1) - target_advantages.unsqueeze(-2)
+    sign = torch.sign(target_diff).unsqueeze(0)
+    comparable = sign != 0
+    pair_valid = valid_mask.unsqueeze(-1) & valid_mask.unsqueeze(-2)
+    pair_active = (
+        bootstrap_mask.unsqueeze(-1).unsqueeze(-1)
+        & pair_valid.unsqueeze(0)
+        & comparable
+    )
+    ranking_values = F.softplus(-sign * pred_diff)
+    ranking = (
+        ranking_values[pair_active].mean()
+        if torch.any(pair_active)
+        else regression.new_zeros(())
+    )
+
+    harmful = expanded_target < 0
+    false_positive_active = active & harmful
+    false_positive = (
+        F.softplus(per_head_advantages[false_positive_active]).mean()
+        if torch.any(false_positive_active)
+        else regression.new_zeros(())
+    )
+    total = regression + ranking_weight * ranking + false_positive_weight * false_positive
+    return {
+        "loss": total,
+        "regression": regression,
+        "ranking": ranking,
+        "false_positive": false_positive,
+    }
 
 
 def save_checkpoint(
@@ -255,6 +320,7 @@ def save_checkpoint(
     option_names: list[str],
     state_feature_names: list[str],
     option_feature_names: list[str],
+    registry_fingerprint: str,
     metadata: dict[str, Any] | None = None,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -264,6 +330,7 @@ def save_checkpoint(
             "option_names": option_names,
             "state_feature_names": state_feature_names,
             "option_feature_names": option_feature_names,
+            "registry_fingerprint": registry_fingerprint,
             "model_state": {
                 key: value.detach().cpu() for key, value in model.state_dict().items()
             },
@@ -274,13 +341,21 @@ def save_checkpoint(
 
 
 def load_checkpoint(
-    path: Path, device: str | torch.device = "cpu"
+    path: Path,
+    device: str | torch.device = "cpu",
+    *,
+    expected_registry_fingerprint: str | None = None,
 ) -> tuple[RecurrentOptionValueNet, dict[str, Any]]:
     payload = torch.load(path, map_location=device, weights_only=False)
-    if payload.get("architecture") != "recurrent_conservative_option_value_v1":
+    if payload.get("architecture") != ARCHITECTURE:
         raise RuntimeError(f"unsupported checkpoint architecture: {path}")
     if int(payload.get("model_version", -1)) != MODEL_VERSION:
         raise RuntimeError(f"unsupported checkpoint version: {path}")
+    if (
+        expected_registry_fingerprint is not None
+        and payload.get("registry_fingerprint") != expected_registry_fingerprint
+    ):
+        raise RuntimeError("checkpoint schedule registry does not match runtime registry")
     model = RecurrentOptionValueNet(
         OptionValueConfig(**dict(payload["config"]))
     ).to(device)
