@@ -1,280 +1,400 @@
-# Rule-first recurrent option-value architecture
+# Schedule-first learning architecture for Kaggriculture
 
-## Revised conclusion
+Date: 2026-08-02
 
-The original proposal on this branch was a small Transformer that split the
-legacy 102-dimensional hybrid-PPO observation into arbitrary contiguous blocks
-and preserved the old 18-way daily action head.  After reviewing the official
-game rules, the current promoted `main.py`, and the repository's completed
-experiments, that design is not the right next step and has been removed.
+## Final architecture decision
 
-The correct learning boundary is not "choose one parameter edit every day".
-It is:
-
-> At a small number of strategically meaningful states, choose among coherent,
-> legality-tested continuation programs, or abstain and keep the incumbent.
-
-The new implementation is `training/recurrent_option_value.py`.
-
-## Rule properties that determine the architecture
-
-### 1. The game is partially observed
-
-Both farms, money, tiles, worker positions, market, and town shops are public.
-The opponent's shed, seeds, and per-worker inventories are private.  Therefore
-a single state snapshot is not Markov from the agent's perspective.  Opponent
-intent and hidden stock must be inferred from history: visible plantings,
-placements, harvest timing, market inventory changes, purchases implied by
-farm changes, and worker behaviour.
-
-A feed-forward one-snapshot policy discards this information.  The proposed
-model therefore encodes a sequence of sparse decision snapshots with a GRU and
-uses its final hidden state as a belief representation.
-
-### 2. There are 720 turns, but only a few true strategic decisions
-
-The official game has 30 days and 24 turns per day.  Low-level play includes
-movement, watering, harvesting, feeding, care, fertilizer collection, shed
-routing, and up to ten market orders every turn.  The current scripted agent
-already handles these constraints and has been heavily optimized.
-
-Exposing those 720-turn actions to RL would create a huge structured action
-space, waste samples relearning legality and pathfinding, and remove the safe
-fallback.  Learning remains above the existing controller.
-
-Useful decision points are event driven, for example:
-
-- first land-expansion opportunity;
-- livestock conversion / herd expansion;
-- each new shop unlock;
-- meaningful milk/wool or crop price regime changes;
-- labour-capacity shortages;
-- storage pressure;
-- start of liquidation.
-
-Fixed daily decisions should be retained only as a simple initial data schedule,
-not as the final control abstraction.
-
-### 3. Final money is the true reward
-
-The terminal reward is final cash.  Intermediate money difference is not a
-valid dense value target because buying land, animals, seeds, wheat, or labour
-reduces cash while increasing future production.  The old PPO shaping based on
-money advantage can therefore punish correct investment.
-
-The strongest existing result instead comes from branching the exact same
-state into multiple continuation profiles and observing final margins.  This
-produces direct counterfactual targets for the decision that matters.
-
-### 4. Market interaction is simultaneous and path dependent
-
-SELL and BUY orders are processed one unit at a time in lockstep.  Both players
-receive the same pre-commit quote for each unit, after which shared inventory and
-price change.  Town demand also changes inventory during the season.  A useful
-state representation must include price/inventory trajectories and visible
-opponent production, not only current prices.
-
-### 5. Daily reset makes strategy naturally hierarchical
-
-Workers disappear each day, inventories are automatically dropped to the shed
-up to capacity, worker positions reset, plants and animals refresh, weeds spawn,
-and shops may unlock.  This creates three natural timescales:
-
-1. season-level program: layout, crop/livestock regime, land timing;
-2. phase/event-level option: targets and economic response for the next phase;
-3. turn-level execution: the existing deterministic router and market planner.
-
-The learner belongs at level 2, conditioned on level 1 and executed through
-level 3.
-
-## Evidence from the repository
-
-The daily semantic PPO prototype generated 1,864 complete games across its
-main experiments.  With the teacher prior active it collapsed to KEEP; removing
-the prior exposed interventions that were worse than the incumbent.
-
-By contrast, counterfactual value learning evaluated several continuation
-profiles from identical live states.  The scaled experiment used 7,000 decision
-states and about 66,000 state/profile outcomes.  Its day-8 selector reached a
-70% win rate and +613 mean margin against the then-current `main.py`, while
-retaining large wins against weaker references.
-
-Hierarchical structured search also succeeded by changing coherent policy
-regimes rather than isolated daily edits.  These results indicate that better
-labels and better option semantics matter more than replacing the MLP with a
-larger generic encoder.
-
-## Proposed control architecture
+The next learning system should not be a raw 720-turn policy, a daily scalar
+parameter editor, or a freely switching library of incompatible midgame
+options.  The strongest current evidence supports a schedule-first hierarchy:
 
 ```text
-Official observation history
-        |
-        v
-Rule-derived structured summaries at decision events
-        |
-        v
-GRU belief encoder  --------------------------+
-        |                                      |
-        v                                      v
-current belief                         candidate option descriptors
-        |                                      |
-        +-------- option-conditioned scorer ---+
-                           |
-                           v
-              ensemble advantages vs KEEP
-                           |
-                           v
-        lower confidence bound + legality mask
-                           |
-                 choose option or KEEP
-                           |
-                           v
-      existing scripted low-level controller
+versioned executable schedule library
+              |
+              v
+conservative schedule selector
+(game start / validated re-entry only)
+              |
+              v
+selected deterministic 30-day program
+              |
+              +------------------------------+
+              |                              |
+              v                              v
+planned command + reference anchor     live state/history
+              |                              |
+              +-------- deviation monitor ---+
+                             |
+                  plan valid and on-track?
+                    /                 \
+                  yes                  no
+                   |                    |
+              execute plan     deterministic RULE_REPAIR
+                                      |
+                                      v
+                         learned repair value model
+                         may override RULE_REPAIR only
+                         with positive confidence bound
+                                      |
+                                      v
+                           legal low-level command
 ```
 
-### State history
+Market quantity conditioning is a separate module built after the schedule and
+repair layers are validated.  PPO is not the default training method.
 
-The first implementation can reuse and extend the counterfactual feature set,
-but each decision record should include deltas since the previous event:
+## Why the design changed again
 
-- day/hour and time remaining;
-- own/opponent public farm composition by crop/animal;
-- land and visible worker capacity;
-- own private shed, seeds, and carried inventory;
-- market price and inventory for every product;
-- price/inventory changes over recent events;
-- unlocked shops and newly unlocked shop;
-- feed requirement, storage pressure, due workload, and liquidation pressure;
-- current schedule, spatial trajectory, and active strategy family;
-- visible opponent changes since the previous event.
+The previous revision correctly moved learning above the deterministic
+controller, but still described options as phase-level continuation programs
+that could be selected at several strategic events.  The latest public notebook
+and replay-distillation evidence shows that this is still too permissive.
 
-Raw 10x10 tile tokens are not the first priority because the existing planner
-already converts spatial state into roles, workload, route lengths, and
-capacity.  Tile or quadrant encoders should be added only if ablations show
-that these rule-derived summaries lose information relevant to option ranking.
+A high-performing public submission can replay one elite 720-turn action tape
+using only `obs.step`.  The source trajectory was not even the winner of its
+original game, yet its full capital schedule remained highly competitive over
+many other seeds and opponent traces.  The useful object is therefore not an
+isolated day-8 herd choice.  It is the coupled sequence of:
 
-### Options
+- opening animals and premium crops;
+- daily labour ramp;
+- land purchase timing;
+- crop rotation;
+- herd expansion and geometry;
+- feed acquisition;
+- repeated market realization;
+- gradual liquidation.
 
-An option is a coherent continuation program, not one scalar mutation.  Initial
-options should be generated from already validated sources:
+Changing one stage without repairing all later assumptions can destroy the
+schedule.  A simple state router added to the fixed tape improved one aggregate
+margin but reduced wins, which is direct evidence that more adaptation is not
+automatically better.
 
-- KEEP the current promoted program;
-- top structured-search genomes;
-- top daily schedule genomes;
-- top spatial trajectory genomes;
-- counterfactual macro profiles and useful combinations;
-- explicit market-response or liquidation modules.
+The architecture now treats a complete schedule as the unit of strategic
+choice and reserves learning inside the schedule for local, compatibility-safe
+repairs.
 
-Every option needs:
+## Rule properties that determine the hierarchy
 
-- a stable name and version;
-- a feature descriptor used by the network;
-- applicability and legality rules;
-- deterministic code that installs it on a fresh agent module;
-- a defined duration or termination event;
-- tests that distinguish it from KEEP and from other options.
+### Partial observation requires history
 
-Continuous free-form parameter generation is postponed until the discrete
-option library is well covered.  A generative policy would otherwise exploit
-invalid, inactive, or destructive parameter combinations already encountered
-in earlier work.
+The opponent's farm and money are visible, but its shed, seeds, and carried
+inventories are hidden.  Market inventory is shared and orders are processed
+unit by unit in lockstep.  A current snapshot cannot fully identify opponent
+stock or intent.  Both the schedule selector and repair model therefore use a
+GRU over sparse rule-derived history summaries.
 
-### Model
+### Terminal cash is the objective
 
-`RecurrentOptionValueNet` contains:
+Land, animals, seeds, wheat, and labour reduce current cash while increasing
+future production.  Intermediate cash advantage is not a safe dense reward.
+Every learned strategic label should be based on final margin or a short-horizon
+repair followed by terminal rollout.
 
-- state MLP stem;
-- GRU over the sparse decision-history sequence;
-- option descriptor MLP;
-- option-conditioned interaction features
-  `[belief, option, belief*option, abs(belief-option)]`;
-- several independent value heads.
+### The low-level controller already solves valuable structure
 
-Each head predicts final-margin advantage relative to KEEP.  KEEP is made
-exactly zero by subtracting its raw score from all options per head.  This
-anchors training and removes the need to estimate an arbitrary absolute game
-value accurately.
+The promoted `main.py` handles legal movement, field jobs, market pricing,
+opponent visible supply, feed reserves, land timing, hiring, fertilizer, and
+liquidation.  Relearning all of this through raw RL would waste samples and
+remove a strong fallback.
 
-### Conservative intervention
+### Timing is unusually stable
 
-At inference the model computes:
+The board geometry, 30-day horizon, 24-turn daily cadence, growth rules, shop
+unlocks, daily worker lifecycle, and endgame deadline are stable.  A timed
+schedule can remain useful even when weeds and shared prices vary.  Invalid
+commands often fail locally while other parallel commands still execute, so a
+well-designed plan can degrade gracefully.
+
+## The four runtime layers
+
+## 1. Executable schedule registry
+
+`training/schedule_registry.py` defines versioned schedule options.  A schedule
+must specify:
+
+- stable ID and version;
+- family and executable controller reference;
+- provenance and licence;
+- fixed-width descriptor;
+- allowed entry days;
+- commitment horizon;
+- ordered reference anchors;
+- source tags and description.
+
+KEEP must be registry index zero.  The registry has a stable SHA-256
+fingerprint, which is stored in model checkpoints to prevent a model from
+silently scoring a different option ordering at inference.
+
+Initial schedule families should include:
+
+1. promoted `main.py` / KEEP;
+2. Kaito public-tape schedule: small melon opening, strawberry scale, balanced
+   eight-cow/seven-sheep herd, three quadrants, twelve hands;
+3. rank-one venks public-tape schedule;
+4. Radiant market-intensive schedule;
+5. current locally promoted EV2 schedule;
+6. later schedules distilled from fresh top-three public episodes.
+
+A public tape can be represented either by the exact action sequence or by an
+executable symbolic controller distilled from it.  Exact tapes are useful
+baselines and teachers; symbolic schedules are preferable for final deployment.
+
+## 2. Conservative schedule selector
+
+`training/recurrent_option_value.py` now explicitly selects whole schedules.
+It is run at game start and, later, only at entry points declared compatible by
+the schedule registry.  Arbitrary midgame switching is masked by commitment.
+
+The model contains:
+
+- state-summary MLP;
+- GRU belief encoder;
+- schedule-descriptor MLP;
+- state-schedule interaction features;
+- bootstrap ensemble value heads;
+- KEEP-relative terminal-margin predictions;
+- lower-confidence-bound abstention.
+
+It predicts:
 
 ```text
-lower_bound = ensemble_mean - uncertainty_scale * ensemble_std
+final_margin(schedule) - final_margin(KEEP)
 ```
 
-A non-KEEP option is selected only when its lower bound exceeds a configured
-minimum advantage.  Invalid options are masked.  Otherwise the controller
-abstains to KEEP.
-
-This is more appropriate than a fixed KEEP logit prior: the gate is based on
-predicted benefit and epistemic disagreement, not a globally constant bias.
-
-## Training plan
-
-### Stage 1: supervised counterfactual option ranking
-
-Generate shared-prefix branches at selected decision events.  For each context,
-run every applicable option to the end of the game and store:
+and chooses a non-KEEP schedule only when:
 
 ```text
-final_margin(option) - final_margin(KEEP)
+mean_advantage - lambda * ensemble_std > minimum_advantage
 ```
 
-Train with a combination of:
+The training loss combines Smooth L1 regression, pairwise ranking, bootstrap
+masks, and an asymmetric penalty for predicting harmful schedules as
+profitable.
 
-- Smooth L1 advantage regression;
-- pairwise ranking loss;
-- best-option classification;
-- bootstrap-resampled ensemble heads;
-- optional asymmetric penalty for false positive interventions.
+## 3. Deviation monitor and deterministic repair baseline
 
-Split by seed and opponent identity so related states do not leak across train
-and validation.
+Every schedule has day-boundary reference anchors, such as:
 
-### Stage 2: sequential validation
+- cash and productive assets;
+- hand count;
+- unlocked quadrants;
+- crop counts;
+- cow/sheep/goose counts;
+- feed stock;
+- shed pressure;
+- due jobs;
+- planned liquidation progress.
 
-One-shot branching is insufficient when several options may be chosen during a
-game.  Evaluate policies that make decisions at multiple events, with later
-choices conditioned on earlier selected options.  Add these trajectories to the
-history training set.
+The runtime compares live summaries with the latest anchor.  It does not demand
+exact equality.  It produces normalized deviation features and invokes repair
+only when one of the following holds:
 
-### Stage 3: offline / conservative RL only if needed
+- the planned command is illegal;
+- a required resource is missing;
+- an animal is at risk;
+- a due harvest/water/feed/care/drop job is being missed;
+- worker position drift prevents a planned command;
+- storage or market conditions exceed a rule threshold;
+- the schedule is materially behind an anchor.
 
-After the option-value model is strong, fitted Q iteration or another
-conservative offline method can propagate value across multiple decision
-points.  PPO is not the default because counterfactual full-information labels
-are already available and on-policy exploration can easily degrade a strong
-incumbent.
+Before learning, a deterministic `RULE_REPAIR` candidate must exist.  Examples
+are nearest urgent feed, care, harvest, water, return/drop, or safe PASS.  The
+neural repair policy is never the only path to legality.
 
-### Stage 4: limited online fine-tuning
+## 4. Schedule-conditioned repair value model
 
-Online self-play should begin only after the supervised selector passes the
-standard-runner gate.  Any online objective must retain:
+`training/schedule_repair_policy.py` ranks a small legal candidate set only
+when repair is required.  Inputs are:
 
-- a substantial incumbent/opponent mixture;
-- KEEP abstention;
-- checkpoint league evaluation;
-- exact fast/standard runner parity;
-- rollback to the promoted deterministic controller.
+- recent state history;
+- selected schedule descriptor;
+- normalized schedule-deviation vector;
+- descriptors for legal repair candidates.
+
+Candidate zero is FOLLOW_PLAN.  Each triggered row also identifies a valid
+RULE_REPAIR fallback.  Ensemble scores are normalized per row relative to that
+fallback.  The model overrides the deterministic repair only when the lower
+confidence advantage is positive.  If repair is not required, FOLLOW_PLAN is
+executed without consulting the learned ranking.
+
+This boundary is safer than behavior cloning the entire low-level action.  The
+network only learns where the fixed schedule or deterministic router is known
+to be insufficient.
+
+## Market conditioning
+
+The public tape buys and sells very large quantities of wheat while running a
+mixed crop/livestock farm.  Requested quantities are not necessarily executed
+quantities because market orders are processed unit by unit and can terminate
+when cash, inventory, or capacity runs out.
+
+Do not copy raw order arguments as labels.  Reconstruct executed transactions
+or replay the official interpreter.  The market conditioner should preserve the
+selected schedule's order and capital intent while adapting only:
+
+- quantity;
+- reserve floor;
+- feed requirement;
+- shed capacity;
+- live price and inventory;
+- town demand;
+- visible opponent exposure;
+- remaining horizon.
+
+This module should begin as constrained quantity regression or discrete
+quantity-bucket counterfactual selection.  It should not reorder the entire
+market block until an ablation proves that reordering helps.
+
+## Training flow
+
+## Stage 0: provenance-safe expert corpus
+
+Collect recent top public episodes and strong public notebooks.  Store:
+
+- retrieval date;
+- leaderboard team and rank snapshot;
+- submission and episode IDs;
+- seat;
+- exact observation/action trace;
+- source URL and licence/provenance;
+- official environment version.
+
+Do not label a replay as the player's private strategy.  Public actions show
+executed behaviour only.
+
+## Stage 1: tape extraction and schedule anchors
+
+For every expert episode:
+
+1. reproduce the original reward exactly;
+2. extract the 720-turn action tape;
+3. compute day-boundary summaries;
+4. identify phase changes: opening, first land, labour ramp, crop rotation,
+   herd completion, production plateau, liquidation;
+5. create reference anchors and a schedule descriptor;
+6. replay both seats on untouched seeds;
+7. retain schedules with broad robustness, not only high source-game reward.
+
+The source game's result is not the label.  Cross-seed, both-seat performance
+is the label.
+
+## Stage 2: full-schedule counterfactual selector
+
+Run each schedule from the same initial seed, seat, and opponent.  Store the
+full final-margin vector for every context.  Start selection at day zero.
+
+Only after day-zero selection works should validated early re-entry points be
+added.  A schedule may be entered midgame only when:
+
+- its registry declares that day;
+- current state passes compatibility rules;
+- required assets/layout are available;
+- a complete suffix implementation exists;
+- counterfactual evaluation includes the same entry condition.
+
+Split train/validation/test by seed and opponent family.  Bootstrap each
+ensemble head over whole game contexts.
+
+## Stage 3: repair dataset generation
+
+Generate repair states from three sources:
+
+1. natural drift while replaying tapes under new seeds, seats, and opponents;
+2. controlled perturbations of weeds, market paths, worker positions, inventory,
+   and missed prior commands;
+3. states where the current deterministic controller and a tape disagree.
+
+For each triggered state:
+
+1. enumerate a small legal candidate set;
+2. include FOLLOW_PLAN when legal;
+3. include deterministic RULE_REPAIR;
+4. branch each candidate;
+5. continue with the same selected schedule and repair policy;
+6. evaluate final margin, or use a validated short horizon followed by a common
+   suffix;
+7. train advantages relative to RULE_REPAIR.
+
+This is residual learning.  Non-trigger states should remain in the dataset as
+negative examples showing that no repair is needed.
+
+## Stage 4: market quantity conditioner
+
+Reconstruct executed quantities and create constrained alternatives around the
+schedule's planned market block.  Train from same-state counterfactual terminal
+outcomes.  Evaluate separately by seat because lockstep order processing makes
+position relevant.
+
+## Stage 5: sequential closed-loop validation
+
+Evaluate the combined system:
+
+```text
+select schedule -> execute -> monitor -> repair -> condition market -> finish
+```
+
+Use complete games, untouched seeds, both seats, and an opponent league
+containing current `main.py`, preserved leaders, public notebooks, and prior
+checkpoints.  Report:
+
+- final money and margin;
+- win rate with confidence interval;
+- worst-opponent and lower-tail margin;
+- schedule-selection frequency;
+- repair trigger rate;
+- learned override rate;
+- fallback rate;
+- illegal planned-action rate;
+- anchor deviation by day;
+- per-schedule regret against full counterfactual outcomes.
+
+## Stage 6: conservative offline RL, only if necessary
+
+If supervised full-schedule and repair value learning plateaus, use fitted Q
+iteration or another conservative offline method over the sparse hierarchy.
+Do not begin with PPO.  Online self-play is the final optional stage and must
+retain deterministic fallbacks, opponent mixtures, and rollback gates.
 
 ## Promotion gates
 
-A learned selector should not enter `main.py` unless it passes all of the
-following on held-out seeds and both seats:
+No learned layer enters `main.py` until all of the following pass:
 
-1. positive mean margin against current `main.py`;
-2. statistically credible win rate above 50%;
-3. no meaningful regression against every model in `test/`;
-4. fast runner and standard runner exact parity on a fixed subset;
-5. option-level diagnostics showing no illegal or inactive interventions;
-6. ablation proving history helps over a single-state model;
-7. ablation proving the uncertainty gate improves downside risk.
+1. exact official/fast-runner parity on fixed traces;
+2. positive held-out mean margin versus current `main.py`;
+3. credible win rate above 50% against current `main.py`;
+4. no meaningful regression against every preserved strong opponent;
+5. both-seat evaluation;
+6. registry fingerprint and schedule implementation validation;
+7. no arbitrary switch during commitment;
+8. every triggered repair has a legal deterministic fallback;
+9. repair model beats RULE_REPAIR, not merely FOLLOW_PLAN;
+10. ablation: schedule selection versus one fixed best schedule;
+11. ablation: repair model versus deterministic repair;
+12. ablation: history versus one-state encoder;
+13. ablation: confidence gate versus greedy intervention;
+14. lower-tail and worst-opponent risk remain acceptable.
 
-## Files on this branch
+## Implementation in this branch
 
+- `training/schedule_registry.py`
+  - versioned whole-schedule schema;
+  - reference anchors and normalized deviation;
+  - entry/commitment masks;
+  - stable registry fingerprint.
 - `training/recurrent_option_value.py`
+  - whole-schedule GRU value ensemble;
+  - KEEP-relative scoring;
+  - conservative selection;
+  - counterfactual regression/ranking/false-positive loss;
+  - checkpoint registry guard.
+- `training/schedule_repair_policy.py`
+  - schedule-conditioned local repair value ensemble;
+  - per-state deterministic fallback anchoring;
+  - repair-trigger gating;
+  - conservative override.
 - `training/test_recurrent_option_value.py`
+- `training/test_schedule_architecture.py`
 
-The removed flat-slice Transformer and old 18-action checkpoint code should not
-be used as the next training path.
+The old flat-slice Transformer and daily 18-action PPO path should remain
+retired.
