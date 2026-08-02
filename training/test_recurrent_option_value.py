@@ -10,6 +10,7 @@ import torch
 from recurrent_option_value import (
     OptionValueConfig,
     RecurrentOptionValueNet,
+    counterfactual_value_loss,
     load_checkpoint,
     save_checkpoint,
 )
@@ -56,12 +57,7 @@ class RecurrentOptionValueTests(unittest.TestCase):
         history = torch.randn(2, 3, 34)
         lengths = torch.tensor([3, 3])
         options = torch.randn(5, 12)
-        # A very large threshold must force KEEP regardless of random weights.
-        object.__setattr__(
-            model.config,
-            "minimum_advantage",
-            1e9,
-        )
+        object.__setattr__(model.config, "minimum_advantage", 1e9)
         selected = model.select(history, lengths, options)
         torch.testing.assert_close(selected["action"], torch.zeros(2, dtype=torch.long))
 
@@ -76,7 +72,17 @@ class RecurrentOptionValueTests(unittest.TestCase):
         selected = model.select(history, lengths, options, mask)
         torch.testing.assert_close(selected["action"], torch.zeros(3, dtype=torch.long))
 
-    def test_ranking_loss_backpropagates(self) -> None:
+    def test_keep_must_remain_valid(self) -> None:
+        model = self.make_model().eval()
+        history = torch.randn(1, 2, 34)
+        lengths = torch.tensor([2])
+        options = torch.randn(3, 12)
+        mask = torch.ones(1, 3, dtype=torch.bool)
+        mask[:, 0] = False
+        with self.assertRaises(ValueError):
+            model.select(history, lengths, options, mask)
+
+    def test_counterfactual_loss_backpropagates(self) -> None:
         torch.manual_seed(5)
         model = self.make_model()
         history = torch.randn(8, 5, 34)
@@ -85,27 +91,17 @@ class RecurrentOptionValueTests(unittest.TestCase):
         target = torch.randn(8, 7)
         target[:, 0] = 0.0
         predicted = model(history, lengths, options)
-        regression = torch.nn.functional.smooth_l1_loss(
-            predicted.mean(dim=0), target
-        )
-        target_diff = target.unsqueeze(2) - target.unsqueeze(1)
-        prediction = predicted.mean(dim=0)
-        prediction_diff = prediction.unsqueeze(2) - prediction.unsqueeze(1)
-        signs = torch.sign(target_diff)
-        comparable = signs != 0
-        ranking = torch.nn.functional.softplus(
-            -signs * prediction_diff
-        )[comparable].mean()
-        loss = regression + 0.25 * ranking
-        loss.backward()
+        metrics = counterfactual_value_loss(predicted, target)
+        metrics["loss"].backward()
         total = sum(
             float(parameter.grad.abs().sum())
             for parameter in model.parameters()
             if parameter.grad is not None
         )
         self.assertGreater(total, 0.0)
+        self.assertTrue(torch.isfinite(metrics["ranking"]))
 
-    def test_checkpoint_round_trip(self) -> None:
+    def test_checkpoint_round_trip_and_registry_guard(self) -> None:
         torch.manual_seed(6)
         model = self.make_model().eval()
         history = torch.randn(2, 3, 34)
@@ -120,10 +116,15 @@ class RecurrentOptionValueTests(unittest.TestCase):
                 option_names=["KEEP", "A", "B", "C", "D"],
                 state_feature_names=[f"s{i}" for i in range(34)],
                 option_feature_names=[f"o{i}" for i in range(12)],
+                registry_fingerprint="abc123",
                 metadata={"smoke": True},
             )
-            loaded, payload = load_checkpoint(path)
+            loaded, payload = load_checkpoint(
+                path, expected_registry_fingerprint="abc123"
+            )
             actual = loaded(history, lengths, options)
+            with self.assertRaises(RuntimeError):
+                load_checkpoint(path, expected_registry_fingerprint="different")
         torch.testing.assert_close(actual, expected)
         self.assertEqual(payload["metadata"], {"smoke": True})
 
