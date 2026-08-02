@@ -2,240 +2,147 @@
 
 Date: 2026-08-02
 
-## Conclusion
+## Status of the evidence
 
-Public expert behaviour should determine the option space before reinforcement
-learning is expanded.  Kaggriculture has several strong but qualitatively
-different strategy families.  A selector trained over one hand-designed list of
-scalar adjustments will miss this structure and will tend either to copy the
-incumbent (`KEEP`) or to combine incompatible choices.
+Leaderboard snapshots and public submissions change quickly.  The 2026-07-31
+rank-one/rank-two notes in this repository are historical evidence, not the
+2026-08-02 ranking.  They remain useful as distinct strategy families, but they
+must not be labelled as the current leader without a fresh authenticated
+leaderboard download.
 
-The recommended order is:
+The newest supplied public notebook provides stronger architectural evidence
+than another hand-written list of scalar options.  It distils Kaito Fukami's
+side of public episode 89454731 into an executable 720-turn tape.  The source
+trajectory scored 125,364 against venks' 128,733, so the tape came from the
+losing side of that particular game.  Nevertheless, the frozen schedule was
+competitive across many other seeds, opponents, and both seats.
 
-1. collect recent public episodes from the current top teams;
-2. extract sparse strategic change points and the observable state before them;
-3. inspect strong public notebooks to recover the intended conditional logic;
-4. implement coherent, licensed continuation modules;
-5. counterfactually evaluate every module from identical saved states;
-6. only then train the recurrent option-value selector.
+This separates two quantities that earlier analysis sometimes conflated:
 
-The leaderboard and public episodes change over time.  The concrete findings
-below use repository snapshots collected on 2026-07-31 and must be refreshed
-before a promotion decision.
+- source-game outcome;
+- counterfactual robustness of the complete schedule.
 
-## What the current evidence already shows
+## What the 2026-08-02 notebook shows
 
-### Current rank-1 snapshot: conditional livestock specialization
+### The submitted policy is almost entirely time indexed
 
-The ten-game rank-1 study found two repeatable continuation modes using the same
-roughly 28 pasture slots:
+The generated agent returns the action stored for `obs.step`.  It does not read
+live prices, weeds, inventory, the opponent, or the current board when choosing
+its nominal command.  Its performance therefore comes from the quality of the
+full timed production program rather than a sophisticated online policy.
 
-- cow-heavy: about 22 cows and 6 sheep;
-- sheep-heavy: about 12 cows and 16 sheep.
+### The useful unit is the complete supply-chain schedule
 
-At day 10, the observable rule
+The distilled trajectory couples:
 
-```text
-MILK >= WOOL -> sheep-heavy
-MILK <  WOOL -> cow-heavy
-```
+- day-0 purchase of three cows, one sheep, and six melon seeds;
+- a small melon opening rather than permanent melon monoculture;
+- progressive rotation into roughly forty strawberry tiles;
+- first and second extra-land purchases around days 8 and 11;
+- labour growth to twelve hands;
+- a final mixed herd of about eight cows and seven sheep;
+- repeated wheat acquisition and product liquidation;
+- gradual crop contraction and labour expiration near the end.
 
-matched all ten observed games.  This is much more informative than learning
-`COWS_18`, `SHEEP_6`, and similar independent actions.  The expert decision is
-a coherent mode switch conditioned on a market relationship.
+These choices are not safely separable.  Crop count changes alter watering and
+harvest work; herd changes alter feed, care, fertilizer, market, storage, and
+route demands; land timing changes geometry; labour timing changes whether all
+of the above can be executed.
 
-The same episodes show a staged program:
+### More adaptation can reduce wins
 
-- days 0-1: around 11-12 melons, 2 sheep, and 3 workers;
-- days 2-6: carrots are used as bridge capital;
-- days 7-9: about 3 wheat tiles and 3-4 sheep;
-- day 10: first major land/livestock conversion;
-- days 11-12: labour rises from about 8 to 11 and livestock approaches 28;
-- days 18-26: around 12 workers;
-- days 27-29: labour is allowed to expire for liquidation.
+The notebook tested a small early cash router.  It improved one counter-family
+mean margin but reduced wins, so it was rejected.  This is evidence against
+adding a learned switch at every apparent strategic event.  A locally sensible
+change can invalidate the remaining tape.
 
-This indicates that labour, layout, herd size, herd composition, and conversion
-day should be represented as one compatible continuation program, not sampled
-as unrelated daily actions.
+### Fixed-trace stress tests are useful but not a real responsive league
 
-### Rank-2 snapshot: market-intensive balanced livestock
+The notebook evaluates candidates against preserved public action traces.  This
+is a valid comparative stress test because each candidate sees the same replay
+mechanism.  It is not proof that a live opponent would keep taking the same
+actions after our behaviour changed.
 
-The rank-2 analysis describes a different family:
+### Requested market quantities are not execution labels
 
-- two land purchases around days 8 and 11;
-- maximum 12 workers;
-- roughly balanced cows and sheep;
-- very large wheat buy and sell request volume;
-- stronger use of market cycling rather than the rank-1 dense specialization.
+The tape contains very large wheat buy and sell requests.  Kaggriculture orders
+are processed unit by unit and may stop due to funds, inventory, or capacity.
+Mining code should reconstruct executed transactions or replay the official
+interpreter before using quantity labels.
 
-This should not be averaged with rank 1 into one policy.  It is a separate
-candidate option family whose value depends on the opponent and market path.
+## Historical strategy families retained from 2026-07-31
 
-### Other top-five snapshots: genuine strategic diversity
+The older public-history snapshots still show genuine diversity:
 
-The public-history summary also contained:
-
-- large mixed cow/sheep production with extensive care;
-- goose/fertilizer-oriented production;
+- dense cow-heavy or sheep-heavy livestock specialization;
+- market-intensive balanced livestock;
+- goose/fertilizer production;
 - cow plus strawberry/fertilizer production;
-- wheat-heavy market production;
+- wheat-market production;
 - crop-only production.
 
-Therefore, expert mining should retain several coherent regimes.  The goal is
-not to clone the mean top-player trajectory.
+These should remain candidate schedule families.  They should no longer be
+represented as independent scalar edits or assumed to reflect the current top
+three.
 
-## What public notebooks add
+## Revised mining target
 
-Public replays expose executed behaviour but not the author's intended
-abstraction.  Public notebooks can reveal:
-
-- phase definitions;
-- target herd and crop schedules;
-- market-price forecasts;
-- opponent-visible-supply estimates;
-- reserve and liquidation rules;
-- job priorities and routing heuristics;
-- which parameters are intended to change together.
-
-The current `main.py` is already derived from the public
-"Scenario-Aware Economic Policy" notebook and includes useful low-level
-abstractions:
-
-- market pricing and projected demand;
-- opponent visible-supply estimates;
-- reactive livestock scoring;
-- feed-stock protection;
-- demand-driven worker hiring;
-- land-purchase timing;
-- field-job generation and assignment;
-- endgame liquidation.
-
-That is evidence against replacing the low-level controller with raw RL.  The
-notebook should be treated as a strong execution engine.  Learning should select
-or modify higher-level continuation programs around it.
-
-## Source hierarchy
-
-Use evidence in the following order.
-
-### 1. Recent public episodes
-
-Best source for:
-
-- what the submitted agent actually did;
-- adaptation across seeds, seats, and opponents;
-- the timing of irreversible changes;
-- whether a notebook's stated strategy survived implementation.
-
-### 2. Public notebook source
-
-Best source for:
-
-- intended branches and state variables;
-- coherent parameter groups;
-- reusable low-level modules;
-- action legality and implementation details.
-
-Respect the notebook licence and attribution.  Do not copy private or
-non-public code.
-
-### 3. Controlled local counterfactuals
-
-Best source for determining whether an observed expert choice is causally useful
-for the current agent.  Public correlation alone is not sufficient.
-
-### 4. Leaderboard score
-
-Use only as a filter.  Simulation ratings are noisy and affected by opponent
-mix, publication timing, and the currently active submission.
-
-## Proposed option-registry structure
-
-Each option should contain a complete continuation contract rather than one
-scalar mutation.
+The mining pipeline should produce complete, executable schedule records:
 
 ```text
-Option
-  id
-  source and licence
-  applicable decision events
-  required state features
-  schedule program
-  spatial/layout program
-  market program
-  liquidation program
-  legality/precondition checks
-  mutually exclusive groups
-  counterfactual validation metadata
+Schedule
+  stable id and version
+  source episode / notebook / local search run
+  provenance and licence
+  exact action tape or symbolic controller
+  day-boundary state anchors
+  phase boundaries
+  layout and routing assumptions
+  market block and liquidation block
+  allowed entry days
+  commitment horizon
+  descriptor vector
+  cross-seed / both-seat validation results
 ```
 
-Initial families to validate are:
+The default entry day is day zero.  A midgame suffix becomes selectable only
+after its asset/layout preconditions and complete suffix have been implemented
+and counterfactually tested.
 
-1. `KEEP_CURRENT_PROGRAM`
-2. `RANK1_COW_HEAVY_D10`
-3. `RANK1_SHEEP_HEAVY_D10`
-4. `RANK2_WHEAT_MARKET_BALANCED`
-5. `GOOSE_FERTILIZER`
-6. `COW_STRAWBERRY_FERTILIZER`
-7. `WHEAT_MARKET_HEAVY`
-8. `CROP_ONLY_LIQUIDATION`
-9. promoted schedule/trajectory genomes from local structured search
+## What to mine from replays
 
-These names are hypotheses, not deployment-ready policies.  Each requires an
-explicit implementation and same-state counterfactual evaluation.
+For each public episode, extract:
 
-## Decision events to mine
+- exact observations and commands for all 720 turns;
+- day-boundary money and productive-asset summaries;
+- hands and unlocked quadrants;
+- crop, herd, structure, and weed geometry;
+- feed requirement and storage pressure;
+- requested market orders and reconstructed executed quantities;
+- first purchase, expansion, plateau, and liquidation times;
+- planned commands that become invalid under untouched seeds;
+- deterministic fallback chosen by the existing controller;
+- terminal reward under both seats and multiple opponents.
 
-Do not force one decision per day.  Candidate events include:
+`mine_expert_options.py` remains useful for identifying visible change points,
+but its output should feed schedule extraction and repair-trigger analysis, not
+a free-switching phase-option policy.
 
-- first shop unlock affecting the current production mix;
-- milk/wool or crop-price ordering change;
-- land becomes affordable with operating reserve remaining;
-- planned field conversion begins;
-- herd capacity or feed burden crosses a threshold;
-- opponent visibly commits to a production family;
-- shed-pressure or price opportunity triggers realization;
-- liquidation horizon is reached.
+## Revised implementation consequence
 
-The new `scripts/mine_expert_options.py` extracts replay-visible change points
-for land, labour, livestock expansion, crop-to-livestock conversion, and labour
-liquidation.  It also records the observable context before each event.
+The evidence now supports this order:
 
-## Important limitations
+1. collect fresh top-team public episodes with timestamps and rank snapshots;
+2. reproduce rewards and build exact executable tapes;
+3. derive symbolic schedules and day-boundary anchors;
+4. create the versioned schedule registry;
+5. compare complete schedules over identical seeds, seats, and opponents;
+6. train a conservative schedule selector at day zero;
+7. build deterministic deviation monitoring and RULE_REPAIR;
+8. train a state-conditioned residual repair model only on triggered states;
+9. add constrained live market-quantity conditioning;
+10. consider conservative offline RL only after these supervised layers plateau.
 
-### Requested market quantity is not executed quantity
-
-Kaggriculture market orders are processed one unit at a time in lockstep.  Large
-orders often mean "continue until funds or inventory run out".  Replay action
-arguments must not be used directly as purchase/sale labels.
-
-The mining script stores request signatures only.  Exact executed quantities
-should later be reconstructed by replaying the official interpreter or by
-comparing state transitions with all simultaneous effects accounted for.
-
-### Hidden opponent inventory
-
-Opponent shed, seeds, and carried inventory are private.  Expert triggers may
-implicitly depend on inferred hidden stock.  This supports recurrent history
-encoding, but it also means a single replay snapshot cannot establish the true
-cause of a choice.
-
-### Publication bias
-
-Only public episodes and public notebooks are visible.  A top team may use a
-different active private submission.  Refresh the leaderboard and submission
-IDs whenever collecting data.
-
-## Implementation consequence
-
-The architecture direction remains a recurrent option-value selector, but its
-option descriptors must be generated from expert and locally promoted strategy
-modules.  The next engineering task is not PPO integration.  It is:
-
-1. run fresh top-team collection with more episodes;
-2. run `scripts/mine_expert_options.py`;
-3. inventory strong public notebooks and their licences;
-4. create a versioned option registry;
-5. implement and test the strongest two or three distinct programs;
-6. extend branched counterfactual generation to those programs;
-7. train and calibrate the conservative selector.
+The primary learning problem is no longer "which scalar should change today?".
+It is "which complete production schedule should be committed to, and how should
+we repair it without destroying its downstream assumptions?"
