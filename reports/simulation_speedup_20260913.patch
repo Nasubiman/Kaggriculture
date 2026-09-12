@@ -1,0 +1,231 @@
+--- a/main.py
++++ b/main.py
+@@ -244,6 +244,25 @@
+ from __future__ import annotations
+ 
+ import copy
++
++
++def _copy_action(action):
++    """Copy internal action commands, whose arguments are immutable scalars.
++
++    Copy every command list so reactive layers cannot mutate the route tape
++    or an earlier action. Unknown metadata retains normal deepcopy semantics.
++    Observation and planner-state copies must continue to use deepcopy.
++    """
++    result = {}
++    for key, value in action.items():
++        if key == "farmer":
++            result[key] = value.copy()
++        elif key in ("hands", "market"):
++            result[key] = [command.copy() for command in value]
++        else:
++            result[key] = copy.deepcopy(value)
++    return result
++
+ 
+ PRODUCTS = ("WHEAT", "CARROT", "TOMATO", "STRAWBERRY", "MELON", "EGG", "MILK", "WOOL", "FERTILIZER")
+ SEED_PRICE = {"WHEAT": 10, "CARROT": 20, "TOMATO": 50, "STRAWBERRY": 100, "MELON": 80}
+@@ -431,8 +450,8 @@
+     def _route_action(self, route, step):
+         tape = self.routes[route]
+         if 0 <= step < len(tape) and isinstance(tape[step], dict):
+-            return copy.deepcopy(tape[step])
+-        return copy.deepcopy(PASS_ACTION)
++            return _copy_action(tape[step])
++        return _copy_action(PASS_ACTION)
+ 
+     def future_sells(self, route, item, step):
+         """Planned SELL quantity of ``item`` in route steps >= ``step`` (suffix sums)."""
+@@ -466,7 +485,6 @@
+             route = st["route"] if st["route"] in self.routes else next(iter(self.routes))
+         st["route"] = route
+         action = self._route_action(route, step)
+-        raw = copy.deepcopy(action)
+         try:
+             if cfg["hand_align"]:
+                 self._hand_align(action, view)
+@@ -496,7 +514,7 @@
+             return action
+         except Exception:
+             self.diagnostics["layer_fallbacks"] += 1
+-            return raw
++            return self._route_action(route, step)
+ 
+     # ---- layer: hand_align ----------------------------------------------------
+     def _hand_align(self, action, view):
+@@ -919,7 +937,7 @@
+                 tape = chassis.routes.get(chassis.players.get(player, {}).get("route"),
+                                           next(iter(chassis.routes.values())))
+                 if 0 <= step < len(tape):
+-                    return copy.deepcopy(tape[step])
++                    return _copy_action(tape[step])
+             except Exception:
+                 pass
+             try:
+@@ -927,7 +945,7 @@
+                 hands = _get(farms[_int(_get(observation, "player", 0))], "hands", []) or []
+                 return {"farmer": ["PASS"], "hands": [["PASS"] for _ in hands], "market": []}
+             except Exception:
+-                return copy.deepcopy(PASS_ACTION)
++                return _copy_action(PASS_ACTION)
+ 
+     agent.chassis = chassis
+     return agent
+@@ -1113,7 +1131,7 @@
+         planned={}
+         for o in action.get('market',[]):
+             if o and o[0]=='SELL' and len(o)>=3:planned[o[1]]=planned.get(o[1],0)+max(0,int(o[2]))
+-        result=copy.deepcopy(action);added=0
++        result=_copy_action(action);added=0
+         for item in sorted(PRODUCTS,key=lambda it:-int(view.prices.get(it,0))):
+             qty=min(needed,max(0,view.shed.get(item,0)-planned.get(item,0)))
+             if qty<=0:continue
+@@ -1318,7 +1336,7 @@
+     _V219_REPORT['hire_requests']+=count
+     if not state.get('committed'):
+         state['committed']=True;_V219_REPORT['commitments']+=1
+-    changed=copy.deepcopy(action);changed['market']+=extra
++    changed=_copy_action(action);changed['market']+=extra
+     return changed
+ 
+ 
+@@ -1423,11 +1441,11 @@
+                   'HARVEST':'harvest_requests','DROP':'drop_requests'}.get(command[0])
+             if name:_V219_REPORT[name]+=1
+             state['last_work'][actor]={'step':step,'command':command,'tomatoes':observation['private']['inventories'][actor].get('TOMATO',0)}
+-        action=copy.deepcopy(action);action['farmer'],action['hands']=commands[0],commands[1:]
++        action=_copy_action(action);action['farmer'],action['hands']=commands[0],commands[1:]
+     if state.get('committed') and len(action['market'])<MAX_ORDERS and not any(o[:2]==['SELL','TOMATO'] for o in action['market']):
+         quantity=projected_shed(action,FarmView(observation)).get('TOMATO',0)
+         if quantity>0:
+-            action=copy.deepcopy(action);action['market'].append(['SELL','TOMATO',quantity])
++            action=_copy_action(action);action['market'].append(['SELL','TOMATO',quantity])
+             _V219_REPORT['tomato_sale_requests']+=quantity
+     return action
+ 
+@@ -1476,7 +1494,7 @@
+             cursor-=1
+     if orders==original:return action
+     _V219_REPORT['reordered_market_turns']+=1
+-    changed=copy.deepcopy(action);changed['market']=orders
++    changed=_copy_action(action);changed['market']=orders
+     return changed
+ _ORDER_PARENT=agent
+ del agent
+@@ -1539,7 +1557,7 @@
+         else:state['failed_placements']+=1
+     state['pending_places']=[]
+     state['last']=step
+-    result=copy.deepcopy(action)
++    result=_copy_action(action)
+     workers=[result.get('farmer') or ['PASS'],*(result.get('hands') or [])]
+     seen_harvest=set();cow_available=int(shed.get('COW',0));occupied=set()
+     for actor,work in enumerate(workers[:len(positions)]):
+@@ -1971,7 +1989,7 @@
+     state['pending']={'first':expected+1,'initial':initial}
+     _V233_REPORT['sheep_hire_requests']+=2;_V233_REPORT['sheep_feed_buy_requests']+=6
+     if initial:_V233_REPORT['sheep_commit_requests']+=1
+-    result=copy.deepcopy(action);result['market']=market+extra
++    result=_copy_action(action);result['market']=market+extra
+     return result
+ 
+ def _v233_worker(obs,actor,targets):
+@@ -2024,7 +2042,7 @@
+     if not 0<shortage<=6 or state.get('rescue_today',0)+shortage>6:return action
+     quote=int(obs['market']['prices']['WHEAT'])
+     if quote<1 or farm['money']<1000+shortage*(quote+10) or sum(stock.values())+shortage>100:return action
+-    result=copy.deepcopy(action);result['market'].append(['BUY_PRODUCT','WHEAT',shortage])
++    result=_copy_action(action);result['market'].append(['BUY_PRODUCT','WHEAT',shortage])
+     state['rescue_today']=state.get('rescue_today',0)+shortage
+     _V233_REPORT['sheep_rescue_feed_requests']+=shortage
+     return result
+@@ -2060,7 +2078,7 @@
+             if pending['initial']:state['committed']=True;_V233_REPORT['sheep_committed']+=1
+     action=_v233_request(observation,action,state,_IMPL.chassis.players[player])
+     if not state.get('committed'):return action
+-    result=copy.deepcopy(action)
++    result=_copy_action(action)
+     commands=[result.get('farmer') or ['PASS']]+list(result.get('hands') or [])
+     commands += [['PASS'] for _ in range(len(farm['hands'])+1-len(commands))]
+     state['work']={}
+@@ -2171,7 +2189,7 @@
+             if len(farm['hands'])>=actor:state['workers'][actor]=plan;_R51_INPUT_REPORT['input_confirmed_hires']+=1
+             else:_R51_INPUT_REPORT['input_hire_errors']+=1
+     if state['workers']:
+-        changed=copy.deepcopy(action)
++        changed=_copy_action(action)
+         for actor,plan in state['workers'].items():
+             inv=private['inventories'][actor];pos=tuple(farm['hands'][actor-1]);cmd=['PASS']
+             if not plan['loaded']:
+@@ -2226,7 +2244,7 @@
+     state['pending']={len(farm['hands'])+1+i:plan for i,plan in enumerate(plans)}
+     _R51_INPUT_REPORT['input_hire_requests']+=len(plans);_R51_INPUT_REPORT['input_purchase_requests']+=total_q+topup
+     _R51_INPUT_REPORT['input_forecast_wheat']+=all_units['WHEAT'];_R51_INPUT_REPORT['input_forecast_carrot']+=all_units['CARROT']
+-    changed=copy.deepcopy(action);changed['market'] += [['BUY_PRODUCT','FERTILIZER',total_q+topup]]+[['HIRE'] for _ in plans];return changed
++    changed=_copy_action(action);changed['market'] += [['BUY_PRODUCT','FERTILIZER',total_q+topup]]+[['HIRE'] for _ in plans];return changed
+ 
+ def agent(observation,configuration=None):
+     try:
+@@ -2269,7 +2287,7 @@
+         if len(o)>=3 and o[0]=='SELL':post[o[1]]=max(0,post.get(o[1],0)-max(0,int(o[2])))
+     needed=sum(post.values())+sum(max(0,q) for inv in private['inventories'] for q in inv.values())-100
+     if needed<=0:return action
+-    result=copy.deepcopy(action);orders=result['market']
++    result=_copy_action(action);orders=result['market']
+     # Grain and fertilizer have native input obligations; other products do not.
+     # Additional commodity sales are bounded by actual post-action physical stock.
+     for item in sorted((p for p in PRODUCTS if p not in ('WHEAT','FERTILIZER')),key=lambda p:-obs['market']['prices'].get(p,0)):
+--- a/training/fast_kaggriculture.py
++++ b/training/fast_kaggriculture.py
+@@ -44,6 +44,32 @@
+     if params is not None:
+         return _OFFICIAL_MARKET_PRICE(item, inventory, params)
+     return _cached_default_market_price(item, inventory)
++
++
++@lru_cache(maxsize=32)
++def _shed_access_set(board_size: int) -> frozenset[tuple[int, int]]:
++    return frozenset(kaggriculture._shed_access_tiles(board_size))
++
++
++def _fast_is_shed_adjacent(pos: Any, board_size: int) -> bool:
++    return tuple(pos) in _shed_access_set(board_size)
++
++
++def _fast_decay_plants(farm: dict[str, Any], step: int) -> None:
++    """Official decay rules with row-local access in the per-turn board scan."""
++    tiles = farm["tiles"]
++    board_size = len(tiles)
++    for row in tiles:
++        for x in range(board_size):
++            tile = row[x]
++            if not isinstance(tile, dict) or tile.get("kind") != "PLANT":
++                continue
++            lifespan = tile["max_lifespan_step"]
++            if lifespan < 0 or step < lifespan or (step - lifespan) % 2 != 0:
++                continue
++            tile["yield_units"] -= 1
++            if tile["yield_units"] <= 0:
++                row[x] = {"kind": "WEED"}
+ 
+ 
+ def _clone_function(function: Callable[..., Any], globals_: dict[str, Any]) -> Any:
+@@ -60,12 +86,14 @@
+ 
+ 
+ def _build_fast_interpreter() -> Callable[[list[Any], Any], list[Any]]:
+-    # These are the only official functions whose global lookups lead to
+-    # market_price.  Reusing their original code objects minimizes drift risk
+-    # while keeping kaggriculture.market_price untouched for standard runs.
++    # Isolate replacements from the standard runner. Clone the callers whose
++    # global lookups must use these replacements; reuse official code otherwise.
+     globals_ = dict(vars(kaggriculture))
+     globals_["market_price"] = _fast_market_price
++    globals_["_is_shed_adjacent"] = _fast_is_shed_adjacent
++    globals_["_decay_plants"] = _fast_decay_plants
+     for name in (
++        "_apply_unit_action",
+         "_refresh_prices",
+         "_process_market",
+         "_town_consume",

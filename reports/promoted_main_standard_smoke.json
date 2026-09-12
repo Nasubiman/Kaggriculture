@@ -1,0 +1,129 @@
+{
+  "candidate": "/Users/nakamuray/code_test/Kaggriculture/main.py",
+  "models_dir": "/Users/nakamuray/code_test/Kaggriculture/test",
+  "fast_runner": false,
+  "models": {
+    "public_v36": "/Users/nakamuray/code_test/Kaggriculture/test/public_v36/main.py",
+    "public_v37": "/Users/nakamuray/code_test/Kaggriculture/test/public_v37/main.py"
+  },
+  "summaries": {
+    "public_v36": {
+      "games": 4,
+      "wins": 4,
+      "ties": 0,
+      "win_rate": 1.0,
+      "mean_reward": 112204.5,
+      "mean_opponent_reward": 109945.5,
+      "mean_margin": 2259.0,
+      "errors": 0
+    },
+    "public_v37": {
+      "games": 4,
+      "wins": 4,
+      "ties": 0,
+      "win_rate": 1.0,
+      "mean_reward": 112843.5,
+      "mean_opponent_reward": 111179.0,
+      "mean_margin": 1664.5,
+      "errors": 0
+    }
+  },
+  "games": [
+    {
+      "model": "public_v36",
+      "seed": 9830000,
+      "seat": 0,
+      "reward": 127678.0,
+      "opponent_reward": 125071.0,
+      "margin": 2607.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "public_v36",
+      "seed": 9830000,
+      "seat": 1,
+      "reward": 127678.0,
+      "opponent_reward": 125071.0,
+      "margin": 2607.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "public_v36",
+      "seed": 9830017,
+      "seat": 0,
+      "reward": 96785.0,
+      "opponent_reward": 94766.0,
+      "margin": 2019.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "public_v36",
+      "seed": 9830017,
+      "seat": 1,
+      "reward": 96677.0,
+      "opponent_reward": 94874.0,
+      "margin": 1803.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "public_v37",
+      "seed": 9830000,
+      "seat": 0,
+      "reward": 129170.0,
+      "opponent_reward": 126533.0,
+      "margin": 2637.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "public_v37",
+      "seed": 9830000,
+      "seat": 1,
+      "reward": 129170.0,
+      "opponent_reward": 126533.0,
+      "margin": 2637.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "public_v37",
+      "seed": 9830017,
+      "seat": 0,
+      "reward": 96571.0,
+      "opponent_reward": 95771.0,
+      "margin": 800.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "public_v37",
+      "seed": 9830017,
+      "seat": 1,
+      "reward": 96463.0,
+      "opponent_reward": 95879.0,
+      "margin": 584.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    }
+  ]
+}

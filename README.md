@@ -3,6 +3,19 @@
 This workspace contains a reproducible public-history analysis pipeline and a
 self-contained baseline agent for the Kaggriculture simulation competition.
 
+The September 2026 workspace now uses an action-tape agent with reactive market
+and worker controls plus a bounded terminal planner in `main.py`. The July
+baseline and PPO experiments described below are historical context. Current
+simulation profiling, speed measurements, and parity checks are documented in
+[`reports/simulation_speedup_20260913.md`](reports/simulation_speedup_20260913.md).
+
+Run the simulation regression checks and benchmark locally with:
+
+```bash
+.venv/bin/python scripts/test_simulation_speed.py
+.venv/bin/python scripts/benchmark_simulation.py --verify
+```
+
 ## Setup
 
 ```bash

@@ -26,7 +26,7 @@ from schedule_genome import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OPPONENTS = ("0801_ev4", "0801_ev5", "0801_v2", "0801_ev6")
+DEFAULT_OPPONENTS = ("public_v31", "public_v35", "public_v36", "public_v37")
 _BASE_PATH = ""
 _OPPONENT_PATHS: dict[str, str] = {}
 _CANDIDATES: dict[str, Any] = {}
@@ -394,4 +394,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -1,0 +1,262 @@
+{
+  "candidate": "/Users/nakamuray/code_test/Kaggriculture/main.py",
+  "models_dir": "/Users/nakamuray/code_test/Kaggriculture/test",
+  "fast_runner": false,
+  "models": {
+    "incumbent_v37_opening": "/Users/nakamuray/code_test/Kaggriculture/test/incumbent_v37_opening/main.py"
+  },
+  "summaries": {
+    "incumbent_v37_opening": {
+      "games": 20,
+      "wins": 20,
+      "ties": 0,
+      "win_rate": 1.0,
+      "mean_reward": 131111.5,
+      "mean_opponent_reward": 83540.2,
+      "mean_margin": 47571.3,
+      "errors": 0
+    }
+  },
+  "games": [
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500000,
+      "seat": 0,
+      "reward": 109331.0,
+      "opponent_reward": 78632.0,
+      "margin": 30699.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500000,
+      "seat": 1,
+      "reward": 109331.0,
+      "opponent_reward": 78632.0,
+      "margin": 30699.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500017,
+      "seat": 0,
+      "reward": 144832.0,
+      "opponent_reward": 80609.0,
+      "margin": 64223.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500017,
+      "seat": 1,
+      "reward": 144832.0,
+      "opponent_reward": 80609.0,
+      "margin": 64223.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500034,
+      "seat": 0,
+      "reward": 153638.0,
+      "opponent_reward": 100381.0,
+      "margin": 53257.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500034,
+      "seat": 1,
+      "reward": 155052.0,
+      "opponent_reward": 98435.0,
+      "margin": 56617.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500051,
+      "seat": 0,
+      "reward": 120778.0,
+      "opponent_reward": 76656.0,
+      "margin": 44122.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500051,
+      "seat": 1,
+      "reward": 120778.0,
+      "opponent_reward": 76656.0,
+      "margin": 44122.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500068,
+      "seat": 0,
+      "reward": 130675.0,
+      "opponent_reward": 78461.0,
+      "margin": 52214.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500068,
+      "seat": 1,
+      "reward": 130675.0,
+      "opponent_reward": 78461.0,
+      "margin": 52214.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500085,
+      "seat": 0,
+      "reward": 110807.0,
+      "opponent_reward": 75110.0,
+      "margin": 35697.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500085,
+      "seat": 1,
+      "reward": 110807.0,
+      "opponent_reward": 75110.0,
+      "margin": 35697.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500102,
+      "seat": 0,
+      "reward": 160102.0,
+      "opponent_reward": 93549.0,
+      "margin": 66553.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500102,
+      "seat": 1,
+      "reward": 160102.0,
+      "opponent_reward": 93549.0,
+      "margin": 66553.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500119,
+      "seat": 0,
+      "reward": 163384.0,
+      "opponent_reward": 104893.0,
+      "margin": 58491.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500119,
+      "seat": 1,
+      "reward": 163384.0,
+      "opponent_reward": 104893.0,
+      "margin": 58491.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500136,
+      "seat": 0,
+      "reward": 66924.0,
+      "opponent_reward": 48636.0,
+      "margin": 18288.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500136,
+      "seat": 1,
+      "reward": 66924.0,
+      "opponent_reward": 48636.0,
+      "margin": 18288.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500153,
+      "seat": 0,
+      "reward": 149937.0,
+      "opponent_reward": 99448.0,
+      "margin": 50489.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "incumbent_v37_opening",
+      "seed": 10500153,
+      "seat": 1,
+      "reward": 149937.0,
+      "opponent_reward": 99448.0,
+      "margin": 50489.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    }
+  ]
+}

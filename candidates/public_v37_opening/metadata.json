@@ -1,0 +1,31 @@
+{
+  "name": "public_v37_opening",
+  "base": "test/public_v37/main.py",
+  "base_sha256": "94c1c2c05ae7cde8fca9ee3957b01112c1cbab82c7434aae6a5f24fa7485bc4c",
+  "change": {
+    "turn": 0,
+    "before": [["BUY_PRODUCT", "WHEAT", 13], ["BUY_PRODUCT", "WHEAT", 30], ["SELL", "WHEAT", 30]],
+    "after": [["BUY_PRODUCT", "WHEAT", 48], ["SELL", "WHEAT", 35]],
+    "net_wheat": 13
+  },
+  "main_sha256": "5fd44a967eeecfe92b15ef45de44c699f539e5ff315b56243cefca5428f458a4",
+  "submission_sha256": "1840965811af40f65c81df5faab0c886df1b8feea01daf8fe78273acd78d1297",
+  "validation": {
+    "versus_public_v37": {
+      "seeds": 100,
+      "games": 200,
+      "wins": 197,
+      "win_rate": 0.985,
+      "mean_margin": 3265.02,
+      "errors": 0,
+      "report": "reports/public_v37_opening_vs_base_100.json"
+    },
+    "standard_runner_smoke": {
+      "games": 4,
+      "wins": 4,
+      "mean_margin": 2395.5,
+      "fast_runner_exact_parity": true,
+      "report": "reports/public_v37_opening_standard_smoke.json"
+    }
+  }
+}

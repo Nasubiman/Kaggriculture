@@ -1,0 +1,5333 @@
+{
+  "base": "/home/nakamura_y/agriculture/Kaggriculture/test/public_v37/main.py",
+  "seeds": [
+    9300000,
+    9300017,
+    9300034,
+    9300051,
+    9300068,
+    9300085,
+    9300102,
+    9300119
+  ],
+  "openings": {
+    "base_q30": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        30
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        30
+      ]
+    ],
+    "buy13_only": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ]
+    ],
+    "roundtrip_q5": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        5
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        5
+      ]
+    ],
+    "roundtrip_first_q5": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        5
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        5
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ]
+    ],
+    "combined_q5": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        18
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        5
+      ]
+    ],
+    "roundtrip_q10": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        10
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        10
+      ]
+    ],
+    "roundtrip_first_q10": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        10
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        10
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ]
+    ],
+    "combined_q10": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        23
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        10
+      ]
+    ],
+    "roundtrip_q15": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        15
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        15
+      ]
+    ],
+    "roundtrip_first_q15": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        15
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        15
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ]
+    ],
+    "combined_q15": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        28
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        15
+      ]
+    ],
+    "roundtrip_q20": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        20
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        20
+      ]
+    ],
+    "roundtrip_first_q20": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        20
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        20
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ]
+    ],
+    "combined_q20": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        33
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        20
+      ]
+    ],
+    "roundtrip_q25": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        25
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        25
+      ]
+    ],
+    "roundtrip_first_q25": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        25
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        25
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ]
+    ],
+    "combined_q25": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        38
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        25
+      ]
+    ],
+    "roundtrip_q35": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        35
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        35
+      ]
+    ],
+    "roundtrip_first_q35": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        35
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        35
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ]
+    ],
+    "combined_q35": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        48
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        35
+      ]
+    ],
+    "roundtrip_q40": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        40
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        40
+      ]
+    ],
+    "roundtrip_first_q40": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        40
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        40
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ]
+    ],
+    "combined_q40": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        53
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        40
+      ]
+    ],
+    "roundtrip_q50": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        50
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        50
+      ]
+    ],
+    "roundtrip_first_q50": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        50
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        50
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ]
+    ],
+    "combined_q50": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        63
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        50
+      ]
+    ],
+    "roundtrip_q60": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        60
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        60
+      ]
+    ],
+    "roundtrip_first_q60": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        60
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        60
+      ],
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        13
+      ]
+    ],
+    "combined_q60": [
+      [
+        "BUY_PRODUCT",
+        "WHEAT",
+        73
+      ],
+      [
+        "SELL",
+        "WHEAT",
+        60
+      ]
+    ]
+  },
+  "ranking": [
+    "combined_q35",
+    "combined_q40",
+    "roundtrip_first_q50",
+    "combined_q50",
+    "roundtrip_first_q60",
+    "combined_q60",
+    "roundtrip_q10",
+    "roundtrip_q20",
+    "roundtrip_q40",
+    "roundtrip_q5",
+    "roundtrip_q25",
+    "combined_q5",
+    "combined_q10",
+    "combined_q15",
+    "base_q30",
+    "buy13_only",
+    "roundtrip_first_q20",
+    "roundtrip_first_q25",
+    "combined_q20",
+    "combined_q25",
+    "roundtrip_first_q35",
+    "roundtrip_first_q40",
+    "roundtrip_q15",
+    "roundtrip_q35",
+    "roundtrip_first_q5",
+    "roundtrip_q50",
+    "roundtrip_first_q10",
+    "roundtrip_first_q15",
+    "roundtrip_q60"
+  ],
+  "summaries": {
+    "base_q30": {
+      "games": 16,
+      "wins": 0,
+      "mean_margin": 0.0,
+      "mean_reward": 109041.375,
+      "errors": 0
+    },
+    "buy13_only": {
+      "games": 16,
+      "wins": 0,
+      "mean_margin": 0.0,
+      "mean_reward": 109041.375,
+      "errors": 0
+    },
+    "roundtrip_q5": {
+      "games": 16,
+      "wins": 16,
+      "mean_margin": 33.0,
+      "mean_reward": 109055.0,
+      "errors": 0
+    },
+    "roundtrip_first_q5": {
+      "games": 16,
+      "wins": 0,
+      "mean_margin": -2979.375,
+      "mean_reward": 98270.75,
+      "errors": 0
+    },
+    "combined_q5": {
+      "games": 16,
+      "wins": 16,
+      "mean_margin": 8.0,
+      "mean_reward": 109045.375,
+      "errors": 0
+    },
+    "roundtrip_q10": {
+      "games": 16,
+      "wins": 16,
+      "mean_margin": 410.0,
+      "mean_reward": 108787.125,
+      "errors": 0
+    },
+    "roundtrip_first_q10": {
+      "games": 16,
+      "wins": 0,
+      "mean_margin": -41930.3125,
+      "mean_reward": 75533.1875,
+      "errors": 0
+    },
+    "combined_q10": {
+      "games": 16,
+      "wins": 16,
+      "mean_margin": 8.0,
+      "mean_reward": 109045.375,
+      "errors": 0
+    },
+    "roundtrip_q15": {
+      "games": 16,
+      "wins": 14,
+      "mean_margin": -343.0,
+      "mean_reward": 108411.625,
+      "errors": 0
+    },
+    "roundtrip_first_q15": {
+      "games": 16,
+      "wins": 0,
+      "mean_margin": -41930.3125,
+      "mean_reward": 75533.1875,
+      "errors": 0
+    },
+    "combined_q15": {
+      "games": 16,
+      "wins": 16,
+      "mean_margin": 8.0,
+      "mean_reward": 109045.375,
+      "errors": 0
+    },
+    "roundtrip_q20": {
+      "games": 16,
+      "wins": 16,
+      "mean_margin": 408.0,
+      "mean_reward": 108786.125,
+      "errors": 0
+    },
+    "roundtrip_first_q20": {
+      "games": 16,
+      "wins": 0,
+      "mean_margin": -32.0,
+      "mean_reward": 109022.0,
+      "errors": 0
+    },
+    "combined_q20": {
+      "games": 16,
+      "wins": 14,
+      "mean_margin": -337.0,
+      "mean_reward": 108413.625,
+      "errors": 0
+    },
+    "roundtrip_q25": {
+      "games": 16,
+      "wins": 16,
+      "mean_margin": 33.0,
+      "mean_reward": 109056.0,
+      "errors": 0
+    },
+    "roundtrip_first_q25": {
+      "games": 16,
+      "wins": 0,
+      "mean_margin": -32.0,
+      "mean_reward": 109022.0,
+      "errors": 0
+    },
+    "combined_q25": {
+      "games": 16,
+      "wins": 14,
+      "mean_margin": -337.0,
+      "mean_reward": 108413.625,
+      "errors": 0
+    },
+    "roundtrip_q35": {
+      "games": 16,
+      "wins": 0,
+      "mean_margin": -400.0,
+      "mean_reward": 108384.125,
+      "errors": 0
+    },
+    "roundtrip_first_q35": {
+      "games": 16,
+      "wins": 14,
+      "mean_margin": -337.0,
+      "mean_reward": 108413.625,
+      "errors": 0
+    },
+    "combined_q35": {
+      "games": 16,
+      "wins": 16,
+      "mean_margin": 3055.25,
+      "mean_reward": 101274.0,
+      "errors": 0
+    },
+    "roundtrip_q40": {
+      "games": 16,
+      "wins": 2,
+      "mean_margin": 337.0,
+      "mean_reward": 108750.625,
+      "errors": 0
+    },
+    "roundtrip_first_q40": {
+      "games": 16,
+      "wins": 14,
+      "mean_margin": -337.0,
+      "mean_reward": 108413.625,
+      "errors": 0
+    },
+    "combined_q40": {
+      "games": 16,
+      "wins": 16,
+      "mean_margin": 3055.25,
+      "mean_reward": 101274.0,
+      "errors": 0
+    },
+    "roundtrip_q50": {
+      "games": 16,
+      "wins": 0,
+      "mean_margin": -2981.375,
+      "mean_reward": 98269.75,
+      "errors": 0
+    },
+    "roundtrip_first_q50": {
+      "games": 16,
+      "wins": 16,
+      "mean_margin": 3055.25,
+      "mean_reward": 101274.0,
+      "errors": 0
+    },
+    "combined_q50": {
+      "games": 16,
+      "wins": 16,
+      "mean_margin": 2521.75,
+      "mean_reward": 85171.625,
+      "errors": 0
+    },
+    "roundtrip_q60": {
+      "games": 16,
+      "wins": 0,
+      "mean_margin": -47125.625,
+      "mean_reward": 79322.25,
+      "errors": 0
+    },
+    "roundtrip_first_q60": {
+      "games": 16,
+      "wins": 16,
+      "mean_margin": 2521.75,
+      "mean_reward": 85171.625,
+      "errors": 0
+    },
+    "combined_q60": {
+      "games": 16,
+      "wins": 16,
+      "mean_margin": 2521.75,
+      "mean_reward": 85171.625,
+      "errors": 0
+    }
+  },
+  "games": [
+    {
+      "candidate": "base_q30",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107754.0,
+      "opponent_reward": 107754.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107754.0,
+      "opponent_reward": 107754.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124267.0,
+      "opponent_reward": 124267.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124267.0,
+      "opponent_reward": 124267.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 102094.0,
+      "opponent_reward": 102094.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 102094.0,
+      "opponent_reward": 102094.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94496.0,
+      "opponent_reward": 94496.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94496.0,
+      "opponent_reward": 94496.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88512.0,
+      "opponent_reward": 88512.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88512.0,
+      "opponent_reward": 88512.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118465.0,
+      "opponent_reward": 118465.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118465.0,
+      "opponent_reward": 118465.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110021.0,
+      "opponent_reward": 110021.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110021.0,
+      "opponent_reward": 110021.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126722.0,
+      "opponent_reward": 126722.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "base_q30",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126722.0,
+      "opponent_reward": 126722.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107754.0,
+      "opponent_reward": 107754.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107754.0,
+      "opponent_reward": 107754.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124267.0,
+      "opponent_reward": 124267.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124267.0,
+      "opponent_reward": 124267.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 102094.0,
+      "opponent_reward": 102094.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 102094.0,
+      "opponent_reward": 102094.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94496.0,
+      "opponent_reward": 94496.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94496.0,
+      "opponent_reward": 94496.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88512.0,
+      "opponent_reward": 88512.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88512.0,
+      "opponent_reward": 88512.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118465.0,
+      "opponent_reward": 118465.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118465.0,
+      "opponent_reward": 118465.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110021.0,
+      "opponent_reward": 110021.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110021.0,
+      "opponent_reward": 110021.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126722.0,
+      "opponent_reward": 126722.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "buy13_only",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126722.0,
+      "opponent_reward": 126722.0,
+      "margin": 0.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107758.0,
+      "opponent_reward": 107750.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107758.0,
+      "opponent_reward": 107750.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124271.0,
+      "opponent_reward": 124263.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124271.0,
+      "opponent_reward": 124263.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 102098.0,
+      "opponent_reward": 102090.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 102098.0,
+      "opponent_reward": 102090.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94500.0,
+      "opponent_reward": 94492.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94500.0,
+      "opponent_reward": 94492.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88516.0,
+      "opponent_reward": 88508.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88516.0,
+      "opponent_reward": 88508.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118469.0,
+      "opponent_reward": 118461.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118469.0,
+      "opponent_reward": 118461.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110025.0,
+      "opponent_reward": 110017.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110025.0,
+      "opponent_reward": 110017.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126726.0,
+      "opponent_reward": 126718.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q10",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126726.0,
+      "opponent_reward": 126718.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107758.0,
+      "opponent_reward": 107750.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107758.0,
+      "opponent_reward": 107750.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124271.0,
+      "opponent_reward": 124263.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124271.0,
+      "opponent_reward": 124263.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 102098.0,
+      "opponent_reward": 102090.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 102098.0,
+      "opponent_reward": 102090.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94500.0,
+      "opponent_reward": 94492.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94500.0,
+      "opponent_reward": 94492.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88516.0,
+      "opponent_reward": 88508.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88516.0,
+      "opponent_reward": 88508.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118469.0,
+      "opponent_reward": 118461.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118469.0,
+      "opponent_reward": 118461.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110025.0,
+      "opponent_reward": 110017.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110025.0,
+      "opponent_reward": 110017.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126726.0,
+      "opponent_reward": 126718.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q15",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126726.0,
+      "opponent_reward": 126718.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107775.0,
+      "opponent_reward": 107734.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107775.0,
+      "opponent_reward": 107734.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124288.0,
+      "opponent_reward": 124247.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124288.0,
+      "opponent_reward": 124247.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 96925.0,
+      "opponent_reward": 99906.0,
+      "margin": -2981.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 96925.0,
+      "opponent_reward": 99906.0,
+      "margin": -2981.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94517.0,
+      "opponent_reward": 94476.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94517.0,
+      "opponent_reward": 94476.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88533.0,
+      "opponent_reward": 88493.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88533.0,
+      "opponent_reward": 88493.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118486.0,
+      "opponent_reward": 118446.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118486.0,
+      "opponent_reward": 118446.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110042.0,
+      "opponent_reward": 110001.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110042.0,
+      "opponent_reward": 110001.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126743.0,
+      "opponent_reward": 126702.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q20",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126743.0,
+      "opponent_reward": 126702.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107775.0,
+      "opponent_reward": 107734.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107775.0,
+      "opponent_reward": 107734.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124288.0,
+      "opponent_reward": 124247.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124288.0,
+      "opponent_reward": 124247.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 96925.0,
+      "opponent_reward": 99906.0,
+      "margin": -2981.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 96925.0,
+      "opponent_reward": 99906.0,
+      "margin": -2981.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94517.0,
+      "opponent_reward": 94476.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94517.0,
+      "opponent_reward": 94476.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88533.0,
+      "opponent_reward": 88493.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88533.0,
+      "opponent_reward": 88493.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118486.0,
+      "opponent_reward": 118446.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118486.0,
+      "opponent_reward": 118446.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110042.0,
+      "opponent_reward": 110001.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110042.0,
+      "opponent_reward": 110001.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126743.0,
+      "opponent_reward": 126702.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q25",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126743.0,
+      "opponent_reward": 126702.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 103864.0,
+      "opponent_reward": 101394.0,
+      "margin": 2470.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 103864.0,
+      "opponent_reward": 101394.0,
+      "margin": 2470.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 128532.0,
+      "opponent_reward": 121031.0,
+      "margin": 7501.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 128532.0,
+      "opponent_reward": 121031.0,
+      "margin": 7501.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 69112.0,
+      "opponent_reward": 68234.0,
+      "margin": 878.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 69112.0,
+      "opponent_reward": 68234.0,
+      "margin": 878.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 64621.0,
+      "opponent_reward": 62470.0,
+      "margin": 2151.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 64621.0,
+      "opponent_reward": 62470.0,
+      "margin": 2151.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 128565.0,
+      "opponent_reward": 127860.0,
+      "margin": 705.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 128565.0,
+      "opponent_reward": 127860.0,
+      "margin": 705.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 111749.0,
+      "opponent_reward": 106633.0,
+      "margin": 5116.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 111749.0,
+      "opponent_reward": 106633.0,
+      "margin": 5116.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 111850.0,
+      "opponent_reward": 108722.0,
+      "margin": 3128.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 111850.0,
+      "opponent_reward": 108722.0,
+      "margin": 3128.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 91899.0,
+      "opponent_reward": 89406.0,
+      "margin": 2493.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q35",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 91899.0,
+      "opponent_reward": 89406.0,
+      "margin": 2493.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 103864.0,
+      "opponent_reward": 101394.0,
+      "margin": 2470.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 103864.0,
+      "opponent_reward": 101394.0,
+      "margin": 2470.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 128532.0,
+      "opponent_reward": 121031.0,
+      "margin": 7501.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 128532.0,
+      "opponent_reward": 121031.0,
+      "margin": 7501.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 69112.0,
+      "opponent_reward": 68234.0,
+      "margin": 878.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 69112.0,
+      "opponent_reward": 68234.0,
+      "margin": 878.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 64621.0,
+      "opponent_reward": 62470.0,
+      "margin": 2151.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 64621.0,
+      "opponent_reward": 62470.0,
+      "margin": 2151.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 128565.0,
+      "opponent_reward": 127860.0,
+      "margin": 705.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 128565.0,
+      "opponent_reward": 127860.0,
+      "margin": 705.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 111749.0,
+      "opponent_reward": 106633.0,
+      "margin": 5116.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 111749.0,
+      "opponent_reward": 106633.0,
+      "margin": 5116.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 111850.0,
+      "opponent_reward": 108722.0,
+      "margin": 3128.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 111850.0,
+      "opponent_reward": 108722.0,
+      "margin": 3128.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 91899.0,
+      "opponent_reward": 89406.0,
+      "margin": 2493.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q40",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 91899.0,
+      "opponent_reward": 89406.0,
+      "margin": 2493.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107758.0,
+      "opponent_reward": 107750.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107758.0,
+      "opponent_reward": 107750.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124271.0,
+      "opponent_reward": 124263.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124271.0,
+      "opponent_reward": 124263.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 102098.0,
+      "opponent_reward": 102090.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 102098.0,
+      "opponent_reward": 102090.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94500.0,
+      "opponent_reward": 94492.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94500.0,
+      "opponent_reward": 94492.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88516.0,
+      "opponent_reward": 88508.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88516.0,
+      "opponent_reward": 88508.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118469.0,
+      "opponent_reward": 118461.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118469.0,
+      "opponent_reward": 118461.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110025.0,
+      "opponent_reward": 110017.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110025.0,
+      "opponent_reward": 110017.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126726.0,
+      "opponent_reward": 126718.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q5",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126726.0,
+      "opponent_reward": 126718.0,
+      "margin": 8.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 70734.0,
+      "opponent_reward": 68725.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 70734.0,
+      "opponent_reward": 68725.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 99623.0,
+      "opponent_reward": 97614.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 99623.0,
+      "opponent_reward": 97614.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 74350.0,
+      "opponent_reward": 72341.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 74350.0,
+      "opponent_reward": 72341.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 72156.0,
+      "opponent_reward": 70147.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 72156.0,
+      "opponent_reward": 70147.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 96568.0,
+      "opponent_reward": 90457.0,
+      "margin": 6111.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 96568.0,
+      "opponent_reward": 90457.0,
+      "margin": 6111.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 93661.0,
+      "opponent_reward": 91652.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 93661.0,
+      "opponent_reward": 91652.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 104944.0,
+      "opponent_reward": 102935.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 104944.0,
+      "opponent_reward": 102935.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 69337.0,
+      "opponent_reward": 67328.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q50",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 69337.0,
+      "opponent_reward": 67328.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 70734.0,
+      "opponent_reward": 68725.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 70734.0,
+      "opponent_reward": 68725.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 99623.0,
+      "opponent_reward": 97614.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 99623.0,
+      "opponent_reward": 97614.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 74350.0,
+      "opponent_reward": 72341.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 74350.0,
+      "opponent_reward": 72341.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 72156.0,
+      "opponent_reward": 70147.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 72156.0,
+      "opponent_reward": 70147.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 96568.0,
+      "opponent_reward": 90457.0,
+      "margin": 6111.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 96568.0,
+      "opponent_reward": 90457.0,
+      "margin": 6111.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 93661.0,
+      "opponent_reward": 91652.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 93661.0,
+      "opponent_reward": 91652.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 104944.0,
+      "opponent_reward": 102935.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 104944.0,
+      "opponent_reward": 102935.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 69337.0,
+      "opponent_reward": 67328.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "combined_q60",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 69337.0,
+      "opponent_reward": 67328.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 78852.0,
+      "opponent_reward": 121349.0,
+      "margin": -42497.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 78831.0,
+      "opponent_reward": 121411.0,
+      "margin": -42580.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 58558.0,
+      "opponent_reward": 86669.0,
+      "margin": -28111.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 58558.0,
+      "opponent_reward": 86669.0,
+      "margin": -28111.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 57885.0,
+      "opponent_reward": 84176.0,
+      "margin": -26291.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 57885.0,
+      "opponent_reward": 84176.0,
+      "margin": -26291.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 75465.0,
+      "opponent_reward": 118854.0,
+      "margin": -43389.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 75465.0,
+      "opponent_reward": 118854.0,
+      "margin": -43389.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 89826.0,
+      "opponent_reward": 153061.0,
+      "margin": -63235.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 89826.0,
+      "opponent_reward": 153061.0,
+      "margin": -63235.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 95492.0,
+      "opponent_reward": 153034.0,
+      "margin": -57542.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 95492.0,
+      "opponent_reward": 153034.0,
+      "margin": -57542.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 74096.0,
+      "opponent_reward": 112989.0,
+      "margin": -38893.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 74096.0,
+      "opponent_reward": 112989.0,
+      "margin": -38893.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 74102.0,
+      "opponent_reward": 109545.0,
+      "margin": -35443.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q10",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 74102.0,
+      "opponent_reward": 109545.0,
+      "margin": -35443.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 78852.0,
+      "opponent_reward": 121349.0,
+      "margin": -42497.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 78831.0,
+      "opponent_reward": 121411.0,
+      "margin": -42580.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 58558.0,
+      "opponent_reward": 86669.0,
+      "margin": -28111.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 58558.0,
+      "opponent_reward": 86669.0,
+      "margin": -28111.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 57885.0,
+      "opponent_reward": 84176.0,
+      "margin": -26291.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 57885.0,
+      "opponent_reward": 84176.0,
+      "margin": -26291.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 75465.0,
+      "opponent_reward": 118854.0,
+      "margin": -43389.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 75465.0,
+      "opponent_reward": 118854.0,
+      "margin": -43389.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 89826.0,
+      "opponent_reward": 153061.0,
+      "margin": -63235.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 89826.0,
+      "opponent_reward": 153061.0,
+      "margin": -63235.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 95492.0,
+      "opponent_reward": 153034.0,
+      "margin": -57542.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 95492.0,
+      "opponent_reward": 153034.0,
+      "margin": -57542.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 74096.0,
+      "opponent_reward": 112989.0,
+      "margin": -38893.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 74096.0,
+      "opponent_reward": 112989.0,
+      "margin": -38893.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 74102.0,
+      "opponent_reward": 109545.0,
+      "margin": -35443.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q15",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 74102.0,
+      "opponent_reward": 109545.0,
+      "margin": -35443.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107745.0,
+      "opponent_reward": 107764.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107745.0,
+      "opponent_reward": 107764.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124258.0,
+      "opponent_reward": 124277.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124258.0,
+      "opponent_reward": 124277.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 102000.0,
+      "opponent_reward": 102125.0,
+      "margin": -125.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 102000.0,
+      "opponent_reward": 102125.0,
+      "margin": -125.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94487.0,
+      "opponent_reward": 94506.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94487.0,
+      "opponent_reward": 94506.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88504.0,
+      "opponent_reward": 88522.0,
+      "margin": -18.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88504.0,
+      "opponent_reward": 88522.0,
+      "margin": -18.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118457.0,
+      "opponent_reward": 118475.0,
+      "margin": -18.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118457.0,
+      "opponent_reward": 118475.0,
+      "margin": -18.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110012.0,
+      "opponent_reward": 110031.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110012.0,
+      "opponent_reward": 110031.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126713.0,
+      "opponent_reward": 126732.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q20",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126713.0,
+      "opponent_reward": 126732.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107745.0,
+      "opponent_reward": 107764.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107745.0,
+      "opponent_reward": 107764.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124258.0,
+      "opponent_reward": 124277.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124258.0,
+      "opponent_reward": 124277.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 102000.0,
+      "opponent_reward": 102125.0,
+      "margin": -125.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 102000.0,
+      "opponent_reward": 102125.0,
+      "margin": -125.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94487.0,
+      "opponent_reward": 94506.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94487.0,
+      "opponent_reward": 94506.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88504.0,
+      "opponent_reward": 88522.0,
+      "margin": -18.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88504.0,
+      "opponent_reward": 88522.0,
+      "margin": -18.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118457.0,
+      "opponent_reward": 118475.0,
+      "margin": -18.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118457.0,
+      "opponent_reward": 118475.0,
+      "margin": -18.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110012.0,
+      "opponent_reward": 110031.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110012.0,
+      "opponent_reward": 110031.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126713.0,
+      "opponent_reward": 126732.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q25",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126713.0,
+      "opponent_reward": 126732.0,
+      "margin": -19.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107775.0,
+      "opponent_reward": 107734.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107775.0,
+      "opponent_reward": 107734.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124288.0,
+      "opponent_reward": 124247.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124288.0,
+      "opponent_reward": 124247.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 96925.0,
+      "opponent_reward": 99906.0,
+      "margin": -2981.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 96925.0,
+      "opponent_reward": 99906.0,
+      "margin": -2981.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94517.0,
+      "opponent_reward": 94476.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94517.0,
+      "opponent_reward": 94476.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88533.0,
+      "opponent_reward": 88493.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88533.0,
+      "opponent_reward": 88493.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118486.0,
+      "opponent_reward": 118446.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118486.0,
+      "opponent_reward": 118446.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110042.0,
+      "opponent_reward": 110001.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110042.0,
+      "opponent_reward": 110001.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126743.0,
+      "opponent_reward": 126702.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q35",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126743.0,
+      "opponent_reward": 126702.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107775.0,
+      "opponent_reward": 107734.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107775.0,
+      "opponent_reward": 107734.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124288.0,
+      "opponent_reward": 124247.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124288.0,
+      "opponent_reward": 124247.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 96925.0,
+      "opponent_reward": 99906.0,
+      "margin": -2981.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 96925.0,
+      "opponent_reward": 99906.0,
+      "margin": -2981.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94517.0,
+      "opponent_reward": 94476.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94517.0,
+      "opponent_reward": 94476.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88533.0,
+      "opponent_reward": 88493.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88533.0,
+      "opponent_reward": 88493.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118486.0,
+      "opponent_reward": 118446.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118486.0,
+      "opponent_reward": 118446.0,
+      "margin": 40.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110042.0,
+      "opponent_reward": 110001.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110042.0,
+      "opponent_reward": 110001.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126743.0,
+      "opponent_reward": 126702.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q40",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126743.0,
+      "opponent_reward": 126702.0,
+      "margin": 41.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 101455.0,
+      "opponent_reward": 103852.0,
+      "margin": -2397.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 101455.0,
+      "opponent_reward": 103852.0,
+      "margin": -2397.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 121078.0,
+      "opponent_reward": 128498.0,
+      "margin": -7420.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 121078.0,
+      "opponent_reward": 128498.0,
+      "margin": -7420.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 68289.0,
+      "opponent_reward": 69090.0,
+      "margin": -801.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 68289.0,
+      "opponent_reward": 69090.0,
+      "margin": -801.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 62525.0,
+      "opponent_reward": 64600.0,
+      "margin": -2075.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 62525.0,
+      "opponent_reward": 64600.0,
+      "margin": -2075.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 127910.0,
+      "opponent_reward": 128538.0,
+      "margin": -628.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 127910.0,
+      "opponent_reward": 128538.0,
+      "margin": -628.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 106691.0,
+      "opponent_reward": 111733.0,
+      "margin": -5042.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 106691.0,
+      "opponent_reward": 111733.0,
+      "margin": -5042.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 108772.0,
+      "opponent_reward": 111824.0,
+      "margin": -3052.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 108772.0,
+      "opponent_reward": 111824.0,
+      "margin": -3052.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 89446.0,
+      "opponent_reward": 91866.0,
+      "margin": -2420.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q5",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 89446.0,
+      "opponent_reward": 91866.0,
+      "margin": -2420.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 103864.0,
+      "opponent_reward": 101394.0,
+      "margin": 2470.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 103864.0,
+      "opponent_reward": 101394.0,
+      "margin": 2470.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 128532.0,
+      "opponent_reward": 121031.0,
+      "margin": 7501.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 128532.0,
+      "opponent_reward": 121031.0,
+      "margin": 7501.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 69112.0,
+      "opponent_reward": 68234.0,
+      "margin": 878.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 69112.0,
+      "opponent_reward": 68234.0,
+      "margin": 878.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 64621.0,
+      "opponent_reward": 62470.0,
+      "margin": 2151.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 64621.0,
+      "opponent_reward": 62470.0,
+      "margin": 2151.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 128565.0,
+      "opponent_reward": 127860.0,
+      "margin": 705.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 128565.0,
+      "opponent_reward": 127860.0,
+      "margin": 705.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 111749.0,
+      "opponent_reward": 106633.0,
+      "margin": 5116.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 111749.0,
+      "opponent_reward": 106633.0,
+      "margin": 5116.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 111850.0,
+      "opponent_reward": 108722.0,
+      "margin": 3128.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 111850.0,
+      "opponent_reward": 108722.0,
+      "margin": 3128.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 91899.0,
+      "opponent_reward": 89406.0,
+      "margin": 2493.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q50",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 91899.0,
+      "opponent_reward": 89406.0,
+      "margin": 2493.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 70734.0,
+      "opponent_reward": 68725.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 70734.0,
+      "opponent_reward": 68725.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 99623.0,
+      "opponent_reward": 97614.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 99623.0,
+      "opponent_reward": 97614.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 74350.0,
+      "opponent_reward": 72341.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 74350.0,
+      "opponent_reward": 72341.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 72156.0,
+      "opponent_reward": 70147.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 72156.0,
+      "opponent_reward": 70147.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 96568.0,
+      "opponent_reward": 90457.0,
+      "margin": 6111.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 96568.0,
+      "opponent_reward": 90457.0,
+      "margin": 6111.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 93661.0,
+      "opponent_reward": 91652.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 93661.0,
+      "opponent_reward": 91652.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 104944.0,
+      "opponent_reward": 102935.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 104944.0,
+      "opponent_reward": 102935.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 69337.0,
+      "opponent_reward": 67328.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_first_q60",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 69337.0,
+      "opponent_reward": 67328.0,
+      "margin": 2009.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107770.0,
+      "opponent_reward": 107739.0,
+      "margin": 31.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107770.0,
+      "opponent_reward": 107739.0,
+      "margin": 31.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124283.0,
+      "opponent_reward": 124252.0,
+      "margin": 31.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124283.0,
+      "opponent_reward": 124252.0,
+      "margin": 31.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 99948.0,
+      "opponent_reward": 96883.0,
+      "margin": 3065.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 99948.0,
+      "opponent_reward": 96883.0,
+      "margin": 3065.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94512.0,
+      "opponent_reward": 94481.0,
+      "margin": 31.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94512.0,
+      "opponent_reward": 94481.0,
+      "margin": 31.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88528.0,
+      "opponent_reward": 88498.0,
+      "margin": 30.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88528.0,
+      "opponent_reward": 88498.0,
+      "margin": 30.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118481.0,
+      "opponent_reward": 118451.0,
+      "margin": 30.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118481.0,
+      "opponent_reward": 118451.0,
+      "margin": 30.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110037.0,
+      "opponent_reward": 110006.0,
+      "margin": 31.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110037.0,
+      "opponent_reward": 110006.0,
+      "margin": 31.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126738.0,
+      "opponent_reward": 126707.0,
+      "margin": 31.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q10",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126738.0,
+      "opponent_reward": 126707.0,
+      "margin": 31.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107773.0,
+      "opponent_reward": 107738.0,
+      "margin": 35.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107773.0,
+      "opponent_reward": 107738.0,
+      "margin": 35.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124286.0,
+      "opponent_reward": 124251.0,
+      "margin": 35.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124286.0,
+      "opponent_reward": 124251.0,
+      "margin": 35.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 96923.0,
+      "opponent_reward": 99910.0,
+      "margin": -2987.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 96923.0,
+      "opponent_reward": 99910.0,
+      "margin": -2987.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94515.0,
+      "opponent_reward": 94480.0,
+      "margin": 35.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94515.0,
+      "opponent_reward": 94480.0,
+      "margin": 35.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88531.0,
+      "opponent_reward": 88497.0,
+      "margin": 34.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88531.0,
+      "opponent_reward": 88497.0,
+      "margin": 34.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118484.0,
+      "opponent_reward": 118450.0,
+      "margin": 34.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118484.0,
+      "opponent_reward": 118450.0,
+      "margin": 34.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110040.0,
+      "opponent_reward": 110005.0,
+      "margin": 35.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110040.0,
+      "opponent_reward": 110005.0,
+      "margin": 35.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126741.0,
+      "opponent_reward": 126706.0,
+      "margin": 35.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q15",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126741.0,
+      "opponent_reward": 126706.0,
+      "margin": 35.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107769.0,
+      "opponent_reward": 107740.0,
+      "margin": 29.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107769.0,
+      "opponent_reward": 107740.0,
+      "margin": 29.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124282.0,
+      "opponent_reward": 124253.0,
+      "margin": 29.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124282.0,
+      "opponent_reward": 124253.0,
+      "margin": 29.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 99947.0,
+      "opponent_reward": 96884.0,
+      "margin": 3063.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 99947.0,
+      "opponent_reward": 96884.0,
+      "margin": 3063.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94511.0,
+      "opponent_reward": 94482.0,
+      "margin": 29.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94511.0,
+      "opponent_reward": 94482.0,
+      "margin": 29.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88527.0,
+      "opponent_reward": 88499.0,
+      "margin": 28.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88527.0,
+      "opponent_reward": 88499.0,
+      "margin": 28.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118480.0,
+      "opponent_reward": 118452.0,
+      "margin": 28.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118480.0,
+      "opponent_reward": 118452.0,
+      "margin": 28.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110036.0,
+      "opponent_reward": 110007.0,
+      "margin": 29.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110036.0,
+      "opponent_reward": 110007.0,
+      "margin": 29.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126737.0,
+      "opponent_reward": 126708.0,
+      "margin": 29.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q20",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126737.0,
+      "opponent_reward": 126708.0,
+      "margin": 29.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107766.0,
+      "opponent_reward": 107746.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107766.0,
+      "opponent_reward": 107746.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124279.0,
+      "opponent_reward": 124259.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124279.0,
+      "opponent_reward": 124259.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 102127.0,
+      "opponent_reward": 102001.0,
+      "margin": 126.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 102127.0,
+      "opponent_reward": 102001.0,
+      "margin": 126.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94508.0,
+      "opponent_reward": 94488.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94508.0,
+      "opponent_reward": 94488.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88524.0,
+      "opponent_reward": 88505.0,
+      "margin": 19.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88524.0,
+      "opponent_reward": 88505.0,
+      "margin": 19.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118477.0,
+      "opponent_reward": 118458.0,
+      "margin": 19.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118477.0,
+      "opponent_reward": 118458.0,
+      "margin": 19.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110033.0,
+      "opponent_reward": 110013.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110033.0,
+      "opponent_reward": 110013.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126734.0,
+      "opponent_reward": 126714.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q25",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126734.0,
+      "opponent_reward": 126714.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107746.0,
+      "opponent_reward": 107767.0,
+      "margin": -21.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107746.0,
+      "opponent_reward": 107767.0,
+      "margin": -21.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124259.0,
+      "opponent_reward": 124280.0,
+      "margin": -21.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124259.0,
+      "opponent_reward": 124280.0,
+      "margin": -21.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 96890.0,
+      "opponent_reward": 99945.0,
+      "margin": -3055.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 96890.0,
+      "opponent_reward": 99945.0,
+      "margin": -3055.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94488.0,
+      "opponent_reward": 94509.0,
+      "margin": -21.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94488.0,
+      "opponent_reward": 94509.0,
+      "margin": -21.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88505.0,
+      "opponent_reward": 88525.0,
+      "margin": -20.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88505.0,
+      "opponent_reward": 88525.0,
+      "margin": -20.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118458.0,
+      "opponent_reward": 118478.0,
+      "margin": -20.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118458.0,
+      "opponent_reward": 118478.0,
+      "margin": -20.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110013.0,
+      "opponent_reward": 110034.0,
+      "margin": -21.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110013.0,
+      "opponent_reward": 110034.0,
+      "margin": -21.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126714.0,
+      "opponent_reward": 126735.0,
+      "margin": -21.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q35",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126714.0,
+      "opponent_reward": 126735.0,
+      "margin": -21.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107734.0,
+      "opponent_reward": 107775.0,
+      "margin": -41.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107734.0,
+      "opponent_reward": 107775.0,
+      "margin": -41.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124247.0,
+      "opponent_reward": 124288.0,
+      "margin": -41.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124247.0,
+      "opponent_reward": 124288.0,
+      "margin": -41.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 99906.0,
+      "opponent_reward": 96925.0,
+      "margin": 2981.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 99906.0,
+      "opponent_reward": 96925.0,
+      "margin": 2981.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94476.0,
+      "opponent_reward": 94517.0,
+      "margin": -41.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94476.0,
+      "opponent_reward": 94517.0,
+      "margin": -41.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88493.0,
+      "opponent_reward": 88533.0,
+      "margin": -40.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88493.0,
+      "opponent_reward": 88533.0,
+      "margin": -40.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118446.0,
+      "opponent_reward": 118486.0,
+      "margin": -40.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118446.0,
+      "opponent_reward": 118486.0,
+      "margin": -40.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110001.0,
+      "opponent_reward": 110042.0,
+      "margin": -41.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110001.0,
+      "opponent_reward": 110042.0,
+      "margin": -41.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126702.0,
+      "opponent_reward": 126743.0,
+      "margin": -41.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q40",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126702.0,
+      "opponent_reward": 126743.0,
+      "margin": -41.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 107765.0,
+      "opponent_reward": 107745.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 107765.0,
+      "opponent_reward": 107745.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 124278.0,
+      "opponent_reward": 124258.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 124278.0,
+      "opponent_reward": 124258.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 102126.0,
+      "opponent_reward": 102000.0,
+      "margin": 126.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 102126.0,
+      "opponent_reward": 102000.0,
+      "margin": 126.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 94507.0,
+      "opponent_reward": 94487.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 94507.0,
+      "opponent_reward": 94487.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 88523.0,
+      "opponent_reward": 88504.0,
+      "margin": 19.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 88523.0,
+      "opponent_reward": 88504.0,
+      "margin": 19.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 118476.0,
+      "opponent_reward": 118457.0,
+      "margin": 19.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 118476.0,
+      "opponent_reward": 118457.0,
+      "margin": 19.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 110032.0,
+      "opponent_reward": 110012.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 110032.0,
+      "opponent_reward": 110012.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 126733.0,
+      "opponent_reward": 126713.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q5",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 126733.0,
+      "opponent_reward": 126713.0,
+      "margin": 20.0,
+      "win": true,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 101454.0,
+      "opponent_reward": 103853.0,
+      "margin": -2399.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 101454.0,
+      "opponent_reward": 103853.0,
+      "margin": -2399.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 121077.0,
+      "opponent_reward": 128499.0,
+      "margin": -7422.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 121077.0,
+      "opponent_reward": 128499.0,
+      "margin": -7422.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 68288.0,
+      "opponent_reward": 69091.0,
+      "margin": -803.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 68288.0,
+      "opponent_reward": 69091.0,
+      "margin": -803.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 62524.0,
+      "opponent_reward": 64601.0,
+      "margin": -2077.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 62524.0,
+      "opponent_reward": 64601.0,
+      "margin": -2077.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 127909.0,
+      "opponent_reward": 128539.0,
+      "margin": -630.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 127909.0,
+      "opponent_reward": 128539.0,
+      "margin": -630.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 106690.0,
+      "opponent_reward": 111734.0,
+      "margin": -5044.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 106690.0,
+      "opponent_reward": 111734.0,
+      "margin": -5044.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 108771.0,
+      "opponent_reward": 111825.0,
+      "margin": -3054.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 108771.0,
+      "opponent_reward": 111825.0,
+      "margin": -3054.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 89445.0,
+      "opponent_reward": 91867.0,
+      "margin": -2422.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q50",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 89445.0,
+      "opponent_reward": 91867.0,
+      "margin": -2422.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300000,
+      "seat": 0,
+      "reward": 59864.0,
+      "opponent_reward": 88408.0,
+      "margin": -28544.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300000,
+      "seat": 1,
+      "reward": 59864.0,
+      "opponent_reward": 88408.0,
+      "margin": -28544.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300017,
+      "seat": 0,
+      "reward": 65815.0,
+      "opponent_reward": 95072.0,
+      "margin": -29257.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300017,
+      "seat": 1,
+      "reward": 65815.0,
+      "opponent_reward": 95072.0,
+      "margin": -29257.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300034,
+      "seat": 0,
+      "reward": 69239.0,
+      "opponent_reward": 124104.0,
+      "margin": -54865.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300034,
+      "seat": 1,
+      "reward": 69239.0,
+      "opponent_reward": 124104.0,
+      "margin": -54865.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300051,
+      "seat": 0,
+      "reward": 96229.0,
+      "opponent_reward": 159894.0,
+      "margin": -63665.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300051,
+      "seat": 1,
+      "reward": 96229.0,
+      "opponent_reward": 159894.0,
+      "margin": -63665.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300068,
+      "seat": 0,
+      "reward": 91050.0,
+      "opponent_reward": 149478.0,
+      "margin": -58428.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300068,
+      "seat": 1,
+      "reward": 91050.0,
+      "opponent_reward": 149478.0,
+      "margin": -58428.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300085,
+      "seat": 0,
+      "reward": 100970.0,
+      "opponent_reward": 163007.0,
+      "margin": -62037.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300085,
+      "seat": 1,
+      "reward": 100970.0,
+      "opponent_reward": 163007.0,
+      "margin": -62037.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300102,
+      "seat": 0,
+      "reward": 60420.0,
+      "opponent_reward": 90688.0,
+      "margin": -30268.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300102,
+      "seat": 1,
+      "reward": 60420.0,
+      "opponent_reward": 90688.0,
+      "margin": -30268.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300119,
+      "seat": 0,
+      "reward": 90991.0,
+      "opponent_reward": 140932.0,
+      "margin": -49941.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "candidate": "roundtrip_q60",
+      "seed": 9300119,
+      "seat": 1,
+      "reward": 90991.0,
+      "opponent_reward": 140932.0,
+      "margin": -49941.0,
+      "win": false,
+      "error": null
+    }
+  ],
+  "winner": "combined_q35",
+  "winner_path": "/media/deepstation/storage/nakamura_y/kaggriculture/runs/public_v37_opening_stage0_main.py"
+}

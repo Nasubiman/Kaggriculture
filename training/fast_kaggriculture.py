@@ -46,6 +46,32 @@ def _fast_market_price(
     return _cached_default_market_price(item, inventory)
 
 
+@lru_cache(maxsize=32)
+def _shed_access_set(board_size: int) -> frozenset[tuple[int, int]]:
+    return frozenset(kaggriculture._shed_access_tiles(board_size))
+
+
+def _fast_is_shed_adjacent(pos: Any, board_size: int) -> bool:
+    return tuple(pos) in _shed_access_set(board_size)
+
+
+def _fast_decay_plants(farm: dict[str, Any], step: int) -> None:
+    """Official decay rules with row-local access in the per-turn board scan."""
+    tiles = farm["tiles"]
+    board_size = len(tiles)
+    for row in tiles:
+        for x in range(board_size):
+            tile = row[x]
+            if not isinstance(tile, dict) or tile.get("kind") != "PLANT":
+                continue
+            lifespan = tile["max_lifespan_step"]
+            if lifespan < 0 or step < lifespan or (step - lifespan) % 2 != 0:
+                continue
+            tile["yield_units"] -= 1
+            if tile["yield_units"] <= 0:
+                row[x] = {"kind": "WEED"}
+
+
 def _clone_function(function: Callable[..., Any], globals_: dict[str, Any]) -> Any:
     """Clone official code with isolated globals, leaving the public runner alone."""
     clone = FunctionType(
@@ -60,12 +86,14 @@ def _clone_function(function: Callable[..., Any], globals_: dict[str, Any]) -> A
 
 
 def _build_fast_interpreter() -> Callable[[list[Any], Any], list[Any]]:
-    # These are the only official functions whose global lookups lead to
-    # market_price.  Reusing their original code objects minimizes drift risk
-    # while keeping kaggriculture.market_price untouched for standard runs.
+    # Isolate replacements from the standard runner. Clone the callers whose
+    # global lookups must use these replacements; reuse official code otherwise.
     globals_ = dict(vars(kaggriculture))
     globals_["market_price"] = _fast_market_price
+    globals_["_is_shed_adjacent"] = _fast_is_shed_adjacent
+    globals_["_decay_plants"] = _fast_decay_plants
     for name in (
+        "_apply_unit_action",
         "_refresh_prices",
         "_process_market",
         "_town_consume",
