@@ -104,11 +104,26 @@ TRAJECTORY_FINALISTS ?= 4
 LAST_TRAJECTORY_SEARCH_RUN := $(SERVER_RESULTS)/LATEST_TRAJECTORY_SEARCH_RUN
 TRAJECTORY_RESULT ?= $(shell test -f "$(LAST_TRAJECTORY_SEARCH_RUN)" && cat "$(LAST_TRAJECTORY_SEARCH_RUN)")
 
-.PHONY: setup kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search schedule-search schedule-status schedule-candidate schedule-use trajectory-search trajectory-status trajectory-candidate trajectory-use genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
+.PHONY: setup simulator-update simulator-check server-simulator-update server-simulator-check kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search schedule-search schedule-status schedule-candidate schedule-use trajectory-search trajectory-status trajectory-candidate trajectory-use genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
 
 setup:
 	$(PYTHON) -m venv $(VENV)
 	$(VENV)/bin/python -m pip install -r requirements.txt
+
+# Install the exact environment used by the current competition rules.
+simulator-update:
+	$(VENV)/bin/python -m pip install -r requirements.txt
+
+# Verify rule constants, locked-tile behavior, and fast/standard parity.
+simulator-check:
+	PYTHONPATH=training $(VENV)/bin/python scripts/check_simulator.py
+
+server-simulator-update:
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; .venv/bin/python -m pip install "kaggle-environments==1.32.7"'
+
+server-simulator-check: server-sync-fast-runner
+	rsync -az scripts/check_simulator.py $(SERVER_HOST):$(SERVER_REPO)/scripts/
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; PYTHONPATH=training .venv/bin/python scripts/check_simulator.py'
 
 kaggle-check:
 	$(KAGGLE) competitions list -s $(COMPETITION)
