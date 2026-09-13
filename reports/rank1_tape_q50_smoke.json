@@ -1,0 +1,34 @@
+{
+  "games": [
+    {
+      "seed": 9100,
+      "seat": 0,
+      "reward": 118555.0,
+      "opponent_reward": 155689.0,
+      "margin": -37134.0,
+      "win": false,
+      "tie": false,
+      "status": "DONE"
+    },
+    {
+      "seed": 9100,
+      "seat": 1,
+      "reward": 118555.0,
+      "opponent_reward": 155689.0,
+      "margin": -37134.0,
+      "win": false,
+      "tie": false,
+      "status": "DONE"
+    }
+  ],
+  "summary": {
+    "games": 2,
+    "wins": 0,
+    "ties": 0,
+    "win_rate": 0.0,
+    "mean_reward": 118555.0,
+    "mean_opponent_reward": 155689.0,
+    "mean_margin": -37134.0,
+    "all_done": true
+  }
+}

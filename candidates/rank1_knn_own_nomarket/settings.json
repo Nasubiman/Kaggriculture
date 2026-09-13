@@ -1,0 +1,12 @@
+{
+  "hand_align": true,
+  "weed_repair": true,
+  "sell_lead": true,
+  "front_run": false,
+  "budget_guard": true,
+  "room_guard": true,
+  "clamp_sells": true,
+  "dead_stock": true,
+  "terminal_liquidation": true,
+  "distance": {"opponent": 0.0, "market": 0.0}
+}

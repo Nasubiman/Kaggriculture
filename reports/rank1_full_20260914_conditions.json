@@ -1,0 +1,1427 @@
+{
+  "team": "Majkel1337",
+  "submission_id": 56156662,
+  "games": 255,
+  "wins": 230,
+  "turns": 183345,
+  "mean_reward": 112726.49019607843,
+  "mean_margin": 12968.050980392158,
+  "seats": {
+    "1": 131,
+    "0": 124
+  },
+  "opponents": {
+    "Artem The Farmer \ud83c\udf45": 13,
+    "M & M & P & Q": 20,
+    "Mengfei Li": 18,
+    "Gleb Tumanov": 1,
+    "\u30a2\u30eb\u30e2\u30f3\u30c9": 1,
+    "SpaTaro": 27,
+    "ymg_aq": 36,
+    "pupen_o": 1,
+    "binghua": 7,
+    "Subramanya N": 3,
+    "Otter Vibe": 12,
+    "charmq": 3,
+    "feel the agi": 19,
+    "THIRD FARM CLUB": 4,
+    "redblackbst": 5,
+    "mtmr_s1": 1,
+    "Games Jadley": 1,
+    "Kaggriculture Agent": 1,
+    "Unknown Mother-Goose": 15,
+    "c0nrad": 2,
+    "carlos-tagosaku": 2,
+    "MINGXI LIU": 1,
+    "cooked": 1,
+    "3\uc815\ud6c8": 1,
+    "lc\u4eca\u5929\u5237\u4e86\u5417": 1,
+    "Himanshu Kumar": 1,
+    "Xiangyu Liu": 2,
+    "insuperabilehart": 1,
+    "carbonapi": 1,
+    "kay.liechtenstein": 1,
+    "Sergey Kutepov": 1,
+    "\u30c7\u30ef\u30f3\u30b7\u30e5": 1,
+    "linmumu009": 1,
+    "american gothic": 1,
+    "chungkuangwen": 1,
+    "supr3mum": 2,
+    "Sean Peppers": 1,
+    "yfy": 1,
+    "Ryosei Hara": 1,
+    "farmin time": 1,
+    "ChengxuGu": 1,
+    "HD h Joratos": 2,
+    "BostonKaggle": 1,
+    "Max Podd": 1,
+    "\ud55c\ubc2d\ub300\ud559\uad50": 1,
+    "Marc Maldonado Lorca": 1,
+    "Ant": 1,
+    "sonny_01": 1,
+    "denden12": 1,
+    "kawauso9n": 1,
+    "Dhruv Bansal": 1,
+    "ykhnkf": 1,
+    "honjousetuna": 1,
+    "goh": 1,
+    "Justin Yang": 1,
+    "\u897f\u677e\u5927\u7950": 1,
+    "Khoi Tuan Nguyen": 1,
+    "Wei Han": 1,
+    "xiao xiongwei": 1,
+    "Ryotaro Minato": 1,
+    "Dubnium": 1,
+    "Rajan Nagarajan": 1,
+    "Electric Weasle": 1,
+    "PyJa": 1,
+    "panda__MB__maximus": 1,
+    "PursueML": 1,
+    "Cathy": 1,
+    "gagacrow": 1,
+    "no pain no gain": 1,
+    "dk07dk": 1,
+    "THeLAB": 1,
+    "Luke Stafford": 1,
+    "CLJY_2026": 1,
+    "Zihao Zeng": 1,
+    "Sri Jayavel K": 1,
+    "Yaromir_Ko": 1,
+    "Casper du Jardin Kejser": 1,
+    "VYSHAKH G NAIR": 1,
+    "yaki-imo": 1,
+    "aditya emmadishetty": 1,
+    "jps": 1
+  },
+  "market": {
+    "HIRE": {
+      "turns": 13728,
+      "quantity": 74522,
+      "day_q10_median_q90": [
+        4.0,
+        16.0,
+        27.0
+      ],
+      "top_hours": [
+        [
+          0,
+          7395
+        ],
+        [
+          1,
+          6144
+        ],
+        [
+          2,
+          153
+        ],
+        [
+          6,
+          17
+        ]
+      ],
+      "money_median": 28201.5,
+      "own_cow_mean": 6.73761655011655,
+      "own_sheep_mean": 5.158581002331002,
+      "opp_cow_mean": 6.529793123543124,
+      "opp_sheep_mean": 5.249854312354312,
+      "milk_wool_spread_median": -2.0,
+      "relevant_price_median": 38.0
+    },
+    "BUY_LAND": {
+      "turns": 797,
+      "quantity": 797,
+      "day_q10_median_q90": [
+        6.0,
+        9.0,
+        9.0
+      ],
+      "top_hours": [
+        [
+          5,
+          466
+        ],
+        [
+          3,
+          225
+        ],
+        [
+          1,
+          81
+        ],
+        [
+          2,
+          8
+        ]
+      ],
+      "money_median": 1970.0,
+      "own_cow_mean": 4.5897114178168135,
+      "own_sheep_mean": 4.026348808030113,
+      "opp_cow_mean": 5.890840652446675,
+      "opp_sheep_mean": 3.6675031367628605,
+      "milk_wool_spread_median": -20.0,
+      "relevant_price_median": 35.0
+    },
+    "BUY_ANIMAL_COW": {
+      "turns": 2145,
+      "quantity": 2145,
+      "day_q10_median_q90": [
+        0.0,
+        6.0,
+        9.0
+      ],
+      "top_hours": [
+        [
+          0,
+          515
+        ],
+        [
+          8,
+          334
+        ],
+        [
+          1,
+          312
+        ],
+        [
+          6,
+          254
+        ]
+      ],
+      "money_median": 1933.0,
+      "own_cow_mean": 3.4615384615384617,
+      "own_sheep_mean": 2.7734265734265735,
+      "opp_cow_mean": 4.385081585081585,
+      "opp_sheep_mean": 2.392074592074592,
+      "milk_wool_spread_median": 1.0,
+      "relevant_price_median": 186.0
+    },
+    "BUY_ANIMAL_SHEEP": {
+      "turns": 1206,
+      "quantity": 1716,
+      "day_q10_median_q90": [
+        0.0,
+        7.0,
+        12.0
+      ],
+      "top_hours": [
+        [
+          1,
+          352
+        ],
+        [
+          12,
+          177
+        ],
+        [
+          10,
+          115
+        ],
+        [
+          14,
+          112
+        ]
+      ],
+      "money_median": 2434.0,
+      "own_cow_mean": 3.6865671641791047,
+      "own_sheep_mean": 4.912106135986733,
+      "opp_cow_mean": 4.291044776119403,
+      "opp_sheep_mean": 4.04228855721393,
+      "milk_wool_spread_median": -37.0,
+      "relevant_price_median": 206.0
+    },
+    "BUY_ANIMAL_GOOSE": {
+      "turns": 396,
+      "quantity": 396,
+      "day_q10_median_q90": [
+        6.0,
+        6.0,
+        6.0
+      ],
+      "top_hours": [
+        [
+          8,
+          149
+        ],
+        [
+          11,
+          98
+        ],
+        [
+          10,
+          52
+        ],
+        [
+          12,
+          50
+        ]
+      ],
+      "money_median": 2404.0,
+      "own_cow_mean": 2.494949494949495,
+      "own_sheep_mean": 3.0,
+      "opp_cow_mean": 4.252525252525253,
+      "opp_sheep_mean": 2.457070707070707,
+      "milk_wool_spread_median": 12.0,
+      "relevant_price_median": 32.0
+    },
+    "BUY_SEED_WHEAT": {
+      "turns": 44526,
+      "quantity": 45763,
+      "day_q10_median_q90": [
+        9.0,
+        16.0,
+        25.0
+      ],
+      "top_hours": [
+        [
+          15,
+          3859
+        ],
+        [
+          16,
+          3804
+        ],
+        [
+          11,
+          3742
+        ],
+        [
+          14,
+          3597
+        ]
+      ],
+      "money_median": 34616.5,
+      "own_cow_mean": 7.58390603243049,
+      "own_sheep_mean": 5.777276198176346,
+      "opp_cow_mean": 7.131451286888559,
+      "opp_sheep_mean": 5.937991285990208,
+      "milk_wool_spread_median": 5.0,
+      "relevant_price_median": 39.0
+    },
+    "BUY_SEED_CARROT": {
+      "turns": 2097,
+      "quantity": 11963,
+      "day_q10_median_q90": [
+        14.0,
+        22.0,
+        26.0
+      ],
+      "top_hours": [
+        [
+          12,
+          474
+        ],
+        [
+          16,
+          357
+        ],
+        [
+          11,
+          321
+        ],
+        [
+          17,
+          249
+        ]
+      ],
+      "money_median": 58595.0,
+      "own_cow_mean": 6.985216976633286,
+      "own_sheep_mean": 5.426323319027182,
+      "opp_cow_mean": 6.812589413447783,
+      "opp_sheep_mean": 6.028612303290415,
+      "milk_wool_spread_median": 2.0,
+      "relevant_price_median": 38.0
+    },
+    "BUY_SEED_TOMATO": {
+      "turns": 2237,
+      "quantity": 2237,
+      "day_q10_median_q90": [
+        9.0,
+        17.0,
+        18.0
+      ],
+      "top_hours": [
+        [
+          16,
+          391
+        ],
+        [
+          17,
+          364
+        ],
+        [
+          15,
+          326
+        ],
+        [
+          18,
+          288
+        ]
+      ],
+      "money_median": 35713.0,
+      "own_cow_mean": 7.9499329459097,
+      "own_sheep_mean": 5.983459991059455,
+      "opp_cow_mean": 7.508270004470273,
+      "opp_sheep_mean": 6.1595887349128295,
+      "milk_wool_spread_median": 11.0,
+      "relevant_price_median": 39.0
+    },
+    "BUY_SEED_STRAWBERRY": {
+      "turns": 8622,
+      "quantity": 8765,
+      "day_q10_median_q90": [
+        2.0,
+        6.0,
+        11.0
+      ],
+      "top_hours": [
+        [
+          17,
+          1050
+        ],
+        [
+          14,
+          978
+        ],
+        [
+          11,
+          926
+        ],
+        [
+          13,
+          843
+        ]
+      ],
+      "money_median": 493.0,
+      "own_cow_mean": 4.304337740663419,
+      "own_sheep_mean": 3.822894919972164,
+      "opp_cow_mean": 4.892484342379959,
+      "opp_sheep_mean": 3.1441660867548133,
+      "milk_wool_spread_median": -10.0,
+      "relevant_price_median": 31.0
+    },
+    "BUY_SEED_MELON": {
+      "turns": 2094,
+      "quantity": 3441,
+      "day_q10_median_q90": [
+        0.0,
+        1.0,
+        2.0
+      ],
+      "top_hours": [
+        [
+          11,
+          501
+        ],
+        [
+          8,
+          445
+        ],
+        [
+          10,
+          376
+        ],
+        [
+          6,
+          255
+        ]
+      ],
+      "money_median": 224.0,
+      "own_cow_mean": 1.7564469914040115,
+      "own_sheep_mean": 2.7564469914040113,
+      "opp_cow_mean": 2.170487106017192,
+      "opp_sheep_mean": 1.7459407831900668,
+      "milk_wool_spread_median": -37.0,
+      "relevant_price_median": 29.0
+    },
+    "BUY_PRODUCT_WHEAT": {
+      "turns": 7863,
+      "quantity": 63110,
+      "day_q10_median_q90": [
+        0.0,
+        7.0,
+        19.0
+      ],
+      "top_hours": [
+        [
+          1,
+          1642
+        ],
+        [
+          0,
+          1288
+        ],
+        [
+          6,
+          971
+        ],
+        [
+          2,
+          675
+        ]
+      ],
+      "money_median": 577.0,
+      "own_cow_mean": 4.480223833142566,
+      "own_sheep_mean": 3.8125397431005976,
+      "opp_cow_mean": 4.516469540887702,
+      "opp_sheep_mean": 3.273686887956251,
+      "milk_wool_spread_median": -37.0,
+      "relevant_price_median": 32.0
+    },
+    "SELL_WHEAT": {
+      "turns": 18633,
+      "quantity": 119727,
+      "day_q10_median_q90": [
+        4.0,
+        20.0,
+        28.0
+      ],
+      "top_hours": [
+        [
+          22,
+          2836
+        ],
+        [
+          6,
+          2364
+        ],
+        [
+          0,
+          1472
+        ],
+        [
+          10,
+          1324
+        ]
+      ],
+      "money_median": 56799.0,
+      "own_cow_mean": 6.789996243224387,
+      "own_sheep_mean": 4.9346857725540705,
+      "opp_cow_mean": 6.494230666022648,
+      "opp_sheep_mean": 5.458433961251543,
+      "milk_wool_spread_median": -6.0,
+      "relevant_price_median": 39.0
+    },
+    "SELL_MILK": {
+      "turns": 17936,
+      "quantity": 49705,
+      "day_q10_median_q90": [
+        14.0,
+        22.0,
+        28.0
+      ],
+      "top_hours": [
+        [
+          21,
+          3485
+        ],
+        [
+          17,
+          2355
+        ],
+        [
+          9,
+          2094
+        ],
+        [
+          13,
+          1323
+        ]
+      ],
+      "money_median": 62386.5,
+      "own_cow_mean": 8.272636039250669,
+      "own_sheep_mean": 4.990243086529884,
+      "opp_cow_mean": 7.807649420160571,
+      "opp_sheep_mean": 5.737343889384478,
+      "milk_wool_spread_median": 12.0,
+      "relevant_price_median": 87.0
+    },
+    "SELL_WOOL": {
+      "turns": 14227,
+      "quantity": 38428,
+      "day_q10_median_q90": [
+        9.0,
+        22.0,
+        28.0
+      ],
+      "top_hours": [
+        [
+          21,
+          1807
+        ],
+        [
+          17,
+          1424
+        ],
+        [
+          5,
+          1348
+        ],
+        [
+          1,
+          1329
+        ]
+      ],
+      "money_median": 66736.0,
+      "own_cow_mean": 6.507345188725663,
+      "own_sheep_mean": 7.660926407534968,
+      "opp_cow_mean": 6.586490475855768,
+      "opp_sheep_mean": 7.773107471708723,
+      "milk_wool_spread_median": -30.0,
+      "relevant_price_median": 141.0
+    },
+    "SELL_FERTILIZER": {
+      "turns": 21825,
+      "quantity": 51826,
+      "day_q10_median_q90": [
+        2.0,
+        9.0,
+        27.0
+      ],
+      "top_hours": [
+        [
+          0,
+          4942
+        ],
+        [
+          2,
+          1548
+        ],
+        [
+          8,
+          1503
+        ],
+        [
+          6,
+          1485
+        ]
+      ],
+      "money_median": 1661.0,
+      "own_cow_mean": 5.592348224513173,
+      "own_sheep_mean": 4.4023825887743415,
+      "opp_cow_mean": 5.733562428407789,
+      "opp_sheep_mean": 4.194410080183276,
+      "milk_wool_spread_median": -19.0,
+      "relevant_price_median": 80.0
+    },
+    "SELL_CARROT": {
+      "turns": 3123,
+      "quantity": 27944,
+      "day_q10_median_q90": [
+        19.0,
+        26.0,
+        29.0
+      ],
+      "top_hours": [
+        [
+          22,
+          1255
+        ],
+        [
+          0,
+          400
+        ],
+        [
+          10,
+          204
+        ],
+        [
+          11,
+          192
+        ]
+      ],
+      "money_median": 74615.0,
+      "own_cow_mean": 6.5824527697726545,
+      "own_sheep_mean": 4.35959013768812,
+      "opp_cow_mean": 6.421389689401217,
+      "opp_sheep_mean": 5.40217739353186,
+      "milk_wool_spread_median": 0.0,
+      "relevant_price_median": 37.0
+    },
+    "SELL_TOMATO": {
+      "turns": 2613,
+      "quantity": 14750,
+      "day_q10_median_q90": [
+        18.0,
+        26.0,
+        29.0
+      ],
+      "top_hours": [
+        [
+          22,
+          931
+        ],
+        [
+          0,
+          751
+        ],
+        [
+          1,
+          253
+        ],
+        [
+          23,
+          122
+        ]
+      ],
+      "money_median": 77840.0,
+      "own_cow_mean": 7.325679295828549,
+      "own_sheep_mean": 4.987370838117107,
+      "opp_cow_mean": 6.993494068120934,
+      "opp_sheep_mean": 5.791427477994642,
+      "milk_wool_spread_median": 2.0,
+      "relevant_price_median": 38.0
+    },
+    "SELL_STRAWBERRY": {
+      "turns": 14829,
+      "quantity": 52916,
+      "day_q10_median_q90": [
+        16.0,
+        21.0,
+        28.0
+      ],
+      "top_hours": [
+        [
+          21,
+          2036
+        ],
+        [
+          9,
+          1724
+        ],
+        [
+          17,
+          1681
+        ],
+        [
+          13,
+          1343
+        ]
+      ],
+      "money_median": 64207.0,
+      "own_cow_mean": 8.062242902420932,
+      "own_sheep_mean": 5.3838424708341766,
+      "opp_cow_mean": 7.5282217276957315,
+      "opp_sheep_mean": 6.019556274866815,
+      "milk_wool_spread_median": 6.0,
+      "relevant_price_median": 40.0
+    },
+    "SELL_MELON": {
+      "turns": 2435,
+      "quantity": 17894,
+      "day_q10_median_q90": [
+        10.0,
+        11.0,
+        20.0
+      ],
+      "top_hours": [
+        [
+          12,
+          334
+        ],
+        [
+          0,
+          300
+        ],
+        [
+          11,
+          298
+        ],
+        [
+          23,
+          290
+        ]
+      ],
+      "money_median": 7804.0,
+      "own_cow_mean": 8.071457905544149,
+      "own_sheep_mean": 5.4940451745379875,
+      "opp_cow_mean": 7.369609856262834,
+      "opp_sheep_mean": 5.4517453798767965,
+      "milk_wool_spread_median": 25.0,
+      "relevant_price_median": 40.0
+    }
+  },
+  "phase_rates": {
+    "d00-05": {
+      "HIRE": 0.04632352941176471,
+      "BUY_LAND": 0.0,
+      "BUY_ANIMAL_COW": 0.013888888888888888,
+      "BUY_ANIMAL_SHEEP": 0.006944444444444444,
+      "BUY_ANIMAL_GOOSE": 0.0,
+      "BUY_SEED_WHEAT": 0.06522331154684095,
+      "BUY_SEED_CARROT": 0.0,
+      "BUY_SEED_TOMATO": 0.0,
+      "BUY_SEED_STRAWBERRY": 0.08055555555555556,
+      "BUY_SEED_MELON": 0.05702614379084967,
+      "BUY_PRODUCT_WHEAT": 0.08243464052287582,
+      "SELL_WHEAT": 0.06151960784313725,
+      "SELL_MILK": 0.0,
+      "SELL_WOOL": 0.0,
+      "SELL_FERTILIZER": 0.16484204793028323,
+      "SELL_CARROT": 0.0,
+      "SELL_TOMATO": 0.0,
+      "SELL_STRAWBERRY": 0.0,
+      "SELL_MELON": 0.0
+    },
+    "d06-09": {
+      "HIRE": 0.07467320261437908,
+      "BUY_LAND": 0.03243464052287582,
+      "BUY_ANIMAL_COW": 0.06213235294117647,
+      "BUY_ANIMAL_SHEEP": 0.024795751633986927,
+      "BUY_ANIMAL_GOOSE": 0.016176470588235296,
+      "BUY_SEED_WHEAT": 0.19509803921568628,
+      "BUY_SEED_CARROT": 0.0007352941176470588,
+      "BUY_SEED_TOMATO": 0.010580065359477125,
+      "BUY_SEED_STRAWBERRY": 0.1610702614379085,
+      "BUY_SEED_MELON": 0.0,
+      "BUY_PRODUCT_WHEAT": 0.10669934640522875,
+      "SELL_WHEAT": 0.014093137254901961,
+      "SELL_MILK": 0.02091503267973856,
+      "SELL_WOOL": 0.062254901960784315,
+      "SELL_FERTILIZER": 0.23925653594771243,
+      "SELL_CARROT": 0.0,
+      "SELL_TOMATO": 0.0,
+      "SELL_STRAWBERRY": 0.0,
+      "SELL_MELON": 0.0
+    },
+    "d10-17": {
+      "HIRE": 0.08333333333333333,
+      "BUY_LAND": 6.127450980392157e-05,
+      "BUY_ANIMAL_COW": 0.002144607843137255,
+      "BUY_ANIMAL_SHEEP": 0.0066380718954248364,
+      "BUY_ANIMAL_GOOSE": 0.0,
+      "BUY_SEED_WHEAT": 0.3587826797385621,
+      "BUY_SEED_CARROT": 0.010600490196078432,
+      "BUY_SEED_TOMATO": 0.0255718954248366,
+      "BUY_SEED_STRAWBERRY": 0.033598856209150325,
+      "BUY_SEED_MELON": 0.0,
+      "BUY_PRODUCT_WHEAT": 0.026470588235294117,
+      "SELL_WHEAT": 0.09683415032679739,
+      "SELL_MILK": 0.09248366013071896,
+      "SELL_WOOL": 0.04372957516339869,
+      "SELL_FERTILIZER": 0.07265114379084968,
+      "SELL_CARROT": 0.004166666666666667,
+      "SELL_TOMATO": 0.0032679738562091504,
+      "SELL_STRAWBERRY": 0.06339869281045751,
+      "SELL_MELON": 0.04229983660130719
+    },
+    "d18-27": {
+      "HIRE": 0.08333333333333333,
+      "BUY_LAND": 0.0,
+      "BUY_ANIMAL_COW": 0.00014705882352941175,
+      "BUY_ANIMAL_SHEEP": 0.0003104575163398693,
+      "BUY_ANIMAL_GOOSE": 0.0,
+      "BUY_SEED_WHEAT": 0.3230882352941176,
+      "BUY_SEED_CARROT": 0.025490196078431372,
+      "BUY_SEED_TOMATO": 0.011862745098039215,
+      "BUY_SEED_STRAWBERRY": 0.0012418300653594771,
+      "BUY_SEED_MELON": 0.0,
+      "BUY_PRODUCT_WHEAT": 0.015032679738562092,
+      "SELL_WHEAT": 0.1377450980392157,
+      "SELL_MILK": 0.1731045751633987,
+      "SELL_WOOL": 0.14547385620915032,
+      "SELL_FERTILIZER": 0.07179738562091503,
+      "SELL_CARROT": 0.028937908496732025,
+      "SELL_TOMATO": 0.026601307189542484,
+      "SELL_STRAWBERRY": 0.15581699346405228,
+      "SELL_MELON": 0.0058823529411764705
+    },
+    "d28-29": {
+      "HIRE": 0.08502294534835211,
+      "BUY_LAND": 0.0,
+      "BUY_ANIMAL_COW": 0.0,
+      "BUY_ANIMAL_SHEEP": 0.0,
+      "BUY_ANIMAL_GOOSE": 0.0,
+      "BUY_SEED_WHEAT": 0.0013350020859407593,
+      "BUY_SEED_CARROT": 0.0,
+      "BUY_SEED_TOMATO": 0.0,
+      "BUY_SEED_STRAWBERRY": 0.0,
+      "BUY_SEED_MELON": 0.0,
+      "BUY_PRODUCT_WHEAT": 0.0006675010429703797,
+      "SELL_WHEAT": 0.23846474760116812,
+      "SELL_MILK": 0.19207342511472675,
+      "SELL_WOOL": 0.13842302878598248,
+      "SELL_FERTILIZER": 0.1638715060492282,
+      "SELL_CARROT": 0.09578639966624948,
+      "SELL_TOMATO": 0.0688360450563204,
+      "SELL_STRAWBERRY": 0.18264497288277012,
+      "SELL_MELON": 0.00033375052148518984
+    }
+  },
+  "spread_rates": {
+    "-49..0": {
+      "BUY_ANIMAL_COW": 0.014658596557594099,
+      "BUY_ANIMAL_SHEEP": 0.011049114179433831
+    },
+    "1..50": {
+      "BUY_ANIMAL_COW": 0.02501222095486394,
+      "BUY_ANIMAL_SHEEP": 0.004290913041116724
+    },
+    "<=-50": {
+      "BUY_ANIMAL_COW": 0.0027098192601682134,
+      "BUY_ANIMAL_SHEEP": 0.006876805480992919
+    },
+    ">50": {
+      "BUY_ANIMAL_COW": 0.004276420545016151,
+      "BUY_ANIMAL_SHEEP": 0.0017742595878258497
+    }
+  },
+  "opponent_herd_rates": {
+    "balanced": {
+      "BUY_ANIMAL_COW": 0.013706140350877192,
+      "BUY_ANIMAL_SHEEP": 0.008214696577509346
+    },
+    "sheep-heavy": {
+      "BUY_ANIMAL_COW": 0.0019478319783197832,
+      "BUY_ANIMAL_SHEEP": 0.006182249322493225
+    },
+    "cow-heavy": {
+      "BUY_ANIMAL_COW": 0.011843598473124935,
+      "BUY_ANIMAL_SHEEP": 0.003012483235324461
+    }
+  },
+  "phase_spread_rates": {
+    "d00-05|-49..0": {
+      "observations": 35731,
+      "buy_cow": 0.01427332008619966,
+      "buy_sheep": 0.00713666004309983
+    },
+    "d06-09|-49..0": {
+      "observations": 7284,
+      "buy_cow": 0.05560131795716639,
+      "buy_sheep": 0.05134541460735859
+    },
+    "d06-09|1..50": {
+      "observations": 12277,
+      "buy_cow": 0.07428524883929298,
+      "buy_sheep": 0.006190437403274416
+    },
+    "d06-09|<=-50": {
+      "observations": 2552,
+      "buy_cow": 0.03800940438871473,
+      "buy_sheep": 0.05721003134796238
+    },
+    "d10-17|<=-50": {
+      "observations": 13237,
+      "buy_cow": 0.0006799123668504948,
+      "buy_sheep": 0.009141044043212209
+    },
+    "d10-17|-49..0": {
+      "observations": 6917,
+      "buy_cow": 0.002168570189388463,
+      "buy_sheep": 0.0098308515252277
+    },
+    "d10-17|1..50": {
+      "observations": 7476,
+      "buy_cow": 0.001070090957731407,
+      "buy_sheep": 0.010032102728731942
+    },
+    "d18-27|-49..0": {
+      "observations": 10964,
+      "buy_cow": 0.0,
+      "buy_sheep": 0.00036483035388544326
+    },
+    "d18-27|1..50": {
+      "observations": 13906,
+      "buy_cow": 7.191140514885661e-05,
+      "buy_sheep": 0.0005033798360419962
+    },
+    "d18-27|>50": {
+      "observations": 16968,
+      "buy_cow": 0.0004714757190004715,
+      "buy_sheep": 0.0003536067892503536
+    },
+    "d28-29|>50": {
+      "observations": 3297,
+      "buy_cow": 0.0,
+      "buy_sheep": 0.0
+    },
+    "d10-17|>50": {
+      "observations": 21330,
+      "buy_cow": 0.0034224097515236757,
+      "buy_sheep": 0.0028598218471636194
+    },
+    "d18-27|<=-50": {
+      "observations": 19362,
+      "buy_cow": 0.0,
+      "buy_sheep": 0.00010329511414110113
+    },
+    "d28-29|-49..0": {
+      "observations": 2548,
+      "buy_cow": 0.0,
+      "buy_sheep": 0.0
+    },
+    "d28-29|<=-50": {
+      "observations": 2977,
+      "buy_cow": 0.0,
+      "buy_sheep": 0.0
+    },
+    "d28-29|1..50": {
+      "observations": 3163,
+      "buy_cow": 0.0,
+      "buy_sheep": 0.0
+    },
+    "d06-09|>50": {
+      "observations": 2367,
+      "buy_cow": 0.0452049007182087,
+      "buy_sheep": 0.004647232784114913
+    },
+    "d00-05|<=-50": {
+      "observations": 989,
+      "buy_cow": 0.0,
+      "buy_sheep": 0.0
+    }
+  },
+  "unit_timing": {
+    "PLANT": {
+      "top_hours": [
+        [
+          16,
+          5860
+        ],
+        [
+          15,
+          5302
+        ],
+        [
+          18,
+          5266
+        ],
+        [
+          21,
+          5214
+        ],
+        [
+          19,
+          5125
+        ]
+      ],
+      "top_positions": [
+        [
+          "(4, 4)",
+          3712
+        ],
+        [
+          "(3, 9)",
+          1849
+        ],
+        [
+          "(2, 3)",
+          1781
+        ],
+        [
+          "(2, 9)",
+          1761
+        ],
+        [
+          "(0, 7)",
+          1747
+        ],
+        [
+          "(2, 5)",
+          1744
+        ]
+      ]
+    },
+    "WATER": {
+      "top_hours": [
+        [
+          23,
+          22461
+        ],
+        [
+          17,
+          22136
+        ],
+        [
+          16,
+          22041
+        ],
+        [
+          19,
+          21898
+        ],
+        [
+          13,
+          20652
+        ]
+      ],
+      "top_positions": [
+        [
+          "(4, 4)",
+          27073
+        ],
+        [
+          "(1, 1)",
+          7167
+        ],
+        [
+          "(3, 2)",
+          7081
+        ],
+        [
+          "(3, 1)",
+          7066
+        ],
+        [
+          "(0, 1)",
+          7052
+        ],
+        [
+          "(1, 0)",
+          6920
+        ]
+      ]
+    },
+    "FERTILIZE": {
+      "top_hours": [
+        [
+          10,
+          2865
+        ],
+        [
+          13,
+          2639
+        ],
+        [
+          16,
+          2526
+        ],
+        [
+          19,
+          2314
+        ],
+        [
+          15,
+          2283
+        ]
+      ],
+      "top_positions": [
+        [
+          "(4, 4)",
+          5583
+        ],
+        [
+          "(3, 6)",
+          1190
+        ],
+        [
+          "(1, 5)",
+          1153
+        ],
+        [
+          "(1, 4)",
+          1145
+        ],
+        [
+          "(0, 5)",
+          1097
+        ],
+        [
+          "(8, 3)",
+          994
+        ]
+      ]
+    },
+    "CARE": {
+      "top_hours": [
+        [
+          5,
+          12589
+        ],
+        [
+          3,
+          11574
+        ],
+        [
+          7,
+          10347
+        ],
+        [
+          9,
+          9833
+        ],
+        [
+          6,
+          5621
+        ]
+      ],
+      "top_positions": [
+        [
+          "(4, 4)",
+          18964
+        ],
+        [
+          "(6, 4)",
+          5725
+        ],
+        [
+          "(7, 4)",
+          5709
+        ],
+        [
+          "(6, 3)",
+          5110
+        ],
+        [
+          "(5, 4)",
+          5087
+        ],
+        [
+          "(5, 3)",
+          4869
+        ]
+      ]
+    },
+    "FEED": {
+      "top_hours": [
+        [
+          4,
+          14270
+        ],
+        [
+          2,
+          10953
+        ],
+        [
+          8,
+          10268
+        ],
+        [
+          6,
+          10121
+        ],
+        [
+          5,
+          5542
+        ]
+      ],
+      "top_positions": [
+        [
+          "(4, 4)",
+          19463
+        ],
+        [
+          "(7, 4)",
+          5486
+        ],
+        [
+          "(6, 4)",
+          5460
+        ],
+        [
+          "(5, 4)",
+          4935
+        ],
+        [
+          "(6, 3)",
+          4869
+        ],
+        [
+          "(5, 3)",
+          4722
+        ]
+      ]
+    },
+    "HARVEST": {
+      "top_hours": [
+        [
+          15,
+          8039
+        ],
+        [
+          11,
+          7930
+        ],
+        [
+          10,
+          7290
+        ],
+        [
+          14,
+          6986
+        ],
+        [
+          13,
+          6872
+        ]
+      ],
+      "top_positions": [
+        [
+          "(4, 4)",
+          10866
+        ],
+        [
+          "(6, 4)",
+          2488
+        ],
+        [
+          "(7, 4)",
+          2380
+        ],
+        [
+          "(5, 3)",
+          2094
+        ],
+        [
+          "(6, 3)",
+          2066
+        ],
+        [
+          "(0, 3)",
+          2040
+        ]
+      ]
+    },
+    "COLLECT_FERTILIZER": {
+      "top_hours": [
+        [
+          4,
+          11560
+        ],
+        [
+          8,
+          10080
+        ],
+        [
+          6,
+          10000
+        ],
+        [
+          10,
+          9203
+        ],
+        [
+          3,
+          6310
+        ]
+      ],
+      "top_positions": [
+        [
+          "(4, 4)",
+          17359
+        ],
+        [
+          "(7, 4)",
+          5876
+        ],
+        [
+          "(5, 4)",
+          5855
+        ],
+        [
+          "(6, 4)",
+          5813
+        ],
+        [
+          "(5, 3)",
+          5753
+        ],
+        [
+          "(6, 3)",
+          5657
+        ]
+      ]
+    },
+    "BUILD_PASTURE": {
+      "top_hours": [
+        [
+          12,
+          621
+        ],
+        [
+          9,
+          529
+        ],
+        [
+          5,
+          326
+        ],
+        [
+          7,
+          323
+        ],
+        [
+          6,
+          292
+        ]
+      ],
+      "top_positions": [
+        [
+          "(5, 4)",
+          317
+        ],
+        [
+          "(4, 4)",
+          274
+        ],
+        [
+          "(3, 4)",
+          255
+        ],
+        [
+          "(4, 3)",
+          255
+        ],
+        [
+          "(2, 4)",
+          255
+        ],
+        [
+          "(4, 2)",
+          255
+        ]
+      ]
+    },
+    "DIG": {
+      "top_hours": [
+        [
+          19,
+          999
+        ],
+        [
+          14,
+          876
+        ],
+        [
+          18,
+          805
+        ],
+        [
+          17,
+          794
+        ],
+        [
+          15,
+          775
+        ]
+      ],
+      "top_positions": [
+        [
+          "(4, 4)",
+          555
+        ],
+        [
+          "(2, 0)",
+          276
+        ],
+        [
+          "(7, 1)",
+          275
+        ],
+        [
+          "(8, 1)",
+          274
+        ],
+        [
+          "(6, 0)",
+          272
+        ],
+        [
+          "(0, 0)",
+          271
+        ]
+      ]
+    }
+  }
+}

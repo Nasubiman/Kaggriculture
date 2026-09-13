@@ -41,7 +41,8 @@ def score(value: Any) -> float:
         return float("-inf")
 
 
-def collect(top_teams: int, episodes_per_team: int, output_dir: Path) -> dict[str, Any]:
+def collect(top_teams: int, episodes_per_team: int, output_dir: Path,
+            submission_id: int | None = None) -> dict[str, Any]:
     if not KAGGLE.exists():
         raise SystemExit("Kaggle CLI is missing. Run `make setup` first.")
 
@@ -69,7 +70,13 @@ def collect(top_teams: int, episodes_per_team: int, output_dir: Path) -> dict[st
             print(f"[{rank}/{top_teams}] {team['teamName']}: no public submissions")
             continue
 
-        submission = max(submissions, key=lambda item: score(item.get("publicScore")))
+        if submission_id is None:
+            submission = max(submissions, key=lambda item: score(item.get("publicScore")))
+        else:
+            matches = [item for item in submissions if int(item["id"]) == submission_id]
+            if not matches:
+                raise SystemExit(f"submission {submission_id} does not belong to {team['teamName']}")
+            submission = matches[0]
         submission_id = int(submission["id"])
         episodes = kaggle_json("episodes", str(submission_id))
         public_episodes = [
@@ -133,11 +140,13 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--top-teams", type=int, default=5)
     parser.add_argument("--episodes-per-team", type=int, default=3)
+    parser.add_argument("--submission-id", type=int,
+                        help="collect this submission for the selected team instead of its best score")
     parser.add_argument("--output-dir", type=Path, default=ROOT / "replays" / "public")
     args = parser.parse_args()
     if args.top_teams < 1 or args.episodes_per_team < 1:
         parser.error("team and episode counts must be positive")
-    collect(args.top_teams, args.episodes_per_team, args.output_dir.resolve())
+    collect(args.top_teams, args.episodes_per_team, args.output_dir.resolve(), args.submission_id)
 
 
 if __name__ == "__main__":

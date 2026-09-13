@@ -1,0 +1,132 @@
+[
+  {
+    "model": "attack_roundtrip_first25",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/test/attack_roundtrip_first25/main.py",
+    "turns": 2157,
+    "errors": 0,
+    "exact_turn": 0.0,
+    "market_exact": 0.35373203523412144,
+    "actor_command": 0.04142230431770954,
+    "opening_exact": 0.0
+  },
+  {
+    "model": "attack_roundtrip_q90",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/test/attack_roundtrip_q90/main.py",
+    "turns": 2157,
+    "errors": 0,
+    "exact_turn": 0.0,
+    "market_exact": 0.35373203523412144,
+    "actor_command": 0.04142230431770954,
+    "opening_exact": 0.0
+  },
+  {
+    "model": "incumbent_pre_results5_20260913",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/test/incumbent_pre_results5_20260913/main.py",
+    "turns": 2157,
+    "errors": 0,
+    "exact_turn": 0.0,
+    "market_exact": 0.35373203523412144,
+    "actor_command": 0.04142230431770954,
+    "opening_exact": 0.0
+  },
+  {
+    "model": "incumbent_roundtrip_first35",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/test/incumbent_roundtrip_first35/main.py",
+    "turns": 2157,
+    "errors": 0,
+    "exact_turn": 0.0,
+    "market_exact": 0.35373203523412144,
+    "actor_command": 0.04142230431770954,
+    "opening_exact": 0.0
+  },
+  {
+    "model": "incumbent_v37_opening",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/test/incumbent_v37_opening/main.py",
+    "turns": 2157,
+    "errors": 0,
+    "exact_turn": 0.0,
+    "market_exact": 0.35373203523412144,
+    "actor_command": 0.04142230431770954,
+    "opening_exact": 0.0
+  },
+  {
+    "model": "public_v31",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/test/public_v31/main.py",
+    "turns": 2157,
+    "errors": 0,
+    "exact_turn": 0.0,
+    "market_exact": 0.35373203523412144,
+    "actor_command": 0.04142230431770954,
+    "opening_exact": 0.0
+  },
+  {
+    "model": "public_v35",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/test/public_v35/main.py",
+    "turns": 2157,
+    "errors": 0,
+    "exact_turn": 0.0,
+    "market_exact": 0.3514140009272137,
+    "actor_command": 0.04142230431770954,
+    "opening_exact": 0.0
+  },
+  {
+    "model": "public_v36",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/test/public_v36/main.py",
+    "turns": 2157,
+    "errors": 0,
+    "exact_turn": 0.0,
+    "market_exact": 0.35373203523412144,
+    "actor_command": 0.04142230431770954,
+    "opening_exact": 0.0
+  },
+  {
+    "model": "public_v37",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/test/public_v37/main.py",
+    "turns": 2157,
+    "errors": 0,
+    "exact_turn": 0.0,
+    "market_exact": 0.35373203523412144,
+    "actor_command": 0.04142230431770954,
+    "opening_exact": 0.0
+  },
+  {
+    "model": "results4_20260913",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/test/results4_20260913/main.py",
+    "turns": 2157,
+    "errors": 0,
+    "exact_turn": 0.0,
+    "market_exact": 0.354195642095503,
+    "actor_command": 0.04142230431770954,
+    "opening_exact": 0.0
+  },
+  {
+    "model": "robust_seat_mix_v1",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/test/robust_seat_mix_v1/main.py",
+    "turns": 2157,
+    "errors": 0,
+    "exact_turn": 0.0,
+    "market_exact": 0.35373203523412144,
+    "actor_command": 0.04142230431770954,
+    "opening_exact": 0.0
+  },
+  {
+    "model": "current_main",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/main.py",
+    "turns": 2157,
+    "errors": 0,
+    "exact_turn": 0.0,
+    "market_exact": 0.35373203523412144,
+    "actor_command": 0.04137612560609559,
+    "opening_exact": 0.0
+  },
+  {
+    "model": "results5_20260913",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/test/results5_20260913/main.py",
+    "turns": 2157,
+    "errors": 0,
+    "exact_turn": 0.0,
+    "market_exact": 0.35373203523412144,
+    "actor_command": 0.04137612560609559,
+    "opening_exact": 0.0
+  }
+]

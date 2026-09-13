@@ -245,25 +245,6 @@ from __future__ import annotations
 
 import copy
 
-
-def _copy_action(action):
-    """Copy internal action commands, whose arguments are immutable scalars.
-
-    Copy every command list so reactive layers cannot mutate the route tape
-    or an earlier action. Unknown metadata retains normal deepcopy semantics.
-    Observation and planner-state copies must continue to use deepcopy.
-    """
-    result = {}
-    for key, value in action.items():
-        if key == "farmer":
-            result[key] = value.copy()
-        elif key in ("hands", "market"):
-            result[key] = [command.copy() for command in value]
-        else:
-            result[key] = copy.deepcopy(value)
-    return result
-
-
 PRODUCTS = ("WHEAT", "CARROT", "TOMATO", "STRAWBERRY", "MELON", "EGG", "MILK", "WOOL", "FERTILIZER")
 SEED_PRICE = {"WHEAT": 10, "CARROT": 20, "TOMATO": 50, "STRAWBERRY": 100, "MELON": 80}
 ANIMAL_COST = {"GOOSE": 300, "COW": 400, "SHEEP": 500}
@@ -450,8 +431,8 @@ class Chassis:
     def _route_action(self, route, step):
         tape = self.routes[route]
         if 0 <= step < len(tape) and isinstance(tape[step], dict):
-            return _copy_action(tape[step])
-        return _copy_action(PASS_ACTION)
+            return copy.deepcopy(tape[step])
+        return copy.deepcopy(PASS_ACTION)
 
     def future_sells(self, route, item, step):
         """Planned SELL quantity of ``item`` in route steps >= ``step`` (suffix sums)."""
@@ -485,6 +466,7 @@ class Chassis:
             route = st["route"] if st["route"] in self.routes else next(iter(self.routes))
         st["route"] = route
         action = self._route_action(route, step)
+        raw = copy.deepcopy(action)
         try:
             if cfg["hand_align"]:
                 self._hand_align(action, view)
@@ -514,7 +496,7 @@ class Chassis:
             return action
         except Exception:
             self.diagnostics["layer_fallbacks"] += 1
-            return self._route_action(route, step)
+            return raw
 
     # ---- layer: hand_align ----------------------------------------------------
     def _hand_align(self, action, view):
@@ -937,7 +919,7 @@ def make_agent(routes, router=None, opponent_plan=None, **settings):
                 tape = chassis.routes.get(chassis.players.get(player, {}).get("route"),
                                           next(iter(chassis.routes.values())))
                 if 0 <= step < len(tape):
-                    return _copy_action(tape[step])
+                    return copy.deepcopy(tape[step])
             except Exception:
                 pass
             try:
@@ -945,7 +927,7 @@ def make_agent(routes, router=None, opponent_plan=None, **settings):
                 hands = _get(farms[_int(_get(observation, "player", 0))], "hands", []) or []
                 return {"farmer": ["PASS"], "hands": [["PASS"] for _ in hands], "market": []}
             except Exception:
-                return _copy_action(PASS_ACTION)
+                return copy.deepcopy(PASS_ACTION)
 
     agent.chassis = chassis
     return agent
@@ -973,7 +955,7 @@ def _router(observation,step,state):
         state['day27']=True
     return state.get('route',0)
 
-_R42_OPENING=[['BUY_PRODUCT', 'WHEAT', 35], ['SELL', 'WHEAT', 35], ['BUY_PRODUCT', 'WHEAT', 13]]
+_R42_OPENING=[['BUY_PRODUCT', 'WHEAT', 13], ['BUY_PRODUCT', 'WHEAT', 30], ['SELL', 'WHEAT', 30]]
 for _r42_tape in _ROUTES.values():
     _r42_tape[0]=dict(_r42_tape[0],market=[list(o) for o in _R42_OPENING])
 del _r42_tape
@@ -1131,7 +1113,7 @@ def agent(observation,configuration=None):
         planned={}
         for o in action.get('market',[]):
             if o and o[0]=='SELL' and len(o)>=3:planned[o[1]]=planned.get(o[1],0)+max(0,int(o[2]))
-        result=_copy_action(action);added=0
+        result=copy.deepcopy(action);added=0
         for item in sorted(PRODUCTS,key=lambda it:-int(view.prices.get(it,0))):
             qty=min(needed,max(0,view.shed.get(item,0)-planned.get(item,0)))
             if qty<=0:continue
@@ -1304,7 +1286,7 @@ def _v219_request(obs, action, state, native):
     parent_hires=sum(bool(o) and o[0]=='HIRE' for o in action['market'])
     expected=max(len(a.get('hands',[])) for a in planned)
     if len(farm['hands'])+parent_hires != expected:return action
-    fertilizer=bool(_V219_FERTILIZE and day in (24,27) and obs['market']['prices']['FERTILIZER']<=30)
+    fertilizer=bool(_V219_FERTILIZE and day in (24,27) and _r79_tomato_fertilizer_worthwhile(obs,action))
     # One watering tour: at most 2 entry moves + 9 between tiles + 10 waters.
     # A hire request by hour2 leaves at least21 callbacks after confirmation.
     crop_workers=1 if day in (19,20,21,22,23,25) and offset<=2 else (3 if 26<=day<=28 else 2)
@@ -1314,14 +1296,15 @@ def _v219_request(obs, action, state, native):
     extra=[]
     if not state.get('committed'):
         extra += [['BUY_LAND'],['BUY_SEED','TOMATO',10]]
-    if fertilizer:extra.append(['BUY_PRODUCT','FERTILIZER',10])
+    fertilizer_quantity=_r70_parent_fert_qty(obs,action,planned,offset) if fertilizer else 0
+    if fertilizer:extra.append(['BUY_PRODUCT','FERTILIZER',fertilizer_quantity])
     extra += [['HIRE'] for _ in range(count)]
     if len(action['market'])+len(extra)>MAX_ORDERS:return action
     # No assumed sale proceeds. Reserve 3,000 for parent obligations and price
     # movement; the qualification separately requires 12,000 initial liquidity.
     budget=sum(_v219_fib(n) for n in range(farm['hires_today'],farm['hires_today']+parent_hires+count))
     if not state.get('committed'):budget+=4500
-    if fertilizer:budget+=10*(obs['market']['prices']['FERTILIZER']+5)
+    if fertilizer:budget+=fertilizer_quantity*(obs['market']['prices']['FERTILIZER']+5)
     for order in action['market']:
         if not order:continue
         if order[0]=='BUY_PRODUCT':budget+=int(order[2])*(int(obs['market']['prices'][order[1]])+10)
@@ -1336,7 +1319,7 @@ def _v219_request(obs, action, state, native):
     _V219_REPORT['hire_requests']+=count
     if not state.get('committed'):
         state['committed']=True;_V219_REPORT['commitments']+=1
-    changed=_copy_action(action);changed['market']+=extra
+    changed=copy.deepcopy(action);changed['market']+=extra
     return changed
 
 
@@ -1441,11 +1424,11 @@ def agent(observation, configuration=None):
                   'HARVEST':'harvest_requests','DROP':'drop_requests'}.get(command[0])
             if name:_V219_REPORT[name]+=1
             state['last_work'][actor]={'step':step,'command':command,'tomatoes':observation['private']['inventories'][actor].get('TOMATO',0)}
-        action=_copy_action(action);action['farmer'],action['hands']=commands[0],commands[1:]
+        action=copy.deepcopy(action);action['farmer'],action['hands']=commands[0],commands[1:]
     if state.get('committed') and len(action['market'])<MAX_ORDERS and not any(o[:2]==['SELL','TOMATO'] for o in action['market']):
         quantity=projected_shed(action,FarmView(observation)).get('TOMATO',0)
         if quantity>0:
-            action=_copy_action(action);action['market'].append(['SELL','TOMATO',quantity])
+            action=copy.deepcopy(action);action['market'].append(['SELL','TOMATO',quantity])
             _V219_REPORT['tomato_sale_requests']+=quantity
     return action
 
@@ -1494,7 +1477,7 @@ def _v224_sales_first(action):
             cursor-=1
     if orders==original:return action
     _V219_REPORT['reordered_market_turns']+=1
-    changed=_copy_action(action);changed['market']=orders
+    changed=copy.deepcopy(action);changed['market']=orders
     return changed
 _ORDER_PARENT=agent
 del agent
@@ -1557,7 +1540,7 @@ def _v231_controller(obs,action,state,cap):
         else:state['failed_placements']+=1
     state['pending_places']=[]
     state['last']=step
-    result=_copy_action(action)
+    result=copy.deepcopy(action)
     workers=[result.get('farmer') or ['PASS'],*(result.get('hands') or [])]
     seen_harvest=set();cow_available=int(shed.get('COW',0));occupied=set()
     for actor,work in enumerate(workers[:len(positions)]):
@@ -1989,7 +1972,7 @@ def _v233_request(obs,action,state,native):
     state['pending']={'first':expected+1,'initial':initial}
     _V233_REPORT['sheep_hire_requests']+=2;_V233_REPORT['sheep_feed_buy_requests']+=6
     if initial:_V233_REPORT['sheep_commit_requests']+=1
-    result=_copy_action(action);result['market']=market+extra
+    result=copy.deepcopy(action);result['market']=market+extra
     return result
 
 def _v233_worker(obs,actor,targets):
@@ -2042,7 +2025,7 @@ def _v234_rescue(obs,action,state):
     if not 0<shortage<=6 or state.get('rescue_today',0)+shortage>6:return action
     quote=int(obs['market']['prices']['WHEAT'])
     if quote<1 or farm['money']<1000+shortage*(quote+10) or sum(stock.values())+shortage>100:return action
-    result=_copy_action(action);result['market'].append(['BUY_PRODUCT','WHEAT',shortage])
+    result=copy.deepcopy(action);result['market'].append(['BUY_PRODUCT','WHEAT',shortage])
     state['rescue_today']=state.get('rescue_today',0)+shortage
     _V233_REPORT['sheep_rescue_feed_requests']+=shortage
     return result
@@ -2078,7 +2061,7 @@ def agent(observation,configuration=None):
             if pending['initial']:state['committed']=True;_V233_REPORT['sheep_committed']+=1
     action=_v233_request(observation,action,state,_IMPL.chassis.players[player])
     if not state.get('committed'):return action
-    result=_copy_action(action)
+    result=copy.deepcopy(action)
     commands=[result.get('farmer') or ['PASS']]+list(result.get('hands') or [])
     commands += [['PASS'] for _ in range(len(farm['hands'])+1-len(commands))]
     state['work']={}
@@ -2161,18 +2144,36 @@ def _r51_input_gain(target,arrival,day):
     baseline=target['yield']+sum(2 if t//24<=target['until'] else 1 for t in target['water'])
     return max(0,min(extra,target['cap']-baseline))
 
-def _r51_input_path(obs,targets):
-    step=int(obs['step']);day=step//24;now=step+4;pos=(4,4);remaining=dict(targets);path=[];quantities={'WHEAT':0,'CARROT':0}
-    while remaining and len(path)<8:
-        options=[]
-        for xy,target in remaining.items():
-            arrival=now+abs(pos[0]-xy[0])+abs(pos[1]-xy[1]);gain=_r51_input_gain(target,arrival,day)
-            price=max(1,int(obs['market']['prices'][target['crop']])-2)
-            if gain and arrival<day*24+23:options.append((gain*price/(arrival-now+1),gain*price,-arrival,xy,arrival,gain))
-        if not options:break
-        _,_,_,xy,arrival,gain=max(options);target=remaining.pop(xy)
-        path.append((xy[0],xy[1],target['crop'],target['birth']));quantities[target['crop']]+=gain;now=arrival+1;pos=xy
-    return path,quantities
+def _r51_input_path(obs,targets,action,index):
+    step=int(obs['step']);day=step//24
+    ready,start=_r62_input_start(obs,action,index)
+    prices={p:max(1,int(obs['market']['prices'][p])-2) for p in ('WHEAT','CARROT')}
+    fertilizer=max(1,_r37_market_price('FERTILIZER',obs['market']['inventory']['FERTILIZER']-16)+2)
+    # Tuple: penalized value, gross value, next free turn, position, path, used,
+    # wheat units, carrot units. No state reads from the rival's private farm.
+    beam=[(0,0,ready,start,(),frozenset(),0,0)]
+    best=None
+    for depth in range(8):
+        expanded=[]
+        for score,gross,now,pos,path,used,wheat,carrot in beam:
+            for xy,target in targets.items():
+                if xy in used:continue
+                arrival=now+abs(pos[0]-xy[0])+abs(pos[1]-xy[1])
+                if arrival>=day*24+23:continue
+                gain=_r51_input_gain(target,arrival,day)
+                if not gain:continue
+                item=target['crop'];new_gross=gross+gain*prices[item]
+                new_path=path+((xy[0],xy[1],item,target['birth']),)
+                expanded.append((new_gross-1.5*fertilizer*len(new_path),new_gross,arrival+1,xy,new_path,
+                                 used|{xy},wheat+(gain if item=='WHEAT' else 0),carrot+(gain if item=='CARROT' else 0)))
+        if not expanded:break
+        expanded.sort(key=lambda s:(-s[0],-s[1],s[2],s[4]))
+        beam=expanded[:8]
+        if depth>=2:
+            candidate=beam[0]
+            if best is None or (-candidate[0],-candidate[1],candidate[2],candidate[4])<(-best[0],-best[1],best[2],best[4]):best=candidate
+    if best is None:return [],{'WHEAT':0,'CARROT':0}
+    return list(best[4]),{'WHEAT':best[6],'CARROT':best[7]}
 
 def _r51_input_control(obs,action,state):
     step=int(obs['step']);day=step//24;hour=step%24;player=int(obs['player']);farm=obs['farms'][player];private=obs['private']
@@ -2189,7 +2190,7 @@ def _r51_input_control(obs,action,state):
             if len(farm['hands'])>=actor:state['workers'][actor]=plan;_R51_INPUT_REPORT['input_confirmed_hires']+=1
             else:_R51_INPUT_REPORT['input_hire_errors']+=1
     if state['workers']:
-        changed=_copy_action(action)
+        changed=copy.deepcopy(action)
         for actor,plan in state['workers'].items():
             inv=private['inventories'][actor];pos=tuple(farm['hands'][actor-1]);cmd=['PASS']
             if not plan['loaded']:
@@ -2230,21 +2231,12 @@ def _r51_input_control(obs,action,state):
         elif len(o)>=3 and o[:2]==['BUY_PRODUCT','FERTILIZER']:available+=max(0,int(o[2]))
     next_native=planned[hour+1];native_pickups=sum(max(0,int(c[2]) if len(c)>2 else 1) for c in [next_native.get('farmer') or ['PASS'],*(next_native.get('hands') or [])] if len(c)>1 and c[:2]==['PICKUP','FERTILIZER'])
     topup=max(0,native_pickups-available)
-    for i in range(_R51_INPUT_MAX_WORKERS):
-        path,units=_r51_input_path(obs,targets);q=len(path)
-        if q<3 or len(action.get('market',[]))+2+i>10 or sum(stock.values())+purchases+total_q+q+topup>95:break
-        quote=_r37_market_price('FERTILIZER',obs['market']['inventory']['FERTILIZER']-total_q-q-topup)
-        cost=(q+(topup if i==0 else 0))*(quote+2)+_v219_fib(int(farm['hires_today'])+i)
-        value=sum(n*max(1,_r37_market_price(item,obs['market']['inventory'][item]+all_units[item]+n)-2) for item,n in units.items())
-        if value<1.5*cost+50 or farm['money']<total_cost+cost+3000:break
-        plans.append({'path':path,'quantity':q,'loaded':False});total_q+=q;total_cost+=cost
-        for item,n in units.items():all_units[item]+=n
-        for x,y,_,_ in path:targets.pop((x,y),None)
+    plans,total_q,total_cost,all_units=_r68_joint_plans(obs,action,targets,stock,purchases,topup)
     if not plans:return action
     state['pending']={len(farm['hands'])+1+i:plan for i,plan in enumerate(plans)}
     _R51_INPUT_REPORT['input_hire_requests']+=len(plans);_R51_INPUT_REPORT['input_purchase_requests']+=total_q+topup
     _R51_INPUT_REPORT['input_forecast_wheat']+=all_units['WHEAT'];_R51_INPUT_REPORT['input_forecast_carrot']+=all_units['CARROT']
-    changed=_copy_action(action);changed['market'] += [['BUY_PRODUCT','FERTILIZER',total_q+topup]]+[['HIRE'] for _ in plans];return changed
+    changed=copy.deepcopy(action);changed['market'] += [['BUY_PRODUCT','FERTILIZER',total_q+topup]]+[['HIRE'] for _ in plans];return changed
 
 def agent(observation,configuration=None):
     try:
@@ -2287,7 +2279,7 @@ def _r51_close_warehouse(obs,action):
         if len(o)>=3 and o[0]=='SELL':post[o[1]]=max(0,post.get(o[1],0)-max(0,int(o[2])))
     needed=sum(post.values())+sum(max(0,q) for inv in private['inventories'] for q in inv.values())-100
     if needed<=0:return action
-    result=_copy_action(action);orders=result['market']
+    result=copy.deepcopy(action);orders=result['market']
     # Grain and fertilizer have native input obligations; other products do not.
     # Additional commodity sales are bounded by actual post-action physical stock.
     for item in sorted((p for p in PRODUCTS if p not in ('WHEAT','FERTILIZER')),key=lambda p:-obs['market']['prices'].get(p,0)):
@@ -2372,15 +2364,262 @@ _R53_LABOR_COMBINED={}
 agent.telemetry=_R53_LABOR_COMBINED
 agent=globals().pop('agent')
 
+# EXP193: deterministic HIRE spawn after native unit actions, then next-turn pickup.
+def _r62_input_start(obs,action,index):
+    farm=obs['farms'][obs['player']]
+    positions=[list(farm['farmer'])]+[list(p) for p in farm['hands']]
+    for actor,c in enumerate([action.get('farmer') or ['PASS'],*(action.get('hands') or [])][:len(positions)]):
+        if c and c[0] in MOVES:
+            dx,dy=MOVES[c[0]]
+            positions[actor]=[max(0,min(9,positions[actor][0]+dx)),max(0,min(9,positions[actor][1]+dy))]
+    access=((4,4),(5,4),(4,5),(5,5))
+    native_hires=sum(bool(o) and o[0]=='HIRE' for o in action.get('market',[]))
+    for _ in range(native_hires+index+1):
+        chosen=min(access,key=lambda p:(sum(tuple(q)==p for q in positions),access.index(p)))
+        positions.append(list(chosen))
+    return int(obs['step'])+2,chosen
 
-# Deterministic seat-conditioned opening selected by search_seat_opening_mix.py.
-_R55_SEAT_OPENINGS = ([['BUY_PRODUCT', 'WHEAT', 13], ['BUY_PRODUCT', 'WHEAT', 30], ['SELL', 'WHEAT', 30]], [['BUY_PRODUCT', 'WHEAT', 18], ['SELL', 'WHEAT', 5]])
-_R55_SEAT_PARENT = agent
-def agent(observation, configuration=None):
-    result = _R55_SEAT_PARENT(observation, configuration)
-    if isinstance(observation, dict) and int(observation.get('step', -1)) == 0:
-        result = dict(result)
-        result['market'] = [list(order) for order in _R55_SEAT_OPENINGS[int(observation['player'])]]
+agent=globals().pop('agent')
+
+def _r68_joint_plans(obs,action,targets,stock,purchases,topup):
+    farm=obs['farms'][obs['player']];choices=[]
+    for mode,first_crop in enumerate((None,'WHEAT','CARROT')):
+        remaining=dict(targets);plans=[];total_q=0;total_cost=0;total_value=0
+        all_units={'WHEAT':0,'CARROT':0}
+        for i in range(_R51_INPUT_MAX_WORKERS):
+            subset={xy:t for xy,t in remaining.items() if t['crop']==first_crop} if i==0 and first_crop else remaining
+            path,units=_r51_input_path(obs,subset,action,i);q=len(path)
+            if q<3 or len(action.get('market',[]))+2+i>10 or sum(stock.values())+purchases+total_q+q+topup>95:break
+            quote=_r37_market_price('FERTILIZER',obs['market']['inventory']['FERTILIZER']-total_q-q-topup)
+            cost=(q+(topup if i==0 else 0))*(quote+2)+_v219_fib(int(farm['hires_today'])+i)
+            value=sum(n*max(1,_r37_market_price(item,obs['market']['inventory'][item]+all_units[item]+n)-2) for item,n in units.items())
+            if value<1.5*cost+50 or farm['money']<total_cost+cost+3000:break
+            plans.append({'path':path,'quantity':q,'loaded':False});total_q+=q;total_cost+=cost;total_value+=value
+            for item,n in units.items():all_units[item]+=n
+            for x,y,_,_ in path:remaining.pop((x,y),None)
+        score=(total_value-total_cost,total_value,-total_cost,-len(plans),-mode)
+        choices.append((score,plans,total_q,total_cost,all_units))
+    _,plans,total_q,total_cost,all_units=max(choices,key=lambda v:v[0])
+    return plans,total_q,total_cost,all_units
+
+agent=globals().pop('agent')
+
+_R70_STATES={}
+_R70_REPORT={}
+
+def _r70_parent_fert_qty(obs,action,planned,offset):
+    stock=dict(projected_shed(action,FarmView(obs)))
+    for order in action.get('market',[]):
+        if len(order)<3:continue
+        op,item,quantity=order[:3];quantity=max(0,int(quantity))
+        if op=='SELL':stock[item]=max(0,stock.get(item,0)-quantity)
+        elif op in ('BUY_PRODUCT','BUY_ANIMAL'):
+            stock[item]=stock.get(item,0)+min(quantity,max(0,100-sum(stock.values())))
+    next_action=planned[offset+1] if offset+1<len(planned) else {}
+    commands=[next_action.get('farmer') or ['PASS'],*(next_action.get('hands') or [])]
+    native_need=sum(max(0,int(c[2]) if len(c)>2 else 1) for c in commands if len(c)>1 and c[:2]==['PICKUP','FERTILIZER'])
+    quantity=max(10,10+native_need-max(0,stock.get('FERTILIZER',0)))
+    if quantity>max(0,100-sum(stock.values())):
+        _R70_REPORT['parent_input_capacity_declines']+=1
+        return 10
+    if quantity>10:
+        _R70_REPORT['parent_input_guard_turns']+=1
+        _R70_REPORT['parent_input_guard_extra_units']+=quantity-10
+    return quantity
+
+def _r70_before(obs):
+    player=int(obs['player']);step=int(obs['step']);state=_R70_STATES.get(player)
+    if state is None or step<=state['step']:
+        state=_R70_STATES[player]={'step':-1,'pending':[],'roles':set()}
+        _R70_REPORT.update(parent_input_guard_turns=0,parent_input_guard_extra_units=0,
+            parent_input_requests=0,parent_input_confirmed=0,parent_input_shortfalls=0,
+            parent_input_errors=0,parent_input_capacity_declines=0)
+    state['step']=step
+    for request in state['pending']:
+        actor,quantity,old=request
+        actual=max(0,int(obs['private']['inventories'][actor].get('FERTILIZER',0))-old)
+        _R70_REPORT['parent_input_confirmed']+=min(quantity,actual)
+        _R70_REPORT['parent_input_shortfalls']+=max(0,quantity-actual)
+    state['pending']=[]
+    return state
+
+def _r70_after(obs,action,state):
+    player=int(obs['player']);day=int(obs['step'])//24
+    for actor,role in _V219_STATES.get(player,{}).get('workers',{}).items():
+        if not role.get('needs_fertilizer'):continue
+        key=(day,actor);inv=obs['private']['inventories'][actor].get('FERTILIZER',0)
+        if key not in state['roles']:
+            state['roles'].add(key)
+            desired=role.get('fertilizer_quantity',10 if role['kind']=='fertilizer' else 5)
+            if role.get('loaded') and not role.get('pickup_requested') and inv<desired:
+                _R70_REPORT['parent_input_shortfalls']+=desired-inv
+        command=action.get('hands',[])[actor-1] if actor<=len(action.get('hands',[])) else ['PASS']
+        if len(command)>1 and command[:2]==['PICKUP','FERTILIZER']:
+            quantity=max(0,int(command[2]) if len(command)>2 else 1)
+            _R70_REPORT['parent_input_requests']+=quantity
+            state['pending'].append((actor,quantity,int(inv)))
+
+_R70_PARENT=agent
+
+def agent(observation,configuration=None):
+    state=None
+    try:state=_r70_before(observation)
+    except Exception:_R70_REPORT['parent_input_errors']=_R70_REPORT.get('parent_input_errors',0)+1
+    result=_R70_PARENT(observation,configuration)
+    try:
+        if state is not None:_r70_after(observation,result,state)
+    except Exception:_R70_REPORT['parent_input_errors']=_R70_REPORT.get('parent_input_errors',0)+1
+    _R70_REPORT.update(getattr(_R70_PARENT,'telemetry',{}))
     return result
-agent.telemetry = getattr(_R55_SEAT_PARENT, 'telemetry', {})
-agent = globals().pop('agent')
+
+agent.telemetry=_R70_REPORT
+agent=globals().pop('agent')
+
+def _r79_tomato_fertilizer_worthwhile(obs,action):
+    if obs['market']['prices']['FERTILIZER']<=30:return True
+    farm=obs['farms'][obs['player']];day=int(obs['step'])//24;bonus=0
+    for y in (5,6):
+        for x in range(5,10):
+            tile=farm['tiles'][y][x]
+            if not isinstance(tile,dict) or tile.get('crop')!='TOMATO':continue
+            birth=tile['planted_day'];until=tile.get('fertilized_until_day',-1)
+            bonus+=sum(until<d and 8<=d+1-birth<=11 for d in range(day,day+3))
+    if not bonus:return False
+    inventory=obs['market']['inventory']
+    price=max(1,_r37_market_price('TOMATO',inventory['TOMATO']+bonus+10)-2)
+    fertilizer=max(1,_r37_market_price('FERTILIZER',inventory['FERTILIZER']-10)+2)
+    native_hires=sum(bool(o) and o[0]=='HIRE' for o in action.get('market',[]))
+    extra_labor=_v219_fib(int(farm['hires_today'])+native_hires+3)
+    return bonus*price>=2*(10*fertilizer+extra_labor)+100
+
+agent=globals().pop('agent')
+
+# EXP216: original adaptation of economic feed and fertilizer-sale concepts.
+# Conceptual credit: Steven Lee Hans, "Lord Momo Returns", September12 snapshot.
+_R85_FEED = True
+_R85_FERT = True
+_R85_PARENT = agent
+_R85_STATES = {}
+_R85_REPORT = {}
+
+def _r85_feed(obs, action):
+    step=int(obs['step']);day=step//24
+    if not 10<=day<=28 or step%24>21:return action
+    player=int(obs['player']);native=_IMPL.chassis.players[player]
+    tape=_v219_native_day(native,day)
+    expected=max(len(a.get('hands',[])) for a in tape)
+    farm=obs['farms'][player];positions=[farm['farmer'],*farm['hands']]
+    commands=[action.get('farmer') or ['PASS'],*(action.get('hands') or [])]
+    prices=obs['market']['prices'];changed=False
+    for actor,command in enumerate(commands[:expected+1]):
+        if command!=['FEED'] or actor>=len(positions):continue
+        tile=_tile_at(farm['tiles'],positions[actor])
+        if not isinstance(tile,dict) or tile.get('animal') not in ('GOOSE','COW','SHEEP'):continue
+        if tile.get('fed_today') or int(tile.get('consecutive_unfed',0))!=0:continue
+        if int(obs['private']['inventories'][actor].get('WHEAT',0))<=0:continue
+        item={'GOOSE':'EGG','COW':'MILK','SHEEP':'WOOL'}[tile['animal']]
+        bonus=1+max(0,int(tile.get('pending_care_bonus',0)))
+        if bonus*(float(prices[item])+5)*1.25>=float(prices['WHEAT']):continue
+        if not _r86_next_feed(obs,positions[actor]):continue
+        commands[actor]=['PASS'];changed=True
+        _R85_REPORT['feed_skips']+=1
+    if not changed:return action
+    result=copy.deepcopy(action);result['farmer'],result['hands']=commands[0],commands[1:]
+    return result
+
+def _r85_reserve(obs, state):
+    step=int(obs['step']);player=int(obs['player']);native=_IMPL.chassis.players[player]
+    route=native['route'];key=(route,step)
+    cache=state.setdefault('native_reserves',{})
+    if route not in cache:
+        # Backward recurrence preserves field-before-market order within a turn.
+        reserve=[0]*720
+        for t in range(718,-1,-1):
+            a=_IMPL.chassis.routes[2 if t>=648 else route][t]
+            pickup=sum(max(0,int(c[2]) if len(c)>2 else 1) for c in [a.get('farmer') or ['PASS'],*(a.get('hands') or [])] if len(c)>1 and c[:2]==['PICKUP','FERTILIZER'])
+            purchase=sum(max(0,int(o[2])) for o in a.get('market',[]) if len(o)>2 and o[:2]==['BUY_PRODUCT','FERTILIZER'])
+            reserve[t]=pickup+max(0,reserve[t+1]-purchase)
+        cache[route]=reserve
+    dedicated=0
+    for parent in (_V219_STATES.get(player,{}),_V233_STATES.get(player,{})):
+        for actor,role in parent.get('workers',{}).items():
+            if not isinstance(role,dict) or not role.get('needs_fertilizer') or role.get('loaded'):continue
+            desired=role.get('fertilizer_quantity',10 if role.get('kind')=='fertilizer' else 5)
+            carried=obs['private']['inventories'][actor].get('FERTILIZER',0)
+            dedicated+=max(0,desired-carried)
+        pending=parent.get('pending') or {}
+        if pending.get('fertilizer'):dedicated+=10
+    inputs=_R51_INPUT_STATES.get(player,{})
+    for actor,plan in {**inputs.get('workers',{}),**(inputs.get('pending') or {})}.items():
+        if not plan.get('loaded'):dedicated+=max(0,int(plan['quantity']))
+    return max(14,cache[route][min(719,step+1)]+dedicated)
+
+def _r85_fertilizer(obs, action, state):
+    step=int(obs['step']);day=step//24
+    if not 6<=day<=28:return action
+    market=action.get('market',[])
+    if len(market)>=MAX_ORDERS or any(o and o[0]!='SELL' for o in market):return action
+    stock=projected_shed(action,FarmView(obs))
+    held=max(0,int(stock.get('FERTILIZER',0)))
+    sold=sum(max(0,int(o[2])) for o in market if len(o)>2 and o[:2]==['SELL','FERTILIZER'])
+    extra=held-sold-_r85_reserve(obs,state)
+    if extra<=0:return action
+    result=copy.deepcopy(action);result['market'].append(['SELL','FERTILIZER',extra])
+    _R85_REPORT['fert_sale_turns']+=1;_R85_REPORT['fert_sale_units']+=extra
+    return result
+
+def agent(observation, configuration=None):
+    result=_R85_PARENT(observation,configuration)
+    try:
+        step=int(observation['step']);player=int(observation['player'])
+        state=_R85_STATES.get(player)
+        if state is None or step<=state['step']:
+            state=_R85_STATES[player]={'step':-1}
+            _R85_REPORT.update(feed_skips=0,fert_sale_turns=0,fert_sale_units=0,economic_overlay_errors=0)
+        state['step']=step
+        if configuration is not None and any(configuration.get(k,v)!=v for k,v in [('boardSize',10),('turnsPerDay',24),('shedCapacity',100),('maxMarketOrdersPerTurn',10)]):return result
+        if _R85_FEED:result=_r85_feed(observation,result)
+        if _R85_FERT:result=_r85_fertilizer(observation,result,state)
+        if step%24==23:result=_r51_close_warehouse(observation,result)
+    except Exception:
+        _R85_REPORT['economic_overlay_errors']=_R85_REPORT.get('economic_overlay_errors',0)+1
+    _R85_REPORT.update(getattr(_R85_PARENT,'telemetry',{}))
+    return result
+
+agent.telemetry=_R85_REPORT
+agent=globals().pop('agent')
+
+# EXP217: planned next-day service is required before discretionary feed cuts.
+_R86_FEED_CACHE = {}
+
+def _r86_next_feed(obs, target):
+    step=int(obs['step']);day=step//24
+    if day==28:return True  # No second dawn follows before game termination.
+    player=int(obs['player']);native=_IMPL.chassis.players[player]
+    tomorrow=day+1;route=2 if tomorrow>=27 else native['route'];key=(route,tomorrow)
+    if key not in _R86_FEED_CACHE:
+        positions=[(4,4)];wheat=[0];access=((4,4),(5,4),(4,5),(5,5));feeds=set()
+        for hour in range(24):
+            a=_IMPL.chassis.routes[route][tomorrow*24+hour]
+            commands=[a.get('farmer') or ['PASS'],*(a.get('hands') or [])]
+            for actor,command in enumerate(commands[:len(positions)]):
+                if not command:continue
+                pos=positions[actor];op=command[0]
+                if op in MOVES:
+                    dx,dy=MOVES[op];positions[actor]=(max(0,min(9,pos[0]+dx)),max(0,min(9,pos[1]+dy)))
+                elif command[:2]==['PICKUP','WHEAT'] and pos in access:
+                    wheat[actor]+=max(0,int(command[2]) if len(command)>2 else 1)
+                elif op=='FEED' and wheat[actor]>0:
+                    wheat[actor]-=1
+                    if hour<=21:feeds.add(pos)
+                elif op=='DROP' and pos in access:wheat[actor]=0
+                elif command[:2]==['PLACE','WHEAT'] and pos in access:
+                    wheat[actor]=max(0,wheat[actor]-max(0,int(command[2]) if len(command)>2 else 1))
+            for order in a.get('market',[]):
+                if order and order[0]=='HIRE':
+                    chosen=min(access,key=lambda p:(positions.count(p),access.index(p)))
+                    positions.append(chosen);wheat.append(0)
+        _R86_FEED_CACHE[key]=frozenset(feeds)
+    return tuple(target) in _R86_FEED_CACHE[key]
+
+agent=globals().pop('agent')

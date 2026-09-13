@@ -103,8 +103,22 @@ TRAJECTORY_ELITE_COUNT ?= 8
 TRAJECTORY_FINALISTS ?= 4
 LAST_TRAJECTORY_SEARCH_RUN := $(SERVER_RESULTS)/LATEST_TRAJECTORY_SEARCH_RUN
 TRAJECTORY_RESULT ?= $(shell test -f "$(LAST_TRAJECTORY_SEARCH_RUN)" && cat "$(LAST_TRAJECTORY_SEARCH_RUN)")
+CURRENT_GENOME_NAME ?= current_genome_$(shell date +%Y%m%d_%H%M%S)
+CURRENT_GENOME_RUN ?= $(SERVER_DATA)/runs/$(CURRENT_GENOME_NAME)
+CURRENT_GENOME_LOCAL_RUN ?= $(SERVER_RESULTS)/$(CURRENT_GENOME_NAME)
+CURRENT_GENOME_OPPONENTS ?= attack_roundtrip_first25 attack_roundtrip_q90 incumbent_roundtrip_first35 incumbent_v37_opening incumbent_pre_results5_20260913 public_v31 public_v35 public_v36 public_v37 results4_20260913
+CURRENT_GENOME_WORKERS ?= 20
+CURRENT_GENOME_POPULATION ?= 48
+CURRENT_GENOME_SCREEN_SEEDS ?= 4
+CURRENT_GENOME_RACE_SEEDS ?= 20
+CURRENT_GENOME_FINAL_SEEDS ?= 100
+CURRENT_GENOME_RACE_COUNT ?= 16
+CURRENT_GENOME_ELITE_COUNT ?= 6
+CURRENT_GENOME_FINALISTS ?= 4
+LAST_CURRENT_GENOME_RUN := $(SERVER_RESULTS)/LATEST_CURRENT_GENOME_RUN
+CURRENT_GENOME_RESULT ?= $(shell test -f "$(LAST_CURRENT_GENOME_RUN)" && cat "$(LAST_CURRENT_GENOME_RUN)")
 
-.PHONY: setup simulator-update simulator-check server-simulator-update server-simulator-check kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search schedule-search schedule-status schedule-candidate schedule-use trajectory-search trajectory-status trajectory-candidate trajectory-use genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
+.PHONY: setup simulator-update simulator-check server-simulator-update server-simulator-check kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search schedule-search schedule-status schedule-candidate schedule-use trajectory-search trajectory-status trajectory-candidate trajectory-use current-genome-search current-genome-status current-genome-candidate current-genome-use genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -319,6 +333,40 @@ trajectory-use: trajectory-candidate
 	$(MAKE) submission-build
 	cp main.py "$(TRAJECTORY_RESULT)/promoted_main.py"
 	@printf '\nPromoted accepted trajectory to main.py\n'
+
+# Search only through the stable agent boundary. Includes coherent public-top3
+# opening trajectories, adaptive cow/sheep profiles, and terminal gates.
+current-genome-search: server-sync-fast-runner
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(CURRENT_GENOME_RUN)/source"'
+	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py
+	rsync -az training/current_genome.py training/search_current_genomes.py training/promote_current_genome.py $(SERVER_HOST):$(SERVER_REPO)/training/
+	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; cp main.py training/current_genome.py training/search_current_genomes.py training/promote_current_genome.py "$(CURRENT_GENOME_RUN)/source/"; cp -R test "$(CURRENT_GENOME_RUN)/source/"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/search_current_genomes.py --base main.py --models-dir test --opponents $(CURRENT_GENOME_OPPONENTS) --workers "$(CURRENT_GENOME_WORKERS)" --population "$(CURRENT_GENOME_POPULATION)" --screen-seeds "$(CURRENT_GENOME_SCREEN_SEEDS)" --race-seeds "$(CURRENT_GENOME_RACE_SEEDS)" --final-seeds "$(CURRENT_GENOME_FINAL_SEEDS)" --race-count "$(CURRENT_GENOME_RACE_COUNT)" --elite-count "$(CURRENT_GENOME_ELITE_COUNT)" --finalists "$(CURRENT_GENOME_FINALISTS)" --output-dir "$(CURRENT_GENOME_RUN)"'
+	mkdir -p "$(CURRENT_GENOME_LOCAL_RUN)"
+	rsync -az $(SERVER_HOST):$(CURRENT_GENOME_RUN)/ "$(CURRENT_GENOME_LOCAL_RUN)/"
+	printf '%s\n' "$(CURRENT_GENOME_LOCAL_RUN)" > "$(LAST_CURRENT_GENOME_RUN)"
+	@printf '\nDone. Next: make current-genome-status\n'
+
+current-genome-status:
+	test -n "$(CURRENT_GENOME_RESULT)"
+	test -f "$(CURRENT_GENOME_RESULT)/decision.json"
+	$(VENV)/bin/python -c 'import json; d=json.load(open("$(CURRENT_GENOME_RESULT)/decision.json")); s=d["selected"]; print("accepted=",d["accepted"]); print("reason=",d["reason"]); print("selected=",s["label"]); print("reward_delta=",round(s["mean_delta"],1),"lower95=",round(s["lower_95_delta"],1),"worst_reward=",round(s["worst_opponent_delta"],1)); print("margin_delta=",round(s.get("mean_margin_delta",0),1),"worst_margin=",round(s.get("worst_opponent_margin_delta",0),1))'
+
+current-genome-candidate:
+	test -n "$(CURRENT_GENOME_RESULT)"
+	test -f "$(CURRENT_GENOME_RESULT)/best_genome.json"
+	test -f "$(CURRENT_GENOME_RESULT)/source/main.py"
+	PYTHONPATH=training $(VENV)/bin/python training/promote_current_genome.py --genome "$(CURRENT_GENOME_RESULT)/best_genome.json" --base "$(CURRENT_GENOME_RESULT)/source/main.py" --output candidate_main.py
+	$(VENV)/bin/python -m py_compile candidate_main.py
+	@printf 'Candidate ready: candidate_main.py\n'
+
+current-genome-use: current-genome-candidate
+	$(VENV)/bin/python -c 'import json; d=json.load(open("$(CURRENT_GENOME_RESULT)/decision.json")); assert d["accepted"], "current-genome acceptance gate was not met"'
+	test -f "$(CURRENT_GENOME_RESULT)/main_before_promotion.py" || cp main.py "$(CURRENT_GENOME_RESULT)/main_before_promotion.py"
+	cp candidate_main.py main.py
+	$(MAKE) submission-build
+	cp main.py "$(CURRENT_GENOME_RESULT)/promoted_main.py"
+	@printf '\nPromoted accepted current genome to main.py\n'
 
 server-hybrid-train: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(HYBRID_RUN)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 CUDA_VISIBLE_DEVICES=0 .venv/bin/python training/train_hybrid_ppo.py --output-dir "$(HYBRID_RUN)" --iterations "$(HYBRID_ITERATIONS)" --games-per-iteration "$(HYBRID_GAMES)" --workers "$(HYBRID_WORKERS)" --score800-reference "$(SERVER_REFERENCE)" --device cuda'

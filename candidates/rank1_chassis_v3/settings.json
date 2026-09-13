@@ -1,0 +1,11 @@
+{
+  "hand_align": true,
+  "weed_repair": true,
+  "sell_lead": true,
+  "front_run": false,
+  "budget_guard": false,
+  "room_guard": false,
+  "clamp_sells": false,
+  "dead_stock": false,
+  "terminal_liquidation": false
+}

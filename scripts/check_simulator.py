@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import importlib.util
 from importlib.metadata import version
 from pathlib import Path
@@ -18,6 +19,7 @@ EXPECTED_VERSION = "1.32.7"
 SEED = 8_150_2026
 EPISODE_STEPS = 49
 ROOT = Path(__file__).resolve().parents[1]
+AGENT_PATH = ROOT / "main.py"
 
 
 def probe_agent(observation: Any) -> dict[str, Any]:
@@ -102,7 +104,7 @@ def check_fast_standard_parity() -> None:
 
 
 def load_agent(module_name: str) -> Any:
-    path = ROOT / "main.py"
+    path = AGENT_PATH
     spec = importlib.util.spec_from_file_location(module_name, path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"cannot load agent from {path}")
@@ -133,6 +135,11 @@ def check_full_game_parity() -> None:
 
 
 def main() -> None:
+    global AGENT_PATH
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--agent", type=Path, default=AGENT_PATH)
+    args = parser.parse_args()
+    AGENT_PATH = args.agent.resolve()
     check_rule_constants()
     check_locked_tile_movement()
     check_fast_standard_parity()

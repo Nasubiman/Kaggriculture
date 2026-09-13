@@ -1,0 +1,1419 @@
+{
+  "source": "replays/rank1_full_20260913",
+  "team": "Majkel1337",
+  "games": 235,
+  "steps": 719,
+  "feature_size": 735,
+  "episodes": [
+    {
+      "episode_id": 108494524,
+      "seat": 0,
+      "reward": 107682.0,
+      "margin": 4762.0
+    },
+    {
+      "episode_id": 108488494,
+      "seat": 1,
+      "reward": 106933.0,
+      "margin": 28450.0
+    },
+    {
+      "episode_id": 108483149,
+      "seat": 1,
+      "reward": 134405.0,
+      "margin": 15233.0
+    },
+    {
+      "episode_id": 108477110,
+      "seat": 0,
+      "reward": 156369.0,
+      "margin": 7137.0
+    },
+    {
+      "episode_id": 108470978,
+      "seat": 1,
+      "reward": 111946.0,
+      "margin": 6933.0
+    },
+    {
+      "episode_id": 108464894,
+      "seat": 1,
+      "reward": 128584.0,
+      "margin": 26775.0
+    },
+    {
+      "episode_id": 108459064,
+      "seat": 0,
+      "reward": 122526.0,
+      "margin": 3936.0
+    },
+    {
+      "episode_id": 108453811,
+      "seat": 0,
+      "reward": 83841.0,
+      "margin": -768.0
+    },
+    {
+      "episode_id": 108447904,
+      "seat": 1,
+      "reward": 103817.0,
+      "margin": -634.0
+    },
+    {
+      "episode_id": 108441866,
+      "seat": 1,
+      "reward": 105883.0,
+      "margin": 12577.0
+    },
+    {
+      "episode_id": 108436524,
+      "seat": 1,
+      "reward": 100946.0,
+      "margin": 40433.0
+    },
+    {
+      "episode_id": 108430587,
+      "seat": 1,
+      "reward": 116807.0,
+      "margin": 11065.0
+    },
+    {
+      "episode_id": 108425363,
+      "seat": 0,
+      "reward": 127286.0,
+      "margin": 23761.0
+    },
+    {
+      "episode_id": 108419608,
+      "seat": 1,
+      "reward": 86941.0,
+      "margin": 14571.0
+    },
+    {
+      "episode_id": 108414382,
+      "seat": 1,
+      "reward": 141083.0,
+      "margin": 29291.0
+    },
+    {
+      "episode_id": 108409365,
+      "seat": 0,
+      "reward": 137338.0,
+      "margin": 12382.0
+    },
+    {
+      "episode_id": 108404344,
+      "seat": 0,
+      "reward": 103686.0,
+      "margin": -1819.0
+    },
+    {
+      "episode_id": 108399446,
+      "seat": 0,
+      "reward": 114634.0,
+      "margin": 8290.0
+    },
+    {
+      "episode_id": 108395112,
+      "seat": 1,
+      "reward": 125605.0,
+      "margin": 10567.0
+    },
+    {
+      "episode_id": 108390115,
+      "seat": 1,
+      "reward": 146697.0,
+      "margin": 9833.0
+    },
+    {
+      "episode_id": 108385318,
+      "seat": 0,
+      "reward": 131651.0,
+      "margin": -4590.0
+    },
+    {
+      "episode_id": 108381189,
+      "seat": 0,
+      "reward": 94216.0,
+      "margin": -2457.0
+    },
+    {
+      "episode_id": 108377045,
+      "seat": 0,
+      "reward": 105635.0,
+      "margin": -13620.0
+    },
+    {
+      "episode_id": 108377042,
+      "seat": 0,
+      "reward": 147908.0,
+      "margin": 13734.0
+    },
+    {
+      "episode_id": 108372810,
+      "seat": 0,
+      "reward": 125465.0,
+      "margin": -14056.0
+    },
+    {
+      "episode_id": 108368104,
+      "seat": 1,
+      "reward": 144805.0,
+      "margin": 13433.0
+    },
+    {
+      "episode_id": 108363848,
+      "seat": 0,
+      "reward": 118221.0,
+      "margin": 12349.0
+    },
+    {
+      "episode_id": 108359085,
+      "seat": 1,
+      "reward": 87615.0,
+      "margin": 3747.0
+    },
+    {
+      "episode_id": 108354767,
+      "seat": 0,
+      "reward": 127932.0,
+      "margin": 8945.0
+    },
+    {
+      "episode_id": 108349757,
+      "seat": 1,
+      "reward": 113359.0,
+      "margin": 12382.0
+    },
+    {
+      "episode_id": 108349935,
+      "seat": 1,
+      "reward": 122782.0,
+      "margin": 3239.0
+    },
+    {
+      "episode_id": 108345542,
+      "seat": 0,
+      "reward": 88402.0,
+      "margin": 12614.0
+    },
+    {
+      "episode_id": 108340909,
+      "seat": 1,
+      "reward": 89945.0,
+      "margin": -19614.0
+    },
+    {
+      "episode_id": 108336738,
+      "seat": 0,
+      "reward": 120610.0,
+      "margin": -5322.0
+    },
+    {
+      "episode_id": 108332509,
+      "seat": 0,
+      "reward": 101208.0,
+      "margin": -1883.0
+    },
+    {
+      "episode_id": 108327803,
+      "seat": 0,
+      "reward": 102649.0,
+      "margin": -504.0
+    },
+    {
+      "episode_id": 108323526,
+      "seat": 0,
+      "reward": 95001.0,
+      "margin": 4475.0
+    },
+    {
+      "episode_id": 108318789,
+      "seat": 1,
+      "reward": 86359.0,
+      "margin": 16013.0
+    },
+    {
+      "episode_id": 108314478,
+      "seat": 0,
+      "reward": 137894.0,
+      "margin": 3820.0
+    },
+    {
+      "episode_id": 108309734,
+      "seat": 1,
+      "reward": 128033.0,
+      "margin": 6868.0
+    },
+    {
+      "episode_id": 108305451,
+      "seat": 0,
+      "reward": 178462.0,
+      "margin": 9375.0
+    },
+    {
+      "episode_id": 108300532,
+      "seat": 1,
+      "reward": 90293.0,
+      "margin": 8814.0
+    },
+    {
+      "episode_id": 108295517,
+      "seat": 1,
+      "reward": 105196.0,
+      "margin": -3119.0
+    },
+    {
+      "episode_id": 108290604,
+      "seat": 0,
+      "reward": 129821.0,
+      "margin": 19373.0
+    },
+    {
+      "episode_id": 108285658,
+      "seat": 1,
+      "reward": 140954.0,
+      "margin": 28331.0
+    },
+    {
+      "episode_id": 108280666,
+      "seat": 1,
+      "reward": 86559.0,
+      "margin": 5870.0
+    },
+    {
+      "episode_id": 108275644,
+      "seat": 0,
+      "reward": 86263.0,
+      "margin": 34999.0
+    },
+    {
+      "episode_id": 108270468,
+      "seat": 1,
+      "reward": 120440.0,
+      "margin": 12282.0
+    },
+    {
+      "episode_id": 108264640,
+      "seat": 0,
+      "reward": 100303.0,
+      "margin": 5455.0
+    },
+    {
+      "episode_id": 108259398,
+      "seat": 0,
+      "reward": 133880.0,
+      "margin": 448.0
+    },
+    {
+      "episode_id": 108253590,
+      "seat": 0,
+      "reward": 110299.0,
+      "margin": 5510.0
+    },
+    {
+      "episode_id": 108248350,
+      "seat": 1,
+      "reward": 110258.0,
+      "margin": 1104.0
+    },
+    {
+      "episode_id": 108242413,
+      "seat": 0,
+      "reward": 101093.0,
+      "margin": -2295.0
+    },
+    {
+      "episode_id": 108236417,
+      "seat": 1,
+      "reward": 119419.0,
+      "margin": 6463.0
+    },
+    {
+      "episode_id": 108230381,
+      "seat": 1,
+      "reward": 123816.0,
+      "margin": 9796.0
+    },
+    {
+      "episode_id": 108224320,
+      "seat": 0,
+      "reward": 142157.0,
+      "margin": 5559.0
+    },
+    {
+      "episode_id": 108218308,
+      "seat": 0,
+      "reward": 116244.0,
+      "margin": 879.0
+    },
+    {
+      "episode_id": 108212349,
+      "seat": 1,
+      "reward": 102571.0,
+      "margin": 8651.0
+    },
+    {
+      "episode_id": 108207190,
+      "seat": 0,
+      "reward": 97231.0,
+      "margin": 5498.0
+    },
+    {
+      "episode_id": 108201162,
+      "seat": 0,
+      "reward": 95908.0,
+      "margin": 2191.0
+    },
+    {
+      "episode_id": 108195254,
+      "seat": 1,
+      "reward": 102618.0,
+      "margin": 10874.0
+    },
+    {
+      "episode_id": 108189222,
+      "seat": 1,
+      "reward": 87170.0,
+      "margin": 5555.0
+    },
+    {
+      "episode_id": 108183191,
+      "seat": 1,
+      "reward": 99811.0,
+      "margin": 475.0
+    },
+    {
+      "episode_id": 108177210,
+      "seat": 0,
+      "reward": 103584.0,
+      "margin": 10480.0
+    },
+    {
+      "episode_id": 108171145,
+      "seat": 1,
+      "reward": 79067.0,
+      "margin": 2541.0
+    },
+    {
+      "episode_id": 108164328,
+      "seat": 1,
+      "reward": 137724.0,
+      "margin": -921.0
+    },
+    {
+      "episode_id": 108158107,
+      "seat": 0,
+      "reward": 120052.0,
+      "margin": 8981.0
+    },
+    {
+      "episode_id": 108151282,
+      "seat": 0,
+      "reward": 131026.0,
+      "margin": 9576.0
+    },
+    {
+      "episode_id": 108145205,
+      "seat": 1,
+      "reward": 100682.0,
+      "margin": 15459.0
+    },
+    {
+      "episode_id": 108139186,
+      "seat": 1,
+      "reward": 148575.0,
+      "margin": 6849.0
+    },
+    {
+      "episode_id": 108133157,
+      "seat": 1,
+      "reward": 93155.0,
+      "margin": 9173.0
+    },
+    {
+      "episode_id": 108127188,
+      "seat": 1,
+      "reward": 116693.0,
+      "margin": 20053.0
+    },
+    {
+      "episode_id": 108121150,
+      "seat": 0,
+      "reward": 118248.0,
+      "margin": 7310.0
+    },
+    {
+      "episode_id": 108115160,
+      "seat": 0,
+      "reward": 116810.0,
+      "margin": 856.0
+    },
+    {
+      "episode_id": 108109289,
+      "seat": 0,
+      "reward": 141933.0,
+      "margin": 7892.0
+    },
+    {
+      "episode_id": 108104083,
+      "seat": 1,
+      "reward": 107732.0,
+      "margin": 8857.0
+    },
+    {
+      "episode_id": 108098091,
+      "seat": 1,
+      "reward": 94417.0,
+      "margin": 1572.0
+    },
+    {
+      "episode_id": 108092293,
+      "seat": 0,
+      "reward": 90724.0,
+      "margin": 6887.0
+    },
+    {
+      "episode_id": 108087066,
+      "seat": 1,
+      "reward": 99983.0,
+      "margin": 8029.0
+    },
+    {
+      "episode_id": 108081303,
+      "seat": 1,
+      "reward": 110493.0,
+      "margin": 3652.0
+    },
+    {
+      "episode_id": 108076337,
+      "seat": 1,
+      "reward": 126131.0,
+      "margin": 16945.0
+    },
+    {
+      "episode_id": 108071295,
+      "seat": 1,
+      "reward": 107572.0,
+      "margin": -9331.0
+    },
+    {
+      "episode_id": 108066211,
+      "seat": 0,
+      "reward": 119315.0,
+      "margin": 8455.0
+    },
+    {
+      "episode_id": 108061234,
+      "seat": 0,
+      "reward": 70476.0,
+      "margin": 4215.0
+    },
+    {
+      "episode_id": 108056121,
+      "seat": 1,
+      "reward": 89788.0,
+      "margin": 10040.0
+    },
+    {
+      "episode_id": 108051093,
+      "seat": 1,
+      "reward": 108580.0,
+      "margin": 4668.0
+    },
+    {
+      "episode_id": 108046165,
+      "seat": 0,
+      "reward": 126703.0,
+      "margin": 4680.0
+    },
+    {
+      "episode_id": 108041258,
+      "seat": 1,
+      "reward": 139190.0,
+      "margin": 2936.0
+    },
+    {
+      "episode_id": 108036463,
+      "seat": 0,
+      "reward": 100882.0,
+      "margin": 5479.0
+    },
+    {
+      "episode_id": 108032343,
+      "seat": 1,
+      "reward": 115425.0,
+      "margin": 10397.0
+    },
+    {
+      "episode_id": 108032330,
+      "seat": 1,
+      "reward": 100757.0,
+      "margin": 9849.0
+    },
+    {
+      "episode_id": 108028156,
+      "seat": 1,
+      "reward": 127386.0,
+      "margin": 2030.0
+    },
+    {
+      "episode_id": 108023488,
+      "seat": 1,
+      "reward": 127887.0,
+      "margin": 7790.0
+    },
+    {
+      "episode_id": 108019268,
+      "seat": 0,
+      "reward": 100765.0,
+      "margin": 602.0
+    },
+    {
+      "episode_id": 108014552,
+      "seat": 0,
+      "reward": 131711.0,
+      "margin": 6831.0
+    },
+    {
+      "episode_id": 108010345,
+      "seat": 1,
+      "reward": 129011.0,
+      "margin": 1592.0
+    },
+    {
+      "episode_id": 108005681,
+      "seat": 0,
+      "reward": 159160.0,
+      "margin": 7991.0
+    },
+    {
+      "episode_id": 108001570,
+      "seat": 0,
+      "reward": 152277.0,
+      "margin": 19201.0
+    },
+    {
+      "episode_id": 107997338,
+      "seat": 0,
+      "reward": 136171.0,
+      "margin": 12857.0
+    },
+    {
+      "episode_id": 107992612,
+      "seat": 1,
+      "reward": 123872.0,
+      "margin": 21586.0
+    },
+    {
+      "episode_id": 107988526,
+      "seat": 0,
+      "reward": 105472.0,
+      "margin": 6285.0
+    },
+    {
+      "episode_id": 107984601,
+      "seat": 1,
+      "reward": 102290.0,
+      "margin": -1293.0
+    },
+    {
+      "episode_id": 107980609,
+      "seat": 0,
+      "reward": 93836.0,
+      "margin": 10478.0
+    },
+    {
+      "episode_id": 107976609,
+      "seat": 1,
+      "reward": 110818.0,
+      "margin": 10214.0
+    },
+    {
+      "episode_id": 107972520,
+      "seat": 1,
+      "reward": 89541.0,
+      "margin": 10849.0
+    },
+    {
+      "episode_id": 107968503,
+      "seat": 1,
+      "reward": 111516.0,
+      "margin": 12864.0
+    },
+    {
+      "episode_id": 107964023,
+      "seat": 0,
+      "reward": 75624.0,
+      "margin": 5660.0
+    },
+    {
+      "episode_id": 107959866,
+      "seat": 1,
+      "reward": 108294.0,
+      "margin": 14708.0
+    },
+    {
+      "episode_id": 107955740,
+      "seat": 1,
+      "reward": 122604.0,
+      "margin": 14663.0
+    },
+    {
+      "episode_id": 107951109,
+      "seat": 1,
+      "reward": 97794.0,
+      "margin": 9515.0
+    },
+    {
+      "episode_id": 107946846,
+      "seat": 0,
+      "reward": 83114.0,
+      "margin": 7740.0
+    },
+    {
+      "episode_id": 107941996,
+      "seat": 0,
+      "reward": 115288.0,
+      "margin": -891.0
+    },
+    {
+      "episode_id": 107937126,
+      "seat": 0,
+      "reward": 120337.0,
+      "margin": 13494.0
+    },
+    {
+      "episode_id": 107932235,
+      "seat": 0,
+      "reward": 117178.0,
+      "margin": 11938.0
+    },
+    {
+      "episode_id": 107927288,
+      "seat": 0,
+      "reward": 107836.0,
+      "margin": 13894.0
+    },
+    {
+      "episode_id": 107921917,
+      "seat": 1,
+      "reward": 76623.0,
+      "margin": 5797.0
+    },
+    {
+      "episode_id": 107916354,
+      "seat": 0,
+      "reward": 84089.0,
+      "margin": -135.0
+    },
+    {
+      "episode_id": 107910428,
+      "seat": 1,
+      "reward": 102660.0,
+      "margin": 8872.0
+    },
+    {
+      "episode_id": 107910439,
+      "seat": 1,
+      "reward": 110481.0,
+      "margin": 18251.0
+    },
+    {
+      "episode_id": 107904471,
+      "seat": 0,
+      "reward": 100263.0,
+      "margin": 11747.0
+    },
+    {
+      "episode_id": 107898399,
+      "seat": 1,
+      "reward": 109572.0,
+      "margin": 7602.0
+    },
+    {
+      "episode_id": 107891452,
+      "seat": 0,
+      "reward": 117837.0,
+      "margin": 1121.0
+    },
+    {
+      "episode_id": 107884530,
+      "seat": 1,
+      "reward": 94145.0,
+      "margin": 13898.0
+    },
+    {
+      "episode_id": 107877730,
+      "seat": 0,
+      "reward": 139334.0,
+      "margin": 2382.0
+    },
+    {
+      "episode_id": 107877731,
+      "seat": 1,
+      "reward": 83163.0,
+      "margin": 11807.0
+    },
+    {
+      "episode_id": 107877718,
+      "seat": 0,
+      "reward": 108274.0,
+      "margin": -3235.0
+    },
+    {
+      "episode_id": 107871539,
+      "seat": 0,
+      "reward": 107623.0,
+      "margin": 9121.0
+    },
+    {
+      "episode_id": 107864717,
+      "seat": 0,
+      "reward": 128323.0,
+      "margin": 1059.0
+    },
+    {
+      "episode_id": 107858683,
+      "seat": 0,
+      "reward": 128022.0,
+      "margin": 12426.0
+    },
+    {
+      "episode_id": 107852724,
+      "seat": 0,
+      "reward": 102810.0,
+      "margin": -2514.0
+    },
+    {
+      "episode_id": 107846766,
+      "seat": 1,
+      "reward": 127556.0,
+      "margin": 4100.0
+    },
+    {
+      "episode_id": 107840805,
+      "seat": 0,
+      "reward": 121482.0,
+      "margin": 4598.0
+    },
+    {
+      "episode_id": 107835000,
+      "seat": 1,
+      "reward": 87018.0,
+      "margin": 7299.0
+    },
+    {
+      "episode_id": 107833015,
+      "seat": 0,
+      "reward": 83333.0,
+      "margin": 4765.0
+    },
+    {
+      "episode_id": 107827721,
+      "seat": 1,
+      "reward": 114507.0,
+      "margin": 7228.0
+    },
+    {
+      "episode_id": 107822120,
+      "seat": 0,
+      "reward": 89517.0,
+      "margin": 10358.0
+    },
+    {
+      "episode_id": 107817031,
+      "seat": 1,
+      "reward": 123095.0,
+      "margin": 10216.0
+    },
+    {
+      "episode_id": 107811776,
+      "seat": 0,
+      "reward": 119279.0,
+      "margin": 8350.0
+    },
+    {
+      "episode_id": 107808128,
+      "seat": 0,
+      "reward": 90195.0,
+      "margin": 12042.0
+    },
+    {
+      "episode_id": 107803076,
+      "seat": 1,
+      "reward": 116294.0,
+      "margin": 15770.0
+    },
+    {
+      "episode_id": 107803086,
+      "seat": 1,
+      "reward": 113351.0,
+      "margin": 12486.0
+    },
+    {
+      "episode_id": 107797288,
+      "seat": 1,
+      "reward": 91329.0,
+      "margin": 12811.0
+    },
+    {
+      "episode_id": 107791414,
+      "seat": 1,
+      "reward": 137628.0,
+      "margin": 17187.0
+    },
+    {
+      "episode_id": 107790395,
+      "seat": 0,
+      "reward": 118823.0,
+      "margin": 15771.0
+    },
+    {
+      "episode_id": 107784471,
+      "seat": 1,
+      "reward": 103849.0,
+      "margin": -2659.0
+    },
+    {
+      "episode_id": 107778535,
+      "seat": 0,
+      "reward": 141375.0,
+      "margin": 24579.0
+    },
+    {
+      "episode_id": 107773715,
+      "seat": 1,
+      "reward": 109486.0,
+      "margin": 11860.0
+    },
+    {
+      "episode_id": 107768546,
+      "seat": 1,
+      "reward": 109841.0,
+      "margin": 5648.0
+    },
+    {
+      "episode_id": 107768551,
+      "seat": 1,
+      "reward": 132793.0,
+      "margin": 1647.0
+    },
+    {
+      "episode_id": 107762724,
+      "seat": 0,
+      "reward": 127640.0,
+      "margin": 13069.0
+    },
+    {
+      "episode_id": 107762643,
+      "seat": 0,
+      "reward": 125249.0,
+      "margin": 10556.0
+    },
+    {
+      "episode_id": 107756968,
+      "seat": 1,
+      "reward": 78487.0,
+      "margin": 4893.0
+    },
+    {
+      "episode_id": 107751894,
+      "seat": 1,
+      "reward": 115149.0,
+      "margin": 18402.0
+    },
+    {
+      "episode_id": 107746036,
+      "seat": 1,
+      "reward": 139820.0,
+      "margin": 11342.0
+    },
+    {
+      "episode_id": 107740777,
+      "seat": 0,
+      "reward": 120571.0,
+      "margin": 9013.0
+    },
+    {
+      "episode_id": 107738818,
+      "seat": 0,
+      "reward": 153068.0,
+      "margin": 44863.0
+    },
+    {
+      "episode_id": 107739801,
+      "seat": 0,
+      "reward": 106975.0,
+      "margin": 4566.0
+    },
+    {
+      "episode_id": 107737821,
+      "seat": 0,
+      "reward": 86217.0,
+      "margin": 13521.0
+    },
+    {
+      "episode_id": 107736836,
+      "seat": 0,
+      "reward": 72491.0,
+      "margin": 20427.0
+    },
+    {
+      "episode_id": 107735828,
+      "seat": 1,
+      "reward": 98720.0,
+      "margin": 16596.0
+    },
+    {
+      "episode_id": 107734831,
+      "seat": 1,
+      "reward": 101197.0,
+      "margin": 6840.0
+    },
+    {
+      "episode_id": 107733844,
+      "seat": 1,
+      "reward": 97494.0,
+      "margin": 9801.0
+    },
+    {
+      "episode_id": 107732949,
+      "seat": 0,
+      "reward": 88015.0,
+      "margin": -442.0
+    },
+    {
+      "episode_id": 107731845,
+      "seat": 1,
+      "reward": 74092.0,
+      "margin": 15785.0
+    },
+    {
+      "episode_id": 107730726,
+      "seat": 1,
+      "reward": 82190.0,
+      "margin": 12410.0
+    },
+    {
+      "episode_id": 107729848,
+      "seat": 1,
+      "reward": 91555.0,
+      "margin": 12772.0
+    },
+    {
+      "episode_id": 107728846,
+      "seat": 0,
+      "reward": 74609.0,
+      "margin": 17082.0
+    },
+    {
+      "episode_id": 107727840,
+      "seat": 0,
+      "reward": 108315.0,
+      "margin": 11533.0
+    },
+    {
+      "episode_id": 107728331,
+      "seat": 1,
+      "reward": 114641.0,
+      "margin": 8359.0
+    },
+    {
+      "episode_id": 107727335,
+      "seat": 1,
+      "reward": 80160.0,
+      "margin": 7778.0
+    },
+    {
+      "episode_id": 107726844,
+      "seat": 0,
+      "reward": 142648.0,
+      "margin": 10690.0
+    },
+    {
+      "episode_id": 107725840,
+      "seat": 0,
+      "reward": 130076.0,
+      "margin": 26886.0
+    },
+    {
+      "episode_id": 107724846,
+      "seat": 0,
+      "reward": 95871.0,
+      "margin": -1101.0
+    },
+    {
+      "episode_id": 107723855,
+      "seat": 0,
+      "reward": 88559.0,
+      "margin": 19428.0
+    },
+    {
+      "episode_id": 107723126,
+      "seat": 0,
+      "reward": 98993.0,
+      "margin": 13011.0
+    },
+    {
+      "episode_id": 107722875,
+      "seat": 1,
+      "reward": 91019.0,
+      "margin": 8976.0
+    },
+    {
+      "episode_id": 107721874,
+      "seat": 0,
+      "reward": 94495.0,
+      "margin": 3345.0
+    },
+    {
+      "episode_id": 107720995,
+      "seat": 1,
+      "reward": 118846.0,
+      "margin": 23099.0
+    },
+    {
+      "episode_id": 107719896,
+      "seat": 1,
+      "reward": 125498.0,
+      "margin": 22649.0
+    },
+    {
+      "episode_id": 107718995,
+      "seat": 1,
+      "reward": 137900.0,
+      "margin": 8566.0
+    },
+    {
+      "episode_id": 107718075,
+      "seat": 1,
+      "reward": 145208.0,
+      "margin": 10138.0
+    },
+    {
+      "episode_id": 107717903,
+      "seat": 0,
+      "reward": 119937.0,
+      "margin": 33442.0
+    },
+    {
+      "episode_id": 107717306,
+      "seat": 1,
+      "reward": 98104.0,
+      "margin": 17680.0
+    },
+    {
+      "episode_id": 107715903,
+      "seat": 0,
+      "reward": 131267.0,
+      "margin": 36330.0
+    },
+    {
+      "episode_id": 107716893,
+      "seat": 0,
+      "reward": 75807.0,
+      "margin": 15750.0
+    },
+    {
+      "episode_id": 107714899,
+      "seat": 1,
+      "reward": 111023.0,
+      "margin": 8223.0
+    },
+    {
+      "episode_id": 107713887,
+      "seat": 1,
+      "reward": 134347.0,
+      "margin": 41464.0
+    },
+    {
+      "episode_id": 107714084,
+      "seat": 1,
+      "reward": 117800.0,
+      "margin": 8620.0
+    },
+    {
+      "episode_id": 107712908,
+      "seat": 0,
+      "reward": 114057.0,
+      "margin": 19219.0
+    },
+    {
+      "episode_id": 107711912,
+      "seat": 1,
+      "reward": 73080.0,
+      "margin": 10831.0
+    },
+    {
+      "episode_id": 107711459,
+      "seat": 1,
+      "reward": 160662.0,
+      "margin": 67488.0
+    },
+    {
+      "episode_id": 107710951,
+      "seat": 1,
+      "reward": 149376.0,
+      "margin": 18976.0
+    },
+    {
+      "episode_id": 107709931,
+      "seat": 1,
+      "reward": 138096.0,
+      "margin": 9343.0
+    },
+    {
+      "episode_id": 107708916,
+      "seat": 1,
+      "reward": 98649.0,
+      "margin": -3078.0
+    },
+    {
+      "episode_id": 107707937,
+      "seat": 0,
+      "reward": 77728.0,
+      "margin": 6542.0
+    },
+    {
+      "episode_id": 107706919,
+      "seat": 0,
+      "reward": 124729.0,
+      "margin": 22459.0
+    },
+    {
+      "episode_id": 107705930,
+      "seat": 0,
+      "reward": 142056.0,
+      "margin": 4090.0
+    },
+    {
+      "episode_id": 107705089,
+      "seat": 0,
+      "reward": 128807.0,
+      "margin": 12421.0
+    },
+    {
+      "episode_id": 107705015,
+      "seat": 0,
+      "reward": 101548.0,
+      "margin": 7983.0
+    },
+    {
+      "episode_id": 107703944,
+      "seat": 1,
+      "reward": 118942.0,
+      "margin": 7802.0
+    },
+    {
+      "episode_id": 107702967,
+      "seat": 0,
+      "reward": 94181.0,
+      "margin": 5960.0
+    },
+    {
+      "episode_id": 107701974,
+      "seat": 0,
+      "reward": 130479.0,
+      "margin": 7208.0
+    },
+    {
+      "episode_id": 107700968,
+      "seat": 0,
+      "reward": 106536.0,
+      "margin": 22024.0
+    },
+    {
+      "episode_id": 107699969,
+      "seat": 0,
+      "reward": 109046.0,
+      "margin": 8783.0
+    },
+    {
+      "episode_id": 107698961,
+      "seat": 1,
+      "reward": 131342.0,
+      "margin": 40924.0
+    },
+    {
+      "episode_id": 107698498,
+      "seat": 0,
+      "reward": 117013.0,
+      "margin": 15124.0
+    },
+    {
+      "episode_id": 107697954,
+      "seat": 1,
+      "reward": 100694.0,
+      "margin": 8017.0
+    },
+    {
+      "episode_id": 107696961,
+      "seat": 1,
+      "reward": 138737.0,
+      "margin": 22576.0
+    },
+    {
+      "episode_id": 107696921,
+      "seat": 1,
+      "reward": 162592.0,
+      "margin": 6696.0
+    },
+    {
+      "episode_id": 107695969,
+      "seat": 1,
+      "reward": 128904.0,
+      "margin": 100335.0
+    },
+    {
+      "episode_id": 107694982,
+      "seat": 0,
+      "reward": 159990.0,
+      "margin": 18665.0
+    },
+    {
+      "episode_id": 107694012,
+      "seat": 0,
+      "reward": 107719.0,
+      "margin": 10750.0
+    },
+    {
+      "episode_id": 107692988,
+      "seat": 1,
+      "reward": 75166.0,
+      "margin": 13527.0
+    },
+    {
+      "episode_id": 107692001,
+      "seat": 1,
+      "reward": 122903.0,
+      "margin": 10239.0
+    },
+    {
+      "episode_id": 107690958,
+      "seat": 1,
+      "reward": 94187.0,
+      "margin": 16709.0
+    },
+    {
+      "episode_id": 107689950,
+      "seat": 1,
+      "reward": 94920.0,
+      "margin": 1909.0
+    },
+    {
+      "episode_id": 107688964,
+      "seat": 1,
+      "reward": 121891.0,
+      "margin": 33734.0
+    },
+    {
+      "episode_id": 107687940,
+      "seat": 1,
+      "reward": 131444.0,
+      "margin": 46867.0
+    },
+    {
+      "episode_id": 107686961,
+      "seat": 1,
+      "reward": 89721.0,
+      "margin": 25941.0
+    },
+    {
+      "episode_id": 107685970,
+      "seat": 1,
+      "reward": 91028.0,
+      "margin": 9595.0
+    },
+    {
+      "episode_id": 107684990,
+      "seat": 0,
+      "reward": 98152.0,
+      "margin": 24842.0
+    },
+    {
+      "episode_id": 107684013,
+      "seat": 1,
+      "reward": 107911.0,
+      "margin": 26271.0
+    },
+    {
+      "episode_id": 107683029,
+      "seat": 1,
+      "reward": 73486.0,
+      "margin": 25786.0
+    },
+    {
+      "episode_id": 107682064,
+      "seat": 0,
+      "reward": 88702.0,
+      "margin": 32084.0
+    },
+    {
+      "episode_id": 107681111,
+      "seat": 0,
+      "reward": 146083.0,
+      "margin": 29907.0
+    },
+    {
+      "episode_id": 107680370,
+      "seat": 0,
+      "reward": 121380.0,
+      "margin": 37035.0
+    },
+    {
+      "episode_id": 107680115,
+      "seat": 0,
+      "reward": 150304.0,
+      "margin": 3012.0
+    },
+    {
+      "episode_id": 107679150,
+      "seat": 1,
+      "reward": 100780.0,
+      "margin": 34165.0
+    },
+    {
+      "episode_id": 107678181,
+      "seat": 1,
+      "reward": 99062.0,
+      "margin": 38876.0
+    },
+    {
+      "episode_id": 107677223,
+      "seat": 0,
+      "reward": 134140.0,
+      "margin": 70586.0
+    },
+    {
+      "episode_id": 107676226,
+      "seat": 0,
+      "reward": 121625.0,
+      "margin": 47693.0
+    },
+    {
+      "episode_id": 107675268,
+      "seat": 1,
+      "reward": 144211.0,
+      "margin": 108183.0
+    },
+    {
+      "episode_id": 107674293,
+      "seat": 0,
+      "reward": 83495.0,
+      "margin": 17519.0
+    },
+    {
+      "episode_id": 107674284,
+      "seat": 0,
+      "reward": 166660.0,
+      "margin": 123901.0
+    },
+    {
+      "episode_id": 107673304,
+      "seat": 1,
+      "reward": 172108.0,
+      "margin": 149671.0
+    }
+  ]
+}

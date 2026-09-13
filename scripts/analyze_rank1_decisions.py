@@ -52,8 +52,8 @@ def analyze_game(path: Path, team: str) -> dict[str, Any]:
     daily_prices: dict[int, dict[str, float]] = {}
     daily_opponent: dict[int, Counter[str]] = {}
 
-    for turn in replay["steps"][1:]:
-        state = turn[player]
+    for step in range(len(replay["steps"]) - 1):
+        state = replay["steps"][step][player]
         observation = state.get("observation") or {}
         day = int(observation.get("day", 0))
         hour = int(observation.get("hour", 0))
@@ -61,7 +61,7 @@ def analyze_game(path: Path, team: str) -> dict[str, Any]:
         if len(farms) <= player:
             continue
         farm = farms[player]
-        action = state.get("action") or {}
+        action = replay["steps"][step + 1][player].get("action") or {}
         actors = [farm.get("farmer")] + list(farm.get("hands") or [])
         commands = [action.get("farmer")] + list(action.get("hands") or [])
         for position, command in zip(actors, commands):
@@ -194,10 +194,19 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--replay-dir", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--team", help="Team name from the manifest (defaults to rank 1)")
     args = parser.parse_args()
     manifest = json.loads((args.replay_dir / "manifest.json").read_text(encoding="utf-8"))
-    team = manifest["teams"][0]["team_name"]
-    games = [analyze_game(args.replay_dir / episode["replay"], team) for episode in manifest["teams"][0]["episodes"]]
+    teams = {row["team_name"]: row for row in manifest["teams"]}
+    team = args.team or manifest["teams"][0]["team_name"]
+    # Locally collected match manifests list the candidate as the collection
+    # owner, while the requested opponent still appears in every replay's
+    # TeamNames. Reuse that episode list so either side can be analyzed.
+    episode_source = teams.get(team, manifest["teams"][0])
+    games = [
+        analyze_game(args.replay_dir / episode["replay"], team)
+        for episode in episode_source["episodes"]
+    ]
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(render(games, team, manifest["collected_at"]), encoding="utf-8")
     print(f"wrote {args.output}")
