@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """Apply conservative, semantics-preserving speedups to main.py.
 
-The patch deliberately leaves kaggle-environments untouched.  Only this agent
+The patch deliberately leaves kaggle-environments untouched. Only this agent
 module gets a local ``copy`` proxy whose ``deepcopy`` specializes exact builtin
-containers and falls back to stdlib for custom/Kaggle objects.  It also removes
-allocations from shed-adjacency checks and reuses the immutable _View snapshot
-only during an identical observation/configuration/step.
+containers and falls back to stdlib for custom/Kaggle objects. It also removes
+allocations from shed-adjacency checks and can reuse an identical _View snapshot.
 
 Before patching, the original is copied verbatim to
 training/reference_main_pre_main_speed.py for parity tests.
@@ -41,7 +40,6 @@ def _fast_deepcopy(value, memo=None):
     ident = id(value)
     if ident in memo:
         return memo[ident]
-
     if kind is list:
         out = []
         memo[ident] = out
@@ -49,14 +47,12 @@ def _fast_deepcopy(value, memo=None):
         for item in value:
             append(_fast_deepcopy(item, memo))
         return out
-
     if kind is dict:
         out = {}
         memo[ident] = out
         for key, item in value.items():
             out[_fast_deepcopy(key, memo)] = _fast_deepcopy(item, memo)
         return out
-
     if kind is set:
         out = set()
         memo[ident] = out
@@ -64,8 +60,7 @@ def _fast_deepcopy(value, memo=None):
         for item in value:
             add(_fast_deepcopy(item, memo))
         return out
-
-    # Tuple deepcopy has cycle/sharing subtleties; retain exact stdlib behavior.
+    # Tuple/custom object deepcopy keeps exact stdlib semantics.
     return _STD_DEEPCOPY(value, memo)
 
 
@@ -86,22 +81,21 @@ _VIEW_CACHE_KEY = None
 _VIEW_CACHE_VALUE = None
 
 
-def _cached_view(observation, configuration):
-    """Reuse _View for repeated nested wrappers on the exact same observation."""
+def _cached_view(observation, player, cfg):
+    """Reuse _View only for the exact same observation/player/config triple."""
     global _VIEW_CACHE_KEY, _VIEW_CACHE_VALUE
     step = _int(_get(observation, "step", 0), 0)
-    player = _int(_get(observation, "player", 0), 0)
     farms = _get(observation, "farms", None)
     private = _get(observation, "private", None)
     market = _get(observation, "market", None)
     town = _get(observation, "town", None)
     key = (
-        id(observation), id(configuration), step, player,
+        id(observation), int(player), id(cfg), step,
         id(farms), id(private), id(market), id(town),
     )
     if key == _VIEW_CACHE_KEY:
         return _VIEW_CACHE_VALUE
-    view = _View(observation, configuration)
+    view = _View(observation, player, cfg)
     _VIEW_CACHE_KEY = key
     _VIEW_CACHE_VALUE = view
     return view
@@ -113,15 +107,11 @@ def main() -> None:
     if MARKER in text:
         print("main.py speed patch already applied")
         return
-
     if not REFERENCE.exists():
         REFERENCE.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(MAIN, REFERENCE)
         print(f"saved baseline: {REFERENCE.relative_to(ROOT)}")
 
-    # The file begins its executable section with ``import copy`` followed by
-    # constants. Insert the local proxy after imports and before any runtime
-    # namespace can capture stdlib ``copy.deepcopy``.
     anchor = "\n\nPRODUCTS = ("
     if anchor not in text:
         raise RuntimeError("could not find PRODUCTS insertion anchor")
@@ -133,16 +123,17 @@ def main() -> None:
         raise RuntimeError(f"expected one _shed_adjacent body, found {text.count(old_shed)}")
     text = text.replace(old_shed, new_shed, 1)
 
-    action_anchor = "\n\nclass _Action:"
-    if action_anchor not in text:
-        raise RuntimeError("could not find _View/_Action boundary")
-    text = text.replace(action_anchor, VIEW_CACHE_HELPER + action_anchor, 1)
+    # Install the cache helper immediately after the sole _View class, before Chassis.
+    chassis_anchor = "\n\n# --------------------------------------------------------------------------- chassis\nclass Chassis:"
+    if chassis_anchor not in text:
+        raise RuntimeError("could not find _View/Chassis boundary")
+    text = text.replace(chassis_anchor, VIEW_CACHE_HELPER + chassis_anchor, 1)
 
-    old = "view = _View(observation, configuration)"
+    old = "view = _View(observation, player, cfg)"
     count = text.count(old)
-    if count < 2:
-        raise RuntimeError(f"unexpectedly few _View wrapper sites: {count}")
-    text = text.replace(old, "view = _cached_view(observation, configuration)")
+    if count < 1:
+        raise RuntimeError(f"could not find _View construction site: {count}")
+    text = text.replace(old, "view = _cached_view(observation, player, cfg)")
 
     MAIN.write_text(text)
     print(f"patched main.py: local fast deepcopy + view cache + shed adjacency ({count} view sites)")
