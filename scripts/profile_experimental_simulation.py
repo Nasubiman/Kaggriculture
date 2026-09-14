@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "training"))
 
-import experimental_fast_kaggriculture as experimental
+import experimental_fast_kaggriculture_v2 as experimental
 import fast_kaggriculture as stable
 
 
@@ -26,7 +26,6 @@ def load_agent(path: Path, name: str):
 def profile_one(name, runner, *, seed=13092000):
     candidate = load_agent(ROOT / "main.py", f"profile_candidate_{name}")
     opponent = load_agent(ROOT / "test/public_v37/main.py", f"profile_opponent_{name}")
-    # Warm caches without charging setup/import effects to the profile.
     runner.run_fast_episode([candidate, opponent], seed=seed - 1)
 
     candidate = load_agent(ROOT / "main.py", f"profile_candidate_measured_{name}")
@@ -48,4 +47,4 @@ def profile_one(name, runner, *, seed=13092000):
 
 if __name__ == "__main__":
     profile_one("stable", stable)
-    profile_one("experimental", experimental)
+    profile_one("experimental_v2", experimental)
