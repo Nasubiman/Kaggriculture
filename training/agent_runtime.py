@@ -18,6 +18,11 @@ try:
 except Exception:
     _reserve_native = None
 
+try:
+    import _kaggriculture_controller as _controller_native
+except Exception:
+    _controller_native = None
+
 
 def fast_deepcopy(value: Any, memo: dict[int, Any] | None = None) -> Any:
     if type(value) in _ATOMIC:
@@ -259,6 +264,23 @@ def _install_native_projected_shed(module: ModuleType) -> None:
     chassis_cls._projected_shed = accelerated
 
 
+def _install_native_v231(module: ModuleType) -> None:
+    if _controller_native is None or not hasattr(_controller_native, "v231_controller"):
+        return
+    ns = module.__dict__
+    original = ns.get("_v231_controller")
+    if not callable(original) or getattr(original, "_native_accelerated", False):
+        return
+    def accelerated(obs, action, state, cap):
+        try:
+            return _controller_native.v231_controller(obs, action, state, int(cap))
+        except Exception:
+            return original(obs, action, state, cap)
+    accelerated._native_accelerated = True
+    accelerated._python_fallback = original
+    ns["_v231_controller"] = accelerated
+
+
 def _install_native_reserve(module: ModuleType) -> None:
     if _reserve_native is None or not hasattr(_reserve_native, "r36_reserve"):
         return
@@ -304,6 +326,7 @@ def optimize_agent_module(module: ModuleType) -> ModuleType:
     _install_native_joint_plans(module)
     _install_native_similarity(module)
     _install_native_projected_shed(module)
+    _install_native_v231(module)
     _install_native_reserve(module)
     return module
 
