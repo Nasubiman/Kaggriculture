@@ -60,7 +60,6 @@ class _CopyProxy:
 
 
 def _install_fast_gain(module: ModuleType) -> None:
-    """Replace generator-heavy _r51_input_gain with an equivalent tight loop."""
     ns = module.__dict__
     original = ns.get("_r51_input_gain")
     if not callable(original) or getattr(original, "_runtime_accelerated", False):
@@ -88,8 +87,73 @@ def _install_fast_gain(module: ModuleType) -> None:
     ns["_r51_input_gain"] = fast_gain
 
 
+def _install_native_market_price(module: ModuleType) -> None:
+    if _native is None or not hasattr(_native, "r37_market_price"):
+        return
+    ns = module.__dict__
+    original = ns.get("_r37_market_price")
+    if not callable(original) or getattr(original, "_native_accelerated", False):
+        return
+
+    def accelerated(item, inventory, params=None):
+        if params is not None:
+            return original(item, inventory, params)
+        try:
+            return _native.r37_market_price(str(item), int(inventory))
+        except Exception:
+            return original(item, inventory)
+
+    accelerated._native_accelerated = True
+    accelerated._python_fallback = original
+    ns["_r37_market_price"] = accelerated
+
+
+def _install_native_start(module: ModuleType) -> None:
+    if _native is None or not hasattr(_native, "r62_input_start"):
+        return
+    ns = module.__dict__
+    original = ns.get("_r62_input_start")
+    if not callable(original) or getattr(original, "_native_accelerated", False):
+        return
+
+    def accelerated(obs, action, index):
+        try:
+            return _native.r62_input_start(obs, action, int(index))
+        except Exception:
+            return original(obs, action, index)
+
+    accelerated._native_accelerated = True
+    accelerated._python_fallback = original
+    ns["_r62_input_start"] = accelerated
+
+
+def _install_native_forecast(module: ModuleType) -> None:
+    if _native is None or not hasattr(_native, "r51_input_forecast"):
+        return
+    ns = module.__dict__
+    original = ns.get("_r51_input_forecast")
+    impl = ns.get("_IMPL")
+    if not callable(original) or impl is None or getattr(original, "_native_accelerated", False):
+        return
+
+    def accelerated(obs, route, expected):
+        try:
+            routes = impl.chassis.routes
+            return _native.r51_input_forecast(
+                obs,
+                routes[route],
+                routes[2],
+                int(expected),
+            )
+        except Exception:
+            return original(obs, route, expected)
+
+    accelerated._native_accelerated = True
+    accelerated._python_fallback = original
+    ns["_r51_input_forecast"] = accelerated
+
+
 def _install_native_r51(module: ModuleType) -> None:
-    """Replace only the hot beam-search core when the optional extension exists."""
     if _native is None:
         return
     ns = module.__dict__
@@ -115,13 +179,8 @@ def _install_native_r51(module: ModuleType) -> None:
                 price_fn("FERTILIZER", market["inventory"]["FERTILIZER"] - 16) + 2,
             )
             return _native.r51_input_path_core(
-                targets,
-                int(ready),
-                start,
-                int(day),
-                int(wheat_price),
-                int(carrot_price),
-                int(fertilizer),
+                targets, int(ready), start, int(day),
+                int(wheat_price), int(carrot_price), int(fertilizer),
             )
         except Exception:
             return original(obs, targets, action, index)
@@ -132,7 +191,6 @@ def _install_native_r51(module: ModuleType) -> None:
 
 
 def _install_native_similarity(module: ModuleType) -> None:
-    """Use allocation-free C++ layout comparison when available."""
     if _native is None or not hasattr(_native, "r37_similarity"):
         return
     ns = module.__dict__
@@ -151,6 +209,27 @@ def _install_native_similarity(module: ModuleType) -> None:
     ns["_r37_similarity"] = accelerated
 
 
+def _install_native_projected_shed(module: ModuleType) -> None:
+    if _native is None or not hasattr(_native, "projected_shed"):
+        return
+    chassis_cls = module.__dict__.get("Chassis")
+    if chassis_cls is None:
+        return
+    original = getattr(chassis_cls, "_projected_shed", None)
+    if not callable(original) or getattr(original, "_native_accelerated", False):
+        return
+
+    def accelerated(self, action, view):
+        try:
+            return _native.projected_shed(action, view, int(self.cfg["shed_capacity"]))
+        except Exception:
+            return original(self, action, view)
+
+    accelerated._native_accelerated = True
+    accelerated._python_fallback = original
+    chassis_cls._projected_shed = accelerated
+
+
 def optimize_agent_module(module: ModuleType) -> ModuleType:
     """Install safe runtime speedups without changing submission compatibility."""
     if module.__dict__.get("copy") is _copy:
@@ -159,8 +238,12 @@ def optimize_agent_module(module: ModuleType) -> ModuleType:
     if isinstance(planner, dict) and planner.get("deepcopy") is _copy.deepcopy:
         planner["deepcopy"] = fast_deepcopy
     _install_fast_gain(module)
+    _install_native_market_price(module)
+    _install_native_start(module)
+    _install_native_forecast(module)
     _install_native_r51(module)
     _install_native_similarity(module)
+    _install_native_projected_shed(module)
     return module
 
 
