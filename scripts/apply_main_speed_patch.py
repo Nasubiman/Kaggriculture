@@ -65,8 +65,7 @@ def _fast_deepcopy(value, memo=None):
             add(_fast_deepcopy(item, memo))
         return out
 
-    # Tuple deepcopy has some cycle/sharing subtleties. It is not a dominant
-    # cost here, so keep the exact stdlib behavior rather than over-optimizing.
+    # Tuple deepcopy has cycle/sharing subtleties; retain exact stdlib behavior.
     return _STD_DEEPCOPY(value, memo)
 
 
@@ -120,9 +119,12 @@ def main() -> None:
         shutil.copy2(MAIN, REFERENCE)
         print(f"saved baseline: {REFERENCE.relative_to(ROOT)}")
 
-    anchor = "\n\ndef _cfg(configuration, key, default=None):"
+    # The file begins its executable section with ``import copy`` followed by
+    # constants. Insert the local proxy after imports and before any runtime
+    # namespace can capture stdlib ``copy.deepcopy``.
+    anchor = "\n\nPRODUCTS = ("
     if anchor not in text:
-        raise RuntimeError("could not find import/helper insertion anchor")
+        raise RuntimeError("could not find PRODUCTS insertion anchor")
     text = text.replace(anchor, FAST_COPY_HELPER + anchor, 1)
 
     old_shed = '''def _shed_adjacent(pos, n):\n    return tuple(pos) in _shed_access_tiles(n)\n'''
