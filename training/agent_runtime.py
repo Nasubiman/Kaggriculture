@@ -13,6 +13,11 @@ try:
 except Exception:
     _native = None
 
+try:
+    import _kaggriculture_reserve as _reserve_native
+except Exception:
+    _reserve_native = None
+
 
 def fast_deepcopy(value: Any, memo: dict[int, Any] | None = None) -> Any:
     if type(value) in _ATOMIC:
@@ -63,7 +68,6 @@ def _install_fast_view(module: ModuleType) -> None:
     original = getattr(view_cls, "__init__", None)
     if not callable(original) or getattr(original, "_runtime_accelerated", False):
         return
-
     def accelerated(self, observation, player, cfg):
         try:
             if type(observation) is not dict:
@@ -79,8 +83,6 @@ def _install_fast_view(module: ModuleType) -> None:
             market = observation.get("market") or {}
             if type(private) is not dict or type(market) is not dict:
                 raise TypeError
-            # Observation containers are read-only throughout a View lifetime. Keep
-            # aliases instead of rebuilding the same dictionaries every callback.
             self.shed = private.get("shed") or {}
             self.seeds = private.get("seeds") or {}
             self.invs = private.get("inventories") or []
@@ -88,14 +90,11 @@ def _install_fast_view(module: ModuleType) -> None:
             self.money = float(self.farm.get("money", 0.0) or 0.0)
             self.tiles = self.farm.get("tiles") or []
             self.board = len(self.tiles) or cfg["board_size"]
-            farmer = self.farm.get("farmer")
-            hands = self.farm.get("hands") or []
-            self.positions = [farmer, *hands]
+            self.positions = [self.farm.get("farmer"), *(self.farm.get("hands") or [])]
             self.hires_today = int(self.farm.get("hires_today", 0) or 0)
             self.quadrants = len(self.farm.get("unlocked_quadrants") or [])
         except Exception:
             original(self, observation, player, cfg)
-
     accelerated._runtime_accelerated = True
     accelerated._python_fallback = original
     view_cls.__init__ = accelerated
@@ -260,6 +259,36 @@ def _install_native_projected_shed(module: ModuleType) -> None:
     chassis_cls._projected_shed = accelerated
 
 
+def _install_native_reserve(module: ModuleType) -> None:
+    if _reserve_native is None or not hasattr(_reserve_native, "r36_reserve"):
+        return
+    ns = module.__dict__
+    original = ns.get("_r36_reserve")
+    impl = ns.get("_IMPL")
+    horizons = ns.get("_R37_HORIZONS")
+    report = ns.get("_R36_SALE_REPORT")
+    if not callable(original) or impl is None or not isinstance(horizons, dict) or not isinstance(report, dict) or getattr(original, "_native_accelerated", False):
+        return
+    def accelerated(obs, action):
+        try:
+            player = int(obs["player"])
+            native_state = impl.chassis.players[player]
+            tape = impl.chassis.routes[native_state["route"]]
+            units, reservations = _reserve_native.r36_reserve(
+                obs, action, native_state, tape, int(horizons.get(player, 2))
+            )
+            if units:
+                report["sale_reserved_units"] = report.get("sale_reserved_units", 0) + int(units)
+            if reservations:
+                report["sale_reservations"] = report.get("sale_reservations", 0) + int(reservations)
+            return action
+        except Exception:
+            return original(obs, action)
+    accelerated._native_accelerated = True
+    accelerated._python_fallback = original
+    ns["_r36_reserve"] = accelerated
+
+
 def optimize_agent_module(module: ModuleType) -> ModuleType:
     if module.__dict__.get("copy") is _copy:
         module.__dict__["copy"] = _CopyProxy()
@@ -275,6 +304,7 @@ def optimize_agent_module(module: ModuleType) -> ModuleType:
     _install_native_joint_plans(module)
     _install_native_similarity(module)
     _install_native_projected_shed(module)
+    _install_native_reserve(module)
     return module
 
 
