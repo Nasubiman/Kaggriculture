@@ -14,6 +14,7 @@ EXT = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
 MODULES = (
     (ROOT / "training" / "native_speedups_v2.cpp", ROOT / "training" / f"_kaggriculture_native{EXT}"),
     (ROOT / "training" / "native_reserve_v2.cpp", ROOT / "training" / f"_kaggriculture_reserve{EXT}"),
+    (ROOT / "training" / "native_controller.cpp", ROOT / "training" / f"_kaggriculture_controller{EXT}"),
 )
 
 
