@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "training"))
 
-import experimental_fast_kaggriculture_v2 as experimental
+import experimental_fast_kaggriculture_v3 as experimental
 import fast_kaggriculture as stable
 
 
@@ -47,4 +47,4 @@ def profile_one(name, runner, *, seed=13092000):
 
 if __name__ == "__main__":
     profile_one("stable", stable)
-    profile_one("experimental_v2", experimental)
+    profile_one("experimental_v3", experimental)
