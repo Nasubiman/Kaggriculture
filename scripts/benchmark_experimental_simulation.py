@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "training"))
 
 import fast_kaggriculture as stable
-import experimental_fast_kaggriculture_v2 as experimental
+import experimental_fast_kaggriculture_v3 as experimental
 
 
 def load_module(path: Path, name: str):
@@ -108,7 +108,6 @@ def main():
         for seat in (0, 1)
     ]
 
-    # Full action/observation/terminal parity on every benchmark task.
     for opponent, seed, seat in tasks:
         _, expected, stable_reward = play(
             stable, args.agent, opponent, seed, seat, verify=True
@@ -125,7 +124,6 @@ def main():
             flush=True,
         )
 
-    # Warm up both paths once before measurement.
     play(stable, args.agent, *tasks[0])
     play(experimental, args.agent, *tasks[0])
 
@@ -172,6 +170,7 @@ def main():
                 ROOT / "training/fast_kaggriculture.py",
                 ROOT / "training/experimental_fast_kaggriculture.py",
                 ROOT / "training/experimental_fast_kaggriculture_v2.py",
+                ROOT / "training/experimental_fast_kaggriculture_v3.py",
             )
         },
     }
