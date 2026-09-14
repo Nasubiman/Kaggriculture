@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """Apply conservative, semantics-preserving speedups to main.py.
 
-The patch deliberately leaves kaggle-environments untouched. Only this agent
-module gets a local ``copy`` proxy whose ``deepcopy`` specializes exact builtin
-containers and falls back to stdlib for custom/Kaggle objects. It also removes
-allocations from shed-adjacency checks, reuses an identical _View snapshot,
-and avoids copying the same route action twice on every normal turn.
+Only two transformations are applied:
+1. install a module-local deepcopy implementation specialized for exact builtin
+   JSON-like containers, with stdlib fallback for every other object type;
+2. remove the second eager copy of each route action that exists only to serve
+   an exceptional fallback path, and reconstruct it only if that path is taken.
 
-Before patching, the original is copied verbatim to
-training/reference_main_pre_main_speed.py for parity tests.
+The real Kaggle environment module is never modified. Before patching, the
+original main.py is copied verbatim to training/reference_main_pre_main_speed.py
+for fast-runner and official-environment parity tests.
 """
 from __future__ import annotations
 
@@ -32,7 +33,7 @@ _FAST_COPY_ATOMIC = frozenset((
 
 
 def _fast_deepcopy(value, memo=None):
-    """Fast deepcopy for exact JSON-like containers; stdlib fallback otherwise."""
+    """Fast deepcopy for exact builtin containers; stdlib fallback otherwise."""
     kind = type(value)
     if kind in _FAST_COPY_ATOMIC:
         return value
@@ -61,12 +62,12 @@ def _fast_deepcopy(value, memo=None):
         for item in value:
             add(_fast_deepcopy(item, memo))
         return out
-    # Tuple/custom object deepcopy keeps exact stdlib semantics.
+    # Tuple/custom/Kaggle Struct objects retain exact stdlib deepcopy behavior.
     return _STD_DEEPCOPY(value, memo)
 
 
 class _AgentCopyProxy:
-    """Module-local copy proxy; never mutates the stdlib copy module."""
+    """Module-local copy proxy; never mutates Python's stdlib copy module."""
     deepcopy = staticmethod(_fast_deepcopy)
 
     def __getattr__(self, name):
@@ -74,32 +75,6 @@ class _AgentCopyProxy:
 
 
 copy = _AgentCopyProxy()
-'''
-
-VIEW_CACHE_HELPER = r'''
-
-_VIEW_CACHE_KEY = None
-_VIEW_CACHE_VALUE = None
-
-
-def _cached_view(observation, player, cfg):
-    """Reuse _View only for the exact same observation/player/config triple."""
-    global _VIEW_CACHE_KEY, _VIEW_CACHE_VALUE
-    step = _int(_get(observation, "step", 0), 0)
-    farms = _get(observation, "farms", None)
-    private = _get(observation, "private", None)
-    market = _get(observation, "market", None)
-    town = _get(observation, "town", None)
-    key = (
-        id(observation), int(player), id(cfg), step,
-        id(farms), id(private), id(market), id(town),
-    )
-    if key == _VIEW_CACHE_KEY:
-        return _VIEW_CACHE_VALUE
-    view = _View(observation, player, cfg)
-    _VIEW_CACHE_KEY = key
-    _VIEW_CACHE_VALUE = view
-    return view
 '''
 
 
@@ -114,36 +89,19 @@ def main() -> None:
         print(f"saved baseline: {REFERENCE.relative_to(ROOT)}")
 
     anchor = "\n\nPRODUCTS = ("
-    if anchor not in text:
-        raise RuntimeError("could not find PRODUCTS insertion anchor")
+    if text.count(anchor) != 1:
+        raise RuntimeError(f"expected one PRODUCTS insertion anchor, found {text.count(anchor)}")
     text = text.replace(anchor, FAST_COPY_HELPER + anchor, 1)
 
-    old_shed = '''def _shed_adjacent(pos, n):\n    return tuple(pos) in _shed_access_tiles(n)\n'''
-    new_shed = '''def _shed_adjacent(pos, n):\n    # Same four inner-corner cells, without allocating a list/tuples.\n    x, y = pos\n    half = n // 2\n    return (x == half - 1 or x == half) and (y == half - 1 or y == half)\n'''
-    if text.count(old_shed) != 1:
-        raise RuntimeError(f"expected one _shed_adjacent body, found {text.count(old_shed)}")
-    text = text.replace(old_shed, new_shed, 1)
-
-    chassis_anchor = "\n\n# --------------------------------------------------------------------------- chassis\nclass Chassis:"
-    if chassis_anchor not in text:
-        raise RuntimeError("could not find _View/Chassis boundary")
-    text = text.replace(chassis_anchor, VIEW_CACHE_HELPER + chassis_anchor, 1)
-
-    old_view = "view = _View(observation, player, cfg)"
-    view_count = text.count(old_view)
-    if view_count < 1:
-        raise RuntimeError(f"could not find _View construction site: {view_count}")
-    text = text.replace(old_view, "view = _cached_view(observation, player, cfg)")
-
-    # The old code deep-copies the route action, then immediately deep-copies it
-    # again into ``raw`` solely for the exception path. On the overwhelmingly
-    # common successful path that second copy is discarded. Recreate the same
-    # pristine route action only if an exception actually occurs.
+    # _route_action already returns a fresh deepcopy. The immediately following
+    # ``raw = copy.deepcopy(action)`` is used only if a later layer raises.
+    # Defer creation of that pristine fallback until the exceptional path.
     old_raw = '''        action = self._route_action(route, step)\n        raw = copy.deepcopy(action)\n        try:\n'''
     new_raw = '''        action = self._route_action(route, step)\n        try:\n'''
     if text.count(old_raw) != 1:
         raise RuntimeError(f"expected one eager raw copy, found {text.count(old_raw)}")
     text = text.replace(old_raw, new_raw, 1)
+
     old_except = '''        except Exception:\n            self.diagnostics["layer_fallbacks"] += 1\n            return raw\n'''
     new_except = '''        except Exception:\n            self.diagnostics["layer_fallbacks"] += 1\n            return self._route_action(route, step)\n'''
     if text.count(old_except) != 1:
@@ -151,10 +109,7 @@ def main() -> None:
     text = text.replace(old_except, new_except, 1)
 
     MAIN.write_text(text)
-    print(
-        "patched main.py: local fast deepcopy + lazy fallback copy + "
-        f"view cache + shed adjacency ({view_count} view sites)"
-    )
+    print("patched main.py: local fast deepcopy + lazy fallback action copy")
 
 
 if __name__ == "__main__":
