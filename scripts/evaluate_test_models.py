@@ -12,7 +12,9 @@ from pathlib import Path
 from statistics import mean
 from typing import Any
 
-from fast_kaggriculture import run_fast_episode
+# v3 specializes the exact default two-player evaluation path and falls back to
+# the stable runner automatically for unsupported configurations.
+from experimental_fast_kaggriculture_v3 import run_fast_episode
 from agent_runtime import optimize_agent_module
 
 
@@ -95,8 +97,6 @@ def game_agents(name: str, suffix: str) -> tuple[Any, Any]:
 def play(task: tuple[str, int, int]) -> dict[str, Any]:
     name, seed, seat = task
     try:
-        # Kaggle starts each submitted module in a fresh game process. Reloading
-        # here reproduces that behavior and isolates agents with module globals.
         suffix = f"{os.getpid()}_{name}_{seed}_{seat}"
         candidate, opponent = game_agents(name, suffix)
         agents = [candidate, opponent] if seat == 0 else [opponent, candidate]
@@ -104,7 +104,6 @@ def play(task: tuple[str, int, int]) -> dict[str, Any]:
             final = run_fast_episode(agents, seed=seed)
         else:
             from kaggle_environments import make
-
             environment = make(
                 "kaggriculture",
                 configuration={"episodeSteps": 720, "seed": seed},
@@ -171,7 +170,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--optimize-agent-runtime", action=argparse.BooleanOptionalAction,
-        default=True, help="use a fast deepcopy for exact dict/list agent data",
+        default=True, help="use runtime-only Python/C++ hot-path accelerators",
     )
     parser.add_argument("--output", type=Path, default=ROOT / "reports/test_models.json")
     args = parser.parse_args()
