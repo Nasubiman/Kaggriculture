@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "training"))
 
 import fast_kaggriculture as stable
-import experimental_fast_kaggriculture as experimental
+import experimental_fast_kaggriculture_v2 as experimental
 
 
 def load_module(path: Path, name: str):
@@ -171,6 +171,7 @@ def main():
                 args.agent,
                 ROOT / "training/fast_kaggriculture.py",
                 ROOT / "training/experimental_fast_kaggriculture.py",
+                ROOT / "training/experimental_fast_kaggriculture_v2.py",
             )
         },
     }
