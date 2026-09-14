@@ -12,7 +12,7 @@ permissions:
 jobs:
   benchmark:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -21,20 +21,31 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
-      - name: Run parity and benchmark
+      - name: Apply guarded main.py speed patch
+        run: python scripts/apply_main_speed_patch.py
+      - name: Verify main.py parity and benchmark
+        run: python scripts/benchmark_main_speed.py --seeds 1 --repeats 2
+      - name: Run simulator parity and benchmark
         run: python scripts/benchmark_experimental_simulation.py --seeds 1 --repeats 2
       - name: Profile simulator paths
         run: python scripts/profile_experimental_simulation.py
-      - name: Print benchmark result
+      - name: Print benchmark results
         if: always()
         run: |
+          if [ -f reports/main_speed_benchmark.json ]; then
+            echo '=== main.py benchmark ==='
+            cat reports/main_speed_benchmark.json
+          fi
           if [ -f reports/experimental_simulation_benchmark.json ]; then
+            echo '=== simulator benchmark ==='
             cat reports/experimental_simulation_benchmark.json
           fi
-      - name: Upload benchmark result
+      - name: Upload benchmark results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: experimental-simulator-benchmark
-          path: reports/experimental_simulation_benchmark.json
+          name: experimental-speed-benchmarks
+          path: |
+            reports/main_speed_benchmark.json
+            reports/experimental_simulation_benchmark.json
           if-no-files-found: ignore
