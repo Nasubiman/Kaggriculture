@@ -10,7 +10,7 @@ import sysconfig
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SRC = ROOT / "training" / "native_speedups.cpp"
+SRC = ROOT / "training" / "native_speedups_v2.cpp"
 EXT = sysconfig.get_config_var("EXT_SUFFIX") or ".so"
 OUT = ROOT / "training" / f"_kaggriculture_native{EXT}"
 
@@ -30,8 +30,7 @@ def main() -> None:
     ).strip()
     cmd = [
         "c++", "-O3", "-DNDEBUG", "-shared", "-std=c++17", "-fPIC",
-        *_host_flags(),
-        *shlex.split(includes), str(SRC), "-o", str(OUT),
+        *_host_flags(), *shlex.split(includes), str(SRC), "-o", str(OUT),
     ]
     print(" ".join(shlex.quote(x) for x in cmd), flush=True)
     subprocess.run(cmd, check=True)
