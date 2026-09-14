@@ -29,7 +29,9 @@ def fast_deepcopy(value: Any, memo: dict[int, Any] | None = None) -> Any:
     if kind is list:
         result: list[Any] = []
         memo[identity] = result
-        result.extend(fast_deepcopy(item, memo) for item in value)
+        append = result.append
+        for item in value:
+            append(fast_deepcopy(item, memo))
         return result
     if kind is dict:
         result_dict: dict[Any, Any] = {}
@@ -44,7 +46,8 @@ def fast_deepcopy(value: Any, memo: dict[int, Any] | None = None) -> Any:
     if kind is set:
         result_set: set[Any] = set()
         memo[identity] = result_set
-        result_set.update(fast_deepcopy(item, memo) for item in value)
+        for item in value:
+            result_set.add(fast_deepcopy(item, memo))
         return result_set
     return _copy.deepcopy(value, memo)
 
@@ -56,13 +59,37 @@ class _CopyProxy:
         return getattr(_copy, name)
 
 
-def _install_native_r51(module: ModuleType) -> None:
-    """Replace only the hot beam-search core when the optional extension exists.
+def _install_fast_gain(module: ModuleType) -> None:
+    """Replace generator-heavy _r51_input_gain with an equivalent tight loop."""
+    ns = module.__dict__
+    original = ns.get("_r51_input_gain")
+    if not callable(original) or getattr(original, "_runtime_accelerated", False):
+        return
 
-    All observation parsing, price calculation, start-state logic and returned
-    Kaggle actions remain Python. Any native exception falls back to the exact
-    original Python function for that call.
-    """
+    def fast_gain(target, arrival, day):
+        harvest = target["harvest"]
+        if harvest is None or harvest <= arrival:
+            return 0
+        until = target["until"]
+        extra = 0
+        baseline = target["yield"]
+        for t in target["water"]:
+            tday = t // 24
+            if arrival < t <= harvest and day <= tday <= day + 2 and tday > until:
+                extra += 1
+            baseline += 2 if tday <= until else 1
+        room = target["cap"] - baseline
+        if extra <= 0 or room <= 0:
+            return 0
+        return extra if extra < room else room
+
+    fast_gain._runtime_accelerated = True
+    fast_gain._python_fallback = original
+    ns["_r51_input_gain"] = fast_gain
+
+
+def _install_native_r51(module: ModuleType) -> None:
+    """Replace only the hot beam-search core when the optional extension exists."""
     if _native is None:
         return
     ns = module.__dict__
@@ -85,10 +112,7 @@ def _install_native_r51(module: ModuleType) -> None:
             carrot_price = max(1, int(prices["CARROT"]) - 2)
             fertilizer = max(
                 1,
-                price_fn(
-                    "FERTILIZER",
-                    market["inventory"]["FERTILIZER"] - 16,
-                ) + 2,
+                price_fn("FERTILIZER", market["inventory"]["FERTILIZER"] - 16) + 2,
             )
             return _native.r51_input_path_core(
                 targets,
@@ -107,6 +131,26 @@ def _install_native_r51(module: ModuleType) -> None:
     ns["_r51_input_path"] = accelerated
 
 
+def _install_native_similarity(module: ModuleType) -> None:
+    """Use allocation-free C++ layout comparison when available."""
+    if _native is None or not hasattr(_native, "r37_similarity"):
+        return
+    ns = module.__dict__
+    original = ns.get("_r37_similarity")
+    if not callable(original) or getattr(original, "_native_accelerated", False):
+        return
+
+    def accelerated(observation):
+        try:
+            return _native.r37_similarity(observation)
+        except Exception:
+            return original(observation)
+
+    accelerated._native_accelerated = True
+    accelerated._python_fallback = original
+    ns["_r37_similarity"] = accelerated
+
+
 def optimize_agent_module(module: ModuleType) -> ModuleType:
     """Install safe runtime speedups without changing submission compatibility."""
     if module.__dict__.get("copy") is _copy:
@@ -114,7 +158,9 @@ def optimize_agent_module(module: ModuleType) -> ModuleType:
     planner = module.__dict__.get("_PLANNER_NS")
     if isinstance(planner, dict) and planner.get("deepcopy") is _copy.deepcopy:
         planner["deepcopy"] = fast_deepcopy
+    _install_fast_gain(module)
     _install_native_r51(module)
+    _install_native_similarity(module)
     return module
 
 
