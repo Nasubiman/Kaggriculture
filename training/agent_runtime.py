@@ -116,6 +116,25 @@ def _install_native_start(module: ModuleType) -> None:
     ns["_r62_input_start"] = accelerated
 
 
+def _install_native_forecast(module: ModuleType) -> None:
+    if _native is None or not hasattr(_native, "r51_input_forecast"):
+        return
+    ns = module.__dict__
+    original = ns.get("_r51_input_forecast")
+    impl = ns.get("_IMPL")
+    if not callable(original) or impl is None or getattr(original, "_native_accelerated", False):
+        return
+    def accelerated(obs, route, expected):
+        try:
+            routes = impl.chassis.routes
+            return _native.r51_input_forecast(obs, routes[route], routes[2], int(expected))
+        except Exception:
+            return original(obs, route, expected)
+    accelerated._native_accelerated = True
+    accelerated._python_fallback = original
+    ns["_r51_input_forecast"] = accelerated
+
+
 def _install_native_r51(module: ModuleType) -> None:
     if _native is None or not hasattr(_native, "r51_input_path_core"):
         return
@@ -177,6 +196,25 @@ def _install_native_similarity(module: ModuleType) -> None:
     ns["_r37_similarity"] = accelerated
 
 
+def _install_native_projected_shed(module: ModuleType) -> None:
+    if _native is None or not hasattr(_native, "projected_shed"):
+        return
+    chassis_cls = module.__dict__.get("Chassis")
+    if chassis_cls is None:
+        return
+    original = getattr(chassis_cls, "_projected_shed", None)
+    if not callable(original) or getattr(original, "_native_accelerated", False):
+        return
+    def accelerated(self, action, view):
+        try:
+            return _native.projected_shed(action, view, int(self.cfg["shed_capacity"]))
+        except Exception:
+            return original(self, action, view)
+    accelerated._native_accelerated = True
+    accelerated._python_fallback = original
+    chassis_cls._projected_shed = accelerated
+
+
 def optimize_agent_module(module: ModuleType) -> ModuleType:
     if module.__dict__.get("copy") is _copy:
         module.__dict__["copy"] = _CopyProxy()
@@ -186,9 +224,11 @@ def optimize_agent_module(module: ModuleType) -> ModuleType:
     _install_fast_gain(module)
     _install_native_market_price(module)
     _install_native_start(module)
+    _install_native_forecast(module)
     _install_native_r51(module)
     _install_native_joint_plans(module)
     _install_native_similarity(module)
+    _install_native_projected_shed(module)
     return module
 
 
