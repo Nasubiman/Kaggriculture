@@ -48,7 +48,12 @@ def summarize(path: Path, team: str) -> dict[str, Any]:
     for step in replay["steps"]:
         observation = step[player]["observation"]
         maximum |= tile_counts(observation["farms"][player])
-    mode = "cow-heavy" if maximum["COW"] >= 20 else "sheep-heavy"
+    if maximum["COW"] > maximum["SHEEP"]:
+        mode = "cow-heavy"
+    elif maximum["SHEEP"] > maximum["COW"]:
+        mode = "sheep-heavy"
+    else:
+        mode = "balanced"
 
     decision = observation_at(replay, player, day=10, hour=0)
     prices = decision["market"]["prices"]
@@ -95,14 +100,14 @@ def summarize(path: Path, team: str) -> dict[str, Any]:
 
 
 def render(games: list[dict[str, Any]], collected_at: str) -> str:
+    classified = [game for game in games if game["mode"] != "balanced"]
     rule_correct = sum(
         (
-            "sheep-heavy"
-            if game["milk_price_day10"] >= game["wool_price_day10"]
-            else "cow-heavy"
-        )
-        == game["mode"]
-        for game in games
+            "cow-heavy"
+            if game["milk_price_day10"] > game["wool_price_day10"]
+            else "sheep-heavy"
+        ) == game["mode"]
+        for game in classified
     )
     wins = sum(game["margin"] > 0 for game in games)
     lines = [
@@ -113,8 +118,8 @@ def render(games: list[dict[str, Any]], collected_at: str) -> str:
         f"- Wins: {wins}/{len(games)}",
         (
             "- Day-10 market rule accuracy: "
-            f"{rule_correct}/{len(games)} "
-            "(`MILK >= WOOL` → sheep-heavy, otherwise cow-heavy)"
+            f"{rule_correct}/{len(classified)} "
+            "(`MILK > WOOL` → cow-heavy, otherwise sheep-heavy; ties excluded)"
         ),
         "",
         "## Per-game decision state",

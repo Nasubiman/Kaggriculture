@@ -24,8 +24,8 @@ OPENING_FAMILIES = (
     "public_q30",
     "combined_q5",
 )
-HERD_POLICIES = ("inherit", "price", "price_opponent")
-HERD_PROFILES = ("leader", "balanced", "sheep", "wide")
+HERD_POLICIES = ("inherit", "price", "price_opponent", "yarn_gate")
+HERD_PROFILES = ("leader", "rank1_255", "balanced", "sheep", "wide")
 PLACEMENT_POLICIES = ("inherit", "center_cows", "center_value", "band_cows", "alternate")
 SERVICE_POLICIES = ("inherit", "care_first", "harvest_first", "fertilizer_first")
 EXTENSION_POLICIES = ("inherit", "off", "price", "broad")
@@ -93,6 +93,9 @@ OPENING_MARKETS: dict[str, tuple[tuple[tuple[Any, ...], ...], ...]] = {
 
 PROFILE_TARGETS = {
     "leader": ((13, 4), (9, 8), (5, 12)),
+    # 255 aligned public games, conditioned on eventual herd majority.  Rounded
+    # from cow-heavy 9.44/3.76 and sheep-heavy 6.21/11.82.
+    "rank1_255": ((10, 4), (8, 7), (6, 12)),
     "balanced": ((11, 6), (8, 8), (6, 10)),
     "sheep": ((9, 8), (7, 10), (4, 13)),
     "wide": ((14, 3), (9, 9), (4, 14)),
@@ -218,7 +221,12 @@ def _herd_target(obs: dict[str, Any], genome: CurrentGenome, own: dict[str, int]
     signal = int(prices.get("MILK", 0)) - int(prices.get("WOOL", 0))
     farms = obs.get("farms", []) or []
     player = int(obs.get("player", 0))
-    if genome.herd_policy == "price_opponent" and len(farms) > 1:
+    if genome.herd_policy == "yarn_gate":
+        # A one-level tree on day-6 state generalized to 244/253 games in
+        # five-fold validation: no YARN_STORE -> cow-heavy, present -> sheep-heavy.
+        shops = (obs.get("town", {}) or {}).get("unlocked_shops", []) or []
+        signal = -100 if "YARN_STORE" in shops else 100
+    elif genome.herd_policy == "price_opponent" and len(farms) > 1:
         opponent = _animal_counts(farms[1 - player])
         signal += genome.opponent_weight * (opponent["COW"] - opponent["SHEEP"])
     high, neutral, low = PROFILE_TARGETS[genome.herd_profile]
@@ -601,6 +609,8 @@ def anchor_genomes() -> list[CurrentGenome]:
         replace(base, opening_seat0="rank1_staged", opening_seat1="rank2_wheat", opening_prefix=2),
         replace(base, opening_seat0="rank3_balanced", opening_seat1="rank1_staged", opening_prefix=2),
         replace(base, herd_policy="price", herd_profile="leader", adaptive_day=6, herd_deadband=20),
+        replace(base, herd_policy="yarn_gate", herd_profile="rank1_255", adaptive_day=6, herd_deadband=0),
+        replace(base, herd_policy="yarn_gate", herd_profile="leader", adaptive_day=6, herd_deadband=0),
         replace(base, herd_policy="price_opponent", herd_profile="balanced", adaptive_day=6, opponent_weight=10),
         replace(base, herd_policy="price_opponent", herd_profile="sheep", adaptive_day=8, opponent_weight=-10),
         replace(base, herd_policy="price", placement_policy="center_cows", placement_radius=2),

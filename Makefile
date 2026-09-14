@@ -106,7 +106,7 @@ TRAJECTORY_RESULT ?= $(shell test -f "$(LAST_TRAJECTORY_SEARCH_RUN)" && cat "$(L
 CURRENT_GENOME_NAME ?= current_genome_$(shell date +%Y%m%d_%H%M%S)
 CURRENT_GENOME_RUN ?= $(SERVER_DATA)/runs/$(CURRENT_GENOME_NAME)
 CURRENT_GENOME_LOCAL_RUN ?= $(SERVER_RESULTS)/$(CURRENT_GENOME_NAME)
-CURRENT_GENOME_OPPONENTS ?= attack_roundtrip_first25 attack_roundtrip_q90 incumbent_roundtrip_first35 incumbent_v37_opening incumbent_pre_results5_20260913 public_v31 public_v35 public_v36 public_v37 results4_20260913
+CURRENT_GENOME_OPPONENTS ?= public_v38_low_pressure_20260914 public_v41_competitive_20260914 public_v41_survival_20260914 results5_20260913 incumbent_v37_opening attack_roundtrip_first25 robust_seat_mix_v1
 CURRENT_GENOME_WORKERS ?= 20
 CURRENT_GENOME_POPULATION ?= 48
 CURRENT_GENOME_SCREEN_SEEDS ?= 4
@@ -117,8 +117,13 @@ CURRENT_GENOME_ELITE_COUNT ?= 6
 CURRENT_GENOME_FINALISTS ?= 4
 LAST_CURRENT_GENOME_RUN := $(SERVER_RESULTS)/LATEST_CURRENT_GENOME_RUN
 CURRENT_GENOME_RESULT ?= $(shell test -f "$(LAST_CURRENT_GENOME_RUN)" && cat "$(LAST_CURRENT_GENOME_RUN)")
+MECHANISM_ABLATION_BASE ?= main.py
+MECHANISM_ABLATION_OPPONENTS ?= public_v38_low_pressure_20260914 public_v41_competitive_20260914 public_v41_survival_20260914
+MECHANISM_ABLATION_SEEDS ?= 20
+MECHANISM_ABLATION_WORKERS ?= 20
+MECHANISM_ABLATION_OUTPUT ?= reports/mechanism_ablations.json
 
-.PHONY: setup simulator-update simulator-check server-simulator-update server-simulator-check kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search schedule-search schedule-status schedule-candidate schedule-use trajectory-search trajectory-status trajectory-candidate trajectory-use current-genome-search current-genome-status current-genome-candidate current-genome-use genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
+.PHONY: setup simulator-update simulator-check server-simulator-update server-simulator-check kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-mechanism-ablation server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search schedule-search schedule-status schedule-candidate schedule-use trajectory-search trajectory-status trajectory-candidate trajectory-use current-genome-search current-genome-status current-genome-candidate current-genome-use genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -206,7 +211,7 @@ server-head-to-head:
 
 server-sync-fast-runner:
 	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training"'
-	rsync -az training/fast_kaggriculture.py $(SERVER_HOST):$(SERVER_REPO)/training/
+	rsync -az training/fast_kaggriculture.py training/agent_runtime.py $(SERVER_HOST):$(SERVER_REPO)/training/
 
 server-test-models: server-sync-fast-runner
 	test -d "$(TEST_DIR)"
@@ -227,6 +232,15 @@ server-test-matrix: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(SERVER_DATA)/runs/manual/test_matrix"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python scripts/evaluate_test_matrix.py --models-dir test $(if $(strip $(TEST_MATRIX_MODELS)),--models $(TEST_MATRIX_MODELS),) --seeds "$(TEST_MATRIX_SEEDS)" --seed-start "$(TEST_MATRIX_SEED_START)" --workers "$(TEST_MATRIX_WORKERS)" --output-dir "$(SERVER_DATA)/runs/manual/test_matrix"'
 	mkdir -p "$(TEST_MATRIX_OUTPUT)"
 	rsync -az $(SERVER_HOST):$(SERVER_DATA)/runs/manual/test_matrix/ "$(TEST_MATRIX_OUTPUT)/"
+
+server-mechanism-ablation: server-sync-fast-runner
+	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(SERVER_DATA)/runs/manual"'
+	rsync -az "$(MECHANISM_ABLATION_BASE)" $(SERVER_HOST):$(SERVER_REPO)/mechanism_base.py
+	rsync -az training/evaluate_mechanism_ablations.py $(SERVER_HOST):$(SERVER_REPO)/training/
+	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/evaluate_mechanism_ablations.py --base mechanism_base.py --models-dir test --opponents $(MECHANISM_ABLATION_OPPONENTS) --seeds "$(MECHANISM_ABLATION_SEEDS)" --workers "$(MECHANISM_ABLATION_WORKERS)" --output "$(SERVER_DATA)/runs/manual/mechanism_ablations.json"'
+	mkdir -p "$(dir $(MECHANISM_ABLATION_OUTPUT))"
+	rsync -az $(SERVER_HOST):$(SERVER_DATA)/runs/manual/mechanism_ablations.json "$(MECHANISM_ABLATION_OUTPUT)"
 
 server-rank1-ablation: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(SERVER_DATA)/runs/manual"'
@@ -341,7 +355,7 @@ current-genome-search: server-sync-fast-runner
 	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py
 	rsync -az training/current_genome.py training/search_current_genomes.py training/promote_current_genome.py $(SERVER_HOST):$(SERVER_REPO)/training/
 	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
-	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; cp main.py training/current_genome.py training/search_current_genomes.py training/promote_current_genome.py "$(CURRENT_GENOME_RUN)/source/"; cp -R test "$(CURRENT_GENOME_RUN)/source/"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/search_current_genomes.py --base main.py --models-dir test --opponents $(CURRENT_GENOME_OPPONENTS) --workers "$(CURRENT_GENOME_WORKERS)" --population "$(CURRENT_GENOME_POPULATION)" --screen-seeds "$(CURRENT_GENOME_SCREEN_SEEDS)" --race-seeds "$(CURRENT_GENOME_RACE_SEEDS)" --final-seeds "$(CURRENT_GENOME_FINAL_SEEDS)" --race-count "$(CURRENT_GENOME_RACE_COUNT)" --elite-count "$(CURRENT_GENOME_ELITE_COUNT)" --finalists "$(CURRENT_GENOME_FINALISTS)" --output-dir "$(CURRENT_GENOME_RUN)"'
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; cp main.py training/agent_runtime.py training/current_genome.py training/search_current_genomes.py training/promote_current_genome.py "$(CURRENT_GENOME_RUN)/source/"; cp -R test "$(CURRENT_GENOME_RUN)/source/"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/search_current_genomes.py --base main.py --models-dir test --opponents $(CURRENT_GENOME_OPPONENTS) --workers "$(CURRENT_GENOME_WORKERS)" --population "$(CURRENT_GENOME_POPULATION)" --screen-seeds "$(CURRENT_GENOME_SCREEN_SEEDS)" --race-seeds "$(CURRENT_GENOME_RACE_SEEDS)" --final-seeds "$(CURRENT_GENOME_FINAL_SEEDS)" --race-count "$(CURRENT_GENOME_RACE_COUNT)" --elite-count "$(CURRENT_GENOME_ELITE_COUNT)" --finalists "$(CURRENT_GENOME_FINALISTS)" --output-dir "$(CURRENT_GENOME_RUN)"'
 	mkdir -p "$(CURRENT_GENOME_LOCAL_RUN)"
 	rsync -az $(SERVER_HOST):$(CURRENT_GENOME_RUN)/ "$(CURRENT_GENOME_LOCAL_RUN)/"
 	printf '%s\n' "$(CURRENT_GENOME_LOCAL_RUN)" > "$(LAST_CURRENT_GENOME_RUN)"

@@ -1,0 +1,517 @@
+{
+  "base": "/home/nakamura_y/agriculture/Kaggriculture/mechanism_base.py",
+  "opponents": [
+    "public_v38_low_pressure_20260914",
+    "public_v41_competitive_20260914",
+    "public_v41_survival_20260914"
+  ],
+  "seeds": [
+    24100000,
+    24100031,
+    24100062,
+    24100093,
+    24100124,
+    24100155,
+    24100186,
+    24100217,
+    24100248,
+    24100279,
+    24100310,
+    24100341,
+    24100372,
+    24100403,
+    24100434,
+    24100465,
+    24100496,
+    24100527,
+    24100558,
+    24100589
+  ],
+  "parent_chain": [
+    "_SHOP_PARENT",
+    "_V219_PARENT",
+    "_EXPERIMENT_PARENT",
+    "_ORDER_PARENT",
+    "_V231_PARENT",
+    "_R36_SALE_PARENT",
+    "_R37_PARENT",
+    "_RELEASE_PARENT",
+    "_V233_PARENT",
+    "_R46_SHADOW_PARENT",
+    "_R51_INPUT_PARENT",
+    "_R51_WAREHOUSE_PARENT",
+    "_R53_LABOR_PARENT",
+    "_R70_PARENT",
+    "_R85_PARENT",
+    "_R95_PARENT",
+    "_R97_PARENT",
+    "_R124_PARENT",
+    "_R127_PARENT",
+    "_R128_PARENT",
+    "_R60_SURVIVAL_PARENT"
+  ],
+  "summaries": [
+    {
+      "variant": "_R46_SHADOW_PARENT",
+      "games": 120,
+      "mean_reward_delta": -95067.53333333334,
+      "mean_margin_delta": -167141.56666666668,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": -94944.45,
+          "margin_delta": -167048.95
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": -95131.2,
+          "margin_delta": -167192.3
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": -95126.95,
+          "margin_delta": -167183.45
+        }
+      }
+    },
+    {
+      "variant": "_V233_PARENT",
+      "games": 120,
+      "mean_reward_delta": -2408.883333333333,
+      "mean_margin_delta": -2497.2,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": -2404.05,
+          "margin_delta": -2492.4
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": -2411.3,
+          "margin_delta": -2499.6
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": -2411.3,
+          "margin_delta": -2499.6
+        }
+      }
+    },
+    {
+      "variant": "_R70_PARENT",
+      "games": 120,
+      "mean_reward_delta": -2372.2166666666667,
+      "mean_margin_delta": -2907.5,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": -2382.35,
+          "margin_delta": -2903.7
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": -2367.15,
+          "margin_delta": -2909.4
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": -2367.15,
+          "margin_delta": -2909.4
+        }
+      }
+    },
+    {
+      "variant": "_SHOP_PARENT",
+      "games": 120,
+      "mean_reward_delta": -2234.4666666666667,
+      "mean_margin_delta": -3605.866666666667,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": -2258.4,
+          "margin_delta": -3629.5
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": -2222.5,
+          "margin_delta": -3594.05
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": -2222.5,
+          "margin_delta": -3594.05
+        }
+      }
+    },
+    {
+      "variant": "_R85_PARENT",
+      "games": 120,
+      "mean_reward_delta": -2026.6666666666667,
+      "mean_margin_delta": -1259.5,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": -1972.4,
+          "margin_delta": -1311.9
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": -2053.8,
+          "margin_delta": -1233.3
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": -2053.8,
+          "margin_delta": -1233.3
+        }
+      }
+    },
+    {
+      "variant": "_R37_PARENT",
+      "games": 120,
+      "mean_reward_delta": -1780.35,
+      "mean_margin_delta": -3237.8333333333335,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": -1797.35,
+          "margin_delta": -3262.8
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": -1771.85,
+          "margin_delta": -3225.35
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": -1771.85,
+          "margin_delta": -3225.35
+        }
+      }
+    },
+    {
+      "variant": "_R51_INPUT_PARENT",
+      "games": 120,
+      "mean_reward_delta": -1273.35,
+      "mean_margin_delta": -1778.7666666666667,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": -1309.35,
+          "margin_delta": -1815.4
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": -1255.35,
+          "margin_delta": -1760.45
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": -1255.35,
+          "margin_delta": -1760.45
+        }
+      }
+    },
+    {
+      "variant": "_V219_PARENT",
+      "games": 120,
+      "mean_reward_delta": -947.9666666666667,
+      "mean_margin_delta": -2305.766666666667,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": -962.1,
+          "margin_delta": -2320.6
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": -940.9,
+          "margin_delta": -2298.35
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": -940.9,
+          "margin_delta": -2298.35
+        }
+      }
+    },
+    {
+      "variant": "_R36_SALE_PARENT",
+      "games": 120,
+      "mean_reward_delta": -797.4666666666667,
+      "mean_margin_delta": -1908.0666666666666,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": -854.7,
+          "margin_delta": -1944.5
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": -766.2,
+          "margin_delta": -1889.85
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": -771.5,
+          "margin_delta": -1889.85
+        }
+      }
+    },
+    {
+      "variant": "_ORDER_PARENT",
+      "games": 120,
+      "mean_reward_delta": -191.65,
+      "mean_margin_delta": -343.1166666666667,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": -194.85,
+          "margin_delta": -354.85
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": -190.05,
+          "margin_delta": -337.25
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": -190.05,
+          "margin_delta": -337.25
+        }
+      }
+    },
+    {
+      "variant": "_R51_WAREHOUSE_PARENT",
+      "games": 120,
+      "mean_reward_delta": -80.63333333333334,
+      "mean_margin_delta": -116.35,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": -79.3,
+          "margin_delta": -115.65
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": -81.3,
+          "margin_delta": -116.7
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": -81.3,
+          "margin_delta": -116.7
+        }
+      }
+    },
+    {
+      "variant": "_R95_PARENT",
+      "games": 120,
+      "mean_reward_delta": -16.9,
+      "mean_margin_delta": -79.31666666666666,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": -24.75,
+          "margin_delta": -75.95
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": -13.05,
+          "margin_delta": -81.15
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": -12.9,
+          "margin_delta": -80.85
+        }
+      }
+    },
+    {
+      "variant": "_R97_PARENT",
+      "games": 120,
+      "mean_reward_delta": -1.35,
+      "mean_margin_delta": -2.55,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": -1.35,
+          "margin_delta": -2.55
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": -1.35,
+          "margin_delta": -2.55
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": -1.35,
+          "margin_delta": -2.55
+        }
+      }
+    },
+    {
+      "variant": "full",
+      "games": 120,
+      "mean_reward_delta": 0.0,
+      "mean_margin_delta": 0.0,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        }
+      }
+    },
+    {
+      "variant": "_EXPERIMENT_PARENT",
+      "games": 120,
+      "mean_reward_delta": 0.0,
+      "mean_margin_delta": 0.0,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        }
+      }
+    },
+    {
+      "variant": "_RELEASE_PARENT",
+      "games": 120,
+      "mean_reward_delta": 0.0,
+      "mean_margin_delta": 0.0,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        }
+      }
+    },
+    {
+      "variant": "_R53_LABOR_PARENT",
+      "games": 120,
+      "mean_reward_delta": 0.0,
+      "mean_margin_delta": 0.0,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        }
+      }
+    },
+    {
+      "variant": "_R124_PARENT",
+      "games": 120,
+      "mean_reward_delta": 0.0,
+      "mean_margin_delta": 0.0,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        }
+      }
+    },
+    {
+      "variant": "_R127_PARENT",
+      "games": 120,
+      "mean_reward_delta": 0.0,
+      "mean_margin_delta": 0.0,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        }
+      }
+    },
+    {
+      "variant": "_R128_PARENT",
+      "games": 120,
+      "mean_reward_delta": 0.0,
+      "mean_margin_delta": 0.0,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        }
+      }
+    },
+    {
+      "variant": "_R60_SURVIVAL_PARENT",
+      "games": 120,
+      "mean_reward_delta": 0.0,
+      "mean_margin_delta": 0.0,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": 0.0,
+          "margin_delta": 0.0
+        }
+      }
+    },
+    {
+      "variant": "_V231_PARENT",
+      "games": 120,
+      "mean_reward_delta": 132.15,
+      "mean_margin_delta": -62.93333333333333,
+      "errors": 0,
+      "by_opponent": {
+        "public_v38_low_pressure_20260914": {
+          "reward_delta": 130.55,
+          "margin_delta": -76.8
+        },
+        "public_v41_competitive_20260914": {
+          "reward_delta": 132.95,
+          "margin_delta": -56.0
+        },
+        "public_v41_survival_20260914": {
+          "reward_delta": 132.95,
+          "margin_delta": -56.0
+        }
+      }
+    }
+  ]
+}

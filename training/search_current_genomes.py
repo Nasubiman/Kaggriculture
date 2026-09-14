@@ -16,19 +16,25 @@ from typing import Any
 
 from current_genome import CurrentGenome, anchor_genomes, configure_module, crossover, mutate
 from fast_kaggriculture import run_fast_episode
+from agent_runtime import optimize_agent_module
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OPPONENTS = (
-    "attack_roundtrip_first25", "attack_roundtrip_q90",
-    "incumbent_roundtrip_first35", "incumbent_v37_opening",
-    "incumbent_pre_results5_20260913", "public_v31", "public_v35",
-    "public_v36", "public_v37", "results4_20260913",
+    "public_v38_low_pressure_20260914",
+    "public_v41_competitive_20260914",
+    "public_v41_survival_20260914",
+    "results5_20260913", "incumbent_v37_opening",
+    "attack_roundtrip_first25", "robust_seat_mix_v1",
 )
 _BASE = ""
 _OPPONENT_PATHS: dict[str, str] = {}
 _AGENTS: dict[str, Any] = {}
 _OPPONENTS: dict[str, Any] = {}
+
+# Permit only an immaterial per-opponent reward trade-off.  Episode rewards are
+# about 100k, so an absolute zero-tolerance gate overreacts to tiny changes.
+MAX_OPPONENT_RELATIVE_REWARD_REGRESSION = 0.002
 
 
 def load_module(path: Path, name: str):
@@ -37,7 +43,7 @@ def load_module(path: Path, name: str):
         raise RuntimeError(f"cannot load {path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return module
+    return optimize_agent_module(module)
 
 
 def read_incumbent(path: Path) -> CurrentGenome:
@@ -82,6 +88,15 @@ def play(task: tuple[dict[str, Any], str, str, int, int]):
                     margin=-1_000_000.0, win=False, error=repr(error))
 
 
+def play_batch(task: tuple[dict[str, Any], str, str, list[int]]):
+    """Keep one candidate/opponent pair hot for all seeds and both seats."""
+    values, key, opponent, seeds = task
+    return [
+        play((values, key, opponent, seed, seat))
+        for seed in seeds for seat in (0, 1)
+    ]
+
+
 def row(genome: CurrentGenome, label: str, parent: str | None = None):
     return {"genome": genome.normalized(), "label": label, "parent": parent}
 
@@ -107,7 +122,8 @@ def diverse_results(results, count: int, base_key: str):
             frontier.append(candidate)
     strict = [value for value in candidates
               if value["lower_95_delta"] > 0
-              and value["worst_opponent_delta"] >= 0
+              and value["worst_opponent_relative_delta"]
+                  >= -MAX_OPPONENT_RELATIVE_REWARD_REGRESSION
               and value["mean_margin_delta"] >= 0
               and value["worst_opponent_margin_delta"] >= 0]
     positive_both = [value for value in candidates
@@ -167,18 +183,26 @@ def summarize(candidate, games, baseline):
             game["margin"] - baseline[(opponent, game["seed"], game["seat"])]["margin"]
             for game in subset
         ]
+        baseline_rewards = [
+            baseline[(opponent, game["seed"], game["seat"])]["reward"]
+            for game in subset
+        ]
+        baseline_mean_reward = mean(baseline_rewards)
         deltas += values
         margin_deltas += opponent_margin_deltas
         by_opponent[opponent] = {
             "games": len(subset), "mean_delta": mean(values),
+            "relative_delta": mean(values) / max(1.0, abs(baseline_mean_reward)),
             "mean_margin_delta": mean(opponent_margin_deltas),
             "mean_reward": mean(game["reward"] for game in subset),
+            "baseline_mean_reward": baseline_mean_reward,
             "mean_margin": mean(game["margin"] for game in subset),
             "win_rate": mean(float(game["win"]) for game in subset),
             "errors": sum(game["error"] is not None for game in subset),
         }
     stderr = stdev(deltas) / math.sqrt(len(deltas)) if len(deltas) > 1 else 0.0
     worst = min(value["mean_delta"] for value in by_opponent.values())
+    worst_relative = min(value["relative_delta"] for value in by_opponent.values())
     worst_margin = min(value["mean_margin_delta"] for value in by_opponent.values())
     errors = sum(game["error"] is not None for game in games)
     paired_score = (mean(deltas) - 0.5 * stderr + 0.50 * mean(margin_deltas)
@@ -195,23 +219,36 @@ def summarize(candidate, games, baseline):
         "mean_margin_delta": mean(margin_deltas),
         "lower_95_delta": mean(deltas) - 1.96 * stderr,
         "worst_opponent_delta": worst, "paired_score": paired_score,
+        "worst_opponent_relative_delta": worst_relative,
         "worst_opponent_margin_delta": worst_margin,
         "errors": errors, "by_opponent": by_opponent,
     }
 
 
-def evaluate(pool, candidates, opponents, seeds, baseline_genome):
+def evaluate(pool, candidates, opponents, seeds, baseline_genome, *, batched=True):
     candidates = unique(candidates)
     baseline_key = baseline_genome.key()
     if baseline_key not in {value["genome"].key() for value in candidates}:
         candidates.insert(0, row(baseline_genome, "incumbent"))
-    tasks = [
-        (value["genome"].to_dict(), value["genome"].key(), opponent, seed, seat)
-        for value in candidates for opponent in opponents for seed in seeds for seat in (0, 1)
-    ]
     games = {value["genome"].key(): [] for value in candidates}
-    for game in pool.imap_unordered(play, tasks, chunksize=1):
-        games[game["key"]].append(game)
+    if batched:
+        tasks = [
+            (value["genome"].to_dict(), value["genome"].key(), opponent, seeds)
+            for value in candidates for opponent in opponents
+        ]
+        batches = pool.imap_unordered(play_batch, tasks, chunksize=1)
+    else:
+        scalar_tasks = [
+            (value["genome"].to_dict(), value["genome"].key(), opponent, seed, seat)
+            for value in candidates for opponent in opponents
+            for seed in seeds for seat in (0, 1)
+        ]
+        batches = ([game] for game in pool.imap_unordered(
+            play, scalar_tasks, chunksize=1
+        ))
+    for batch in batches:
+        for game in batch:
+            games[game["key"]].append(game)
     baseline = {
         (g["opponent"], g["seed"], g["seat"]): g for g in games[baseline_key]
     }
@@ -242,6 +279,7 @@ def main():
     parser.add_argument("--race-count", type=int, default=16)
     parser.add_argument("--elite-count", type=int, default=6)
     parser.add_argument("--finalists", type=int, default=4)
+    parser.add_argument("--task-mode", choices=("batch", "game"), default="batch")
     parser.add_argument("--seed", type=int, default=20260913)
     parser.add_argument("--seed-start", type=int, default=19_130_000)
     parser.add_argument("--output-dir", type=Path, required=True)
@@ -261,33 +299,42 @@ def main():
     with context.Pool(workers, initializer=worker_init,
                       initargs=(str(args.base.resolve()), {k: str(v.resolve()) for k,v in paths.items()})) as pool:
         seeds0 = [args.seed_start + 31*i for i in range(args.screen_seeds)]
-        stage0 = evaluate(pool, initial_pool(base, rng, args.population), args.opponents, seeds0, base)
+        stage0 = evaluate(pool, initial_pool(base, rng, args.population), args.opponents,
+                          seeds0, base, batched=args.task_mode == "batch")
         save(output / "stage0_screen.json", seeds0, stage0)
         race_rows = [row(base, "incumbent")] + [
             row(CurrentGenome(**v["genome"]), v["label"], v["parent"])
             for v in diverse_results(stage0, args.race_count, base.key())
         ]
         seeds1 = [args.seed_start + 100_000 + 31*i for i in range(args.race_seeds)]
-        stage1 = evaluate(pool, race_rows, args.opponents, seeds1, base)
+        stage1 = evaluate(pool, race_rows, args.opponents, seeds1, base,
+                          batched=args.task_mode == "batch")
         save(output / "stage1_race.json", seeds1, stage1)
         elite = diverse_results(stage1, args.elite_count, base.key())
-        stage2 = evaluate(pool, offspring(base, elite, rng, args.population), args.opponents, seeds1, base)
+        stage2 = evaluate(pool, offspring(base, elite, rng, args.population),
+                          args.opponents, seeds1, base,
+                          batched=args.task_mode == "batch")
         save(output / "stage2_offspring.json", seeds1, stage2)
         final_rows = [row(base, "incumbent")] + [
             row(CurrentGenome(**v["genome"]), v["label"], v["parent"])
             for v in diverse_results(stage2, args.finalists, base.key())
         ]
         seeds2 = [args.seed_start + 200_000 + 31*i for i in range(args.final_seeds)]
-        final = evaluate(pool, final_rows, args.opponents, seeds2, base)
+        final = evaluate(pool, final_rows, args.opponents, seeds2, base,
+                         batched=args.task_mode == "batch")
         save(output / "final_heldout.json", seeds2, final)
     eligible = [v for v in final if v["key"] != base.key() and v["errors"] == 0
-                and v["lower_95_delta"] > 0 and v["worst_opponent_delta"] >= 0
+                and v["lower_95_delta"] > 0
+                and v["worst_opponent_relative_delta"]
+                    >= -MAX_OPPONENT_RELATIVE_REWARD_REGRESSION
                 and v["mean_margin_delta"] >= 0
                 and v["worst_opponent_margin_delta"] >= 0]
     accepted = bool(eligible)
     selected = eligible[0] if eligible else next(v for v in final if v["key"] == base.key())
     decision = {"accepted": accepted,
-                "reason": "positive reward lower bound and no reward/margin regression" if accepted else "held-out reward/margin gate not met",
+                "reason": ("positive reward lower bound, <=0.2% per-opponent reward "
+                           "regression, and no margin regression" if accepted
+                           else "held-out reward/margin gate not met"),
                 "best_overall": final[0], "selected": selected}
     (output / "decision.json").write_text(json.dumps(decision, indent=2)+"\n")
     (output / "best_genome.json").write_text(json.dumps(selected["genome"], indent=2)+"\n")

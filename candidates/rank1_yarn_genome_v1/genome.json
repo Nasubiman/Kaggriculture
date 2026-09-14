@@ -1,0 +1,6 @@
+{
+  "herd_policy": "yarn_gate",
+  "herd_profile": "rank1_255",
+  "adaptive_day": 6,
+  "herd_deadband": 0
+}

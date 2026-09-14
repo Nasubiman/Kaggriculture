@@ -15,11 +15,15 @@ from statistics import mean
 from typing import Any
 
 from fast_kaggriculture import run_fast_episode
+from agent_runtime import optimize_agent_module
 
 
 ROOT = Path(__file__).resolve().parents[1]
 _MODEL_PATHS: dict[str, str] = {}
 _FAST_RUNNER = True
+_REUSE_AGENTS = True
+_OPTIMIZE_AGENT_RUNTIME = True
+_MODEL_AGENTS: dict[str, Any] = {}
 
 
 def load_agent(path: Path, name: str) -> Any:
@@ -28,6 +32,8 @@ def load_agent(path: Path, name: str) -> Any:
         raise RuntimeError(f"cannot load {path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    if _OPTIMIZE_AGENT_RUNTIME:
+        optimize_agent_module(module)
     agent = getattr(module, "agent", None)
     if not callable(agent):
         raise RuntimeError(f"{path} does not define a callable agent")
@@ -50,18 +56,35 @@ def discover(models_dir: Path, selected: list[str]) -> dict[str, Path]:
     return available
 
 
-def worker_init(model_paths: dict[str, str], fast_runner: bool) -> None:
-    global _MODEL_PATHS, _FAST_RUNNER
+def worker_init(model_paths: dict[str, str], fast_runner: bool,
+                reuse_agents: bool, optimize_agent_runtime: bool) -> None:
+    global _MODEL_PATHS, _FAST_RUNNER, _REUSE_AGENTS, _MODEL_AGENTS
+    global _OPTIMIZE_AGENT_RUNTIME
     _MODEL_PATHS = model_paths
     _FAST_RUNNER = fast_runner
+    _REUSE_AGENTS = reuse_agents
+    _OPTIMIZE_AGENT_RUNTIME = optimize_agent_runtime
+    _MODEL_AGENTS = {}
+
+
+def model_agent(name: str, suffix: str) -> Any:
+    if not _REUSE_AGENTS:
+        return load_agent(Path(_MODEL_PATHS[name]), f"matrix_{name}_{suffix}")
+    agent = _MODEL_AGENTS.get(name)
+    if agent is None:
+        agent = load_agent(
+            Path(_MODEL_PATHS[name]), f"matrix_{os.getpid()}_{name}"
+        )
+        _MODEL_AGENTS[name] = agent
+    return agent
 
 
 def play(task: tuple[str, str, int, int]) -> dict[str, Any]:
     model_a, model_b, seed, seat_a = task
     suffix = f"{os.getpid()}_{model_a}_{model_b}_{seed}_{seat_a}"
     try:
-        agent_a = load_agent(Path(_MODEL_PATHS[model_a]), f"matrix_a_{suffix}")
-        agent_b = load_agent(Path(_MODEL_PATHS[model_b]), f"matrix_b_{suffix}")
+        agent_a = model_agent(model_a, suffix)
+        agent_b = model_agent(model_b, suffix)
         agents = [agent_a, agent_b] if seat_a == 0 else [agent_b, agent_a]
         if _FAST_RUNNER:
             final = run_fast_episode(agents, seed=seed)
@@ -226,6 +249,14 @@ def main() -> None:
         "--fast-runner", action=argparse.BooleanOptionalAction, default=True
     )
     parser.add_argument(
+        "--reuse-agents", action=argparse.BooleanOptionalAction, default=True,
+        help="reuse loaded modules within each worker; agents reset at step zero",
+    )
+    parser.add_argument(
+        "--optimize-agent-runtime", action=argparse.BooleanOptionalAction,
+        default=True, help="use a fast deepcopy for exact dict/list agent data",
+    )
+    parser.add_argument(
         "--output-dir", type=Path, default=ROOT / "reports/test_matrix"
     )
     args = parser.parse_args()
@@ -246,7 +277,9 @@ def main() -> None:
     with context.Pool(
         workers,
         initializer=worker_init,
-        initargs=({name: str(path) for name, path in models.items()}, args.fast_runner),
+        initargs=({name: str(path) for name, path in models.items()},
+                  args.fast_runner, args.reuse_agents,
+                  args.optimize_agent_runtime),
     ) as pool:
         games = list(pool.imap_unordered(play, tasks, chunksize=1))
     games.sort(
@@ -271,6 +304,8 @@ def main() -> None:
         "models_dir": str(args.models_dir.resolve()),
         "models": {name: str(models[name]) for name in names},
         "fast_runner": args.fast_runner,
+        "reuse_agents": args.reuse_agents,
+        "optimize_agent_runtime": args.optimize_agent_runtime,
         "seed_start": args.seed_start,
         "seeds": seeds,
         "games_per_pair": 2 * len(seeds),

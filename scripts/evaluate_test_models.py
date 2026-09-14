@@ -13,12 +13,17 @@ from statistics import mean
 from typing import Any
 
 from fast_kaggriculture import run_fast_episode
+from agent_runtime import optimize_agent_module
 
 
 ROOT = Path(__file__).resolve().parents[1]
 _CANDIDATE_PATH = ""
 _OPPONENT_PATHS: dict[str, str] = {}
 _FAST_RUNNER = True
+_REUSE_AGENTS = True
+_OPTIMIZE_AGENT_RUNTIME = True
+_CANDIDATE_AGENT: Any = None
+_OPPONENT_AGENTS: dict[str, Any] = {}
 
 
 def load_agent(path: Path, name: str) -> Any:
@@ -27,6 +32,8 @@ def load_agent(path: Path, name: str) -> Any:
         raise RuntimeError(f"cannot load {path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    if _OPTIMIZE_AGENT_RUNTIME:
+        optimize_agent_module(module)
     agent = getattr(module, "agent", None)
     if not callable(agent):
         raise RuntimeError(f"{path} does not define a callable agent")
@@ -49,11 +56,40 @@ def discover(models_dir: Path, selected: list[str]) -> dict[str, Path]:
     return available
 
 
-def worker_init(candidate: str, opponents: dict[str, str], fast_runner: bool) -> None:
-    global _CANDIDATE_PATH, _OPPONENT_PATHS, _FAST_RUNNER
+def worker_init(candidate: str, opponents: dict[str, str], fast_runner: bool,
+                reuse_agents: bool, optimize_agent_runtime: bool) -> None:
+    global _CANDIDATE_PATH, _OPPONENT_PATHS, _FAST_RUNNER, _REUSE_AGENTS
+    global _CANDIDATE_AGENT, _OPPONENT_AGENTS, _OPTIMIZE_AGENT_RUNTIME
     _CANDIDATE_PATH = candidate
     _OPPONENT_PATHS = opponents
     _FAST_RUNNER = fast_runner
+    _REUSE_AGENTS = reuse_agents
+    _OPTIMIZE_AGENT_RUNTIME = optimize_agent_runtime
+    _CANDIDATE_AGENT = None
+    _OPPONENT_AGENTS = {}
+
+
+def game_agents(name: str, suffix: str) -> tuple[Any, Any]:
+    global _CANDIDATE_AGENT
+    if not _REUSE_AGENTS:
+        return (
+            load_agent(Path(_CANDIDATE_PATH), f"test_candidate_{suffix}"),
+            load_agent(Path(_OPPONENT_PATHS[name]), f"test_opponent_{suffix}"),
+        )
+    # Competition agents reset their per-player state when observation.step
+    # returns to zero. Search already relies on this contract; retaining one
+    # module per worker avoids recompiling large public agents every episode.
+    if _CANDIDATE_AGENT is None:
+        _CANDIDATE_AGENT = load_agent(
+            Path(_CANDIDATE_PATH), f"test_candidate_{os.getpid()}"
+        )
+    opponent = _OPPONENT_AGENTS.get(name)
+    if opponent is None:
+        opponent = load_agent(
+            Path(_OPPONENT_PATHS[name]), f"test_opponent_{os.getpid()}_{name}"
+        )
+        _OPPONENT_AGENTS[name] = opponent
+    return _CANDIDATE_AGENT, opponent
 
 
 def play(task: tuple[str, int, int]) -> dict[str, Any]:
@@ -62,10 +98,7 @@ def play(task: tuple[str, int, int]) -> dict[str, Any]:
         # Kaggle starts each submitted module in a fresh game process. Reloading
         # here reproduces that behavior and isolates agents with module globals.
         suffix = f"{os.getpid()}_{name}_{seed}_{seat}"
-        candidate = load_agent(Path(_CANDIDATE_PATH), f"test_candidate_{suffix}")
-        opponent = load_agent(
-            Path(_OPPONENT_PATHS[name]), f"test_opponent_{suffix}"
-        )
+        candidate, opponent = game_agents(name, suffix)
         agents = [candidate, opponent] if seat == 0 else [opponent, candidate]
         if _FAST_RUNNER:
             final = run_fast_episode(agents, seed=seed)
@@ -132,6 +165,14 @@ def main() -> None:
     parser.add_argument(
         "--fast-runner", action=argparse.BooleanOptionalAction, default=True
     )
+    parser.add_argument(
+        "--reuse-agents", action=argparse.BooleanOptionalAction, default=True,
+        help="reuse loaded modules within each worker; agents reset at step zero",
+    )
+    parser.add_argument(
+        "--optimize-agent-runtime", action=argparse.BooleanOptionalAction,
+        default=True, help="use a fast deepcopy for exact dict/list agent data",
+    )
     parser.add_argument("--output", type=Path, default=ROOT / "reports/test_models.json")
     args = parser.parse_args()
 
@@ -152,6 +193,8 @@ def main() -> None:
             str(args.candidate.resolve()),
             {name: str(path) for name, path in opponents.items()},
             args.fast_runner,
+            args.reuse_agents,
+            args.optimize_agent_runtime,
         ),
     ) as pool:
         games = list(pool.imap_unordered(play, tasks, chunksize=1))
@@ -165,6 +208,8 @@ def main() -> None:
         "candidate": str(args.candidate.resolve()),
         "models_dir": str(args.models_dir.resolve()),
         "fast_runner": args.fast_runner,
+        "reuse_agents": args.reuse_agents,
+        "optimize_agent_runtime": args.optimize_agent_runtime,
         "models": {name: str(path) for name, path in opponents.items()},
         "summaries": summaries,
         "games": games,

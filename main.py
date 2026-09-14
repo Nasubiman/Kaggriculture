@@ -1,3 +1,6 @@
+# EXP257: V39 base with funded atomic opening.
+# Opening assignment adapted from Rayk Kretzschmar, Rank Your Agent.
+# Existing upstream attribution retained below; original funding guard by Ahmed Berat Ozer.
 # EXP-173 isolate opening market sequence inspired by yhay81/shop-router-0911-simple (Apache-2.0).
 # Kaggriculture EXP-167 candidate. Not submitted automatically.
 # Attribution: thomastschinkel, yhay81, destbreso, aurax7, tetsutani,
@@ -955,7 +958,7 @@ def _router(observation,step,state):
         state['day27']=True
     return state.get('route',0)
 
-_R42_OPENING=[['BUY_PRODUCT', 'WHEAT', 13], ['BUY_PRODUCT', 'WHEAT', 30], ['SELL', 'WHEAT', 30]]
+_R42_OPENING=[['BUY_PRODUCT', 'WHEAT', 5], ['BUY_PRODUCT', 'WHEAT', 10], ['SELL', 'WHEAT', 60]]
 for _r42_tape in _ROUTES.values():
     _r42_tape[0]=dict(_r42_tape[0],market=[list(o) for o in _R42_OPENING])
 del _r42_tape
@@ -1629,7 +1632,7 @@ _R36_NATIVE_SUPPRESS=Chassis._apply_suppression
 _R36_SALE_REPORT={}
 
 def _r36_native_lead(self,action,view,projected,route,step,next_sup):
-    if step<288 or step>=696:
+    if step<216 or step>=696:
         return _R36_NATIVE_LEAD(self,action,view,projected,route,step,next_sup)
 
 def _r36_suppress(action,state,step):
@@ -1647,7 +1650,7 @@ Chassis._apply_suppression=staticmethod(_r36_suppress)
 def _r36_reserve(obs,action):
     step=int(obs['step'])
     # The final planner forecasts its own parent, so keep its full window native.
-    if not 288<=step<696:return action
+    if not 216<=step<696:return action
     native=_IMPL.chassis.players[int(obs['player'])]
     tape=_IMPL.chassis.routes[native['route']]
     end=min(695,step+_R37_HORIZONS.get(int(obs['player']),2),(step//72+1)*72-1)
@@ -2518,7 +2521,7 @@ def _r85_feed(obs, action):
         if tile.get('fed_today') or int(tile.get('consecutive_unfed',0))!=0:continue
         if int(obs['private']['inventories'][actor].get('WHEAT',0))<=0:continue
         item={'GOOSE':'EGG','COW':'MILK','SHEEP':'WOOL'}[tile['animal']]
-        bonus=1+max(0,int(tile.get('pending_care_bonus',0)))
+        bonus=_r88_feed_bonus_cost(tile,day)
         if bonus*(float(prices[item])+5)*1.25>=float(prices['WHEAT']):continue
         if not _r86_next_feed(obs,positions[actor]):continue
         commands[actor]=['PASS'];changed=True
@@ -2623,3 +2626,761 @@ def _r86_next_feed(obs, target):
     return tuple(target) in _R86_FEED_CACHE[key]
 
 agent=globals().pop('agent')
+
+# EXP219: charge care credits only when this feeding decision can affect them.
+_R88_PHASE = True
+_R88_HORIZON = True
+_R88_ANIMAL_DAYS = {'GOOSE': (4, 1), 'COW': (8, 2), 'SHEEP': (6, 3)}
+
+
+def _r88_feed_bonus_cost(tile, day):
+    first, interval = _R88_ANIMAL_DAYS[tile['animal']]
+    first += int(tile['placed_day'])
+    tomorrow = day + 1
+    produces = tomorrow >= first and (tomorrow - first) % interval == 0
+    pending = max(0, int(tile.get('pending_care_bonus', 0)))
+    if _R88_PHASE and not produces:
+        pending = 0  # It remains banked on non-production dawns.
+    care = 1  # Conservative: charge one possible CARE even if not yet observed.
+    if _R88_HORIZON:
+        # Today's care is added AFTER tomorrow's production; its first possible
+        # payout is a later production dawn, which must occur before game end.
+        next_use = first
+        if next_use <= tomorrow:
+            next_use += ((tomorrow - next_use) // interval + 1) * interval
+        if next_use > 29:
+            care = 0
+    return pending + care
+
+
+agent = globals().pop('agent')
+
+# EXP226: retain physical grain for two complete days before trimming a buy.
+_R95_PARENT = agent
+_R95_REPORT = {}
+_R95_RESERVES = {}
+
+def _r95_reserve(obs):
+    step=int(obs['step']);player=int(obs['player'])
+    native=_IMPL.chassis.players[player];route=native['route']
+    key=(route,step)
+    if key not in _R95_RESERVES:
+        demand=6  # Physical buffer beyond every scheduled pickup and sale.
+        for t in range(step+1,min(719,step+49)):
+            a=_IMPL.chassis.routes[2 if t>=648 else route][t]
+            for c in [a.get('farmer') or ['PASS'],*(a.get('hands') or [])]:
+                if c[:2]==['PICKUP','WHEAT']:
+                    demand+=max(0,int(c[2]) if len(c)>2 else 1)
+            for o in a.get('market',[]):
+                if len(o)>2 and o[:2]==['SELL','WHEAT']:
+                    demand+=max(0,int(o[2]))
+        _R95_RESERVES[key]=demand
+    demand=_R95_RESERVES[key]
+    # Reserve full feed for a possible southeast sheep commitment. Do not
+    # rely on its future discretionary buy, eligibility, or existing cargo.
+    if obs['town']['unlocked_shops'].count('YARN_STORE')>=2:
+        demand+=6*len({t//24 for t in range(step+1,step+49) if t//24>=12})
+    return demand
+
+def _r95_replenish(obs,action):
+    step=int(obs['step'])
+    if not 10<=step//24<=11:return action
+    orders=action.get('market') or []
+    if not any(len(o)>2 and o[:2]==['BUY_PRODUCT','WHEAT'] and int(o[2])>0 for o in orders):return action
+    # Preserve all same-turn grain trading/arbitrage sequences unchanged.
+    if any(o[:2]==['SELL','WHEAT'] for o in orders):return action
+    farm,private=_PLANNER_NS['_clone_state'](obs['farms'][obs['player']],obs['private'])
+    commands=[action.get('farmer') or ['PASS'],*(action.get('hands') or [])]
+    for actor,c in enumerate(commands[:len(private['inventories'])]):
+        _PLANNER_NS['_apply_unit_action'](farm,private,actor,c,10,step//24,24,100)
+    held=max(0,int(private['shed'].get('WHEAT',0)))
+    reserve=_r95_reserve(obs);result=None;removed=0
+    for i,o in enumerate(orders):
+        if len(o)<3 or o[:2]!=['BUY_PRODUCT','WHEAT']:continue
+        quantity=max(0,int(o[2]));retained=min(quantity,max(0,reserve-held))
+        held+=retained
+        if retained<quantity:
+            if result is None:result=copy.deepcopy(action)
+            result['market'][i][2]=retained  # Zero keeps every later order slot.
+            removed+=quantity-retained
+    if result is None:return action
+    _R95_REPORT['replenishment_trim_turns']+=1
+    _R95_REPORT['replenishment_trim_units']+=removed
+    return result
+
+def agent(observation,configuration=None):
+    result=_R95_PARENT(observation,configuration)
+    try:
+        if int(observation['step'])==0:
+            _R95_REPORT.update(replenishment_trim_turns=0,replenishment_trim_units=0,replenishment_errors=0)
+        if configuration is not None and any(configuration.get(k,v)!=v for k,v in [('boardSize',10),('turnsPerDay',24),('shedCapacity',100),('maxMarketOrdersPerTurn',10)]):return result
+        result=_r95_replenish(observation,result)
+    except Exception:
+        _R95_REPORT['replenishment_errors']=_R95_REPORT.get('replenishment_errors',0)+1
+    _R95_REPORT.update(getattr(_R95_PARENT,'telemetry',{}))
+    return result
+
+agent.telemetry=_R95_REPORT
+agent=globals().pop('agent')
+
+# EXP231: protect inputs using funded current orders without unassigned cash padding from observed physical resources.
+_R97_PARENT=agent
+_R97_REPORT={}
+_R97_LAST={}
+
+def _r97_market_stock(shed,orders):
+    stock=dict(shed);buys={};sales={}
+    for index,order in enumerate(orders):
+        if len(order)<3:continue
+        op,item,n=order[:3];n=max(0,int(n))
+        if op=='SELL':
+            q=min(n,max(0,stock.get(item,0)));stock[item]=stock.get(item,0)-q;sales[index]=q
+        elif op in ('BUY_PRODUCT','BUY_ANIMAL'):
+            q=min(n,max(0,100-sum(stock.values())));stock[item]=stock.get(item,0)+q;buys[index]=q
+    return stock,buys,sales
+
+def _r97_delivery(stock,private,night):
+    stock=dict(stock);lost={}
+    if night:
+        for inv in private['inventories']:
+            for item,q in inv.items():
+                q=max(0,int(q));take=min(q,max(0,100-sum(stock.values())))
+                stock[item]=stock.get(item,0)+take
+                if q>take:lost[item]=lost.get(item,0)+q-take
+    return stock,lost
+
+def _r97_budget(obs,orders):
+    farm=obs['farms'][obs['player']];cost=0;hires=int(farm['hires_today'])
+    # At most ten 100-unit purchases per opponent turn. The additional 1000
+    # own units give an intentionally conservative upper bound on buy quotes.
+    prices={p:_r37_market_price(p,obs['market']['inventory'][p]-2000) for p in ('WHEAT','FERTILIZER')}
+    for order in orders:
+        if not order:continue
+        op=order[0]
+        if op=='HIRE':cost+=_v219_fib(hires);hires+=1
+        elif op=='BUY_LAND':cost+=4000
+        elif len(order)>2:
+            item=order[1];q=max(0,int(order[2]))
+            if op=='BUY_PRODUCT':cost+=q*prices[item]
+            elif op=='BUY_ANIMAL':cost+=q*{'GOOSE':300,'COW':400,'SHEEP':500}[item]
+            elif op=='BUY_SEED':cost+=q*{'WHEAT':10,'CARROT':20,'TOMATO':50,'STRAWBERRY':100,'MELON':80}[item]
+    return cost<=farm['money']  # No current sale proceeds are assumed.
+
+def _r97_supply(obs,action):
+    step=int(obs['step']);player=int(obs['player']);day=step//24
+    if not 144<=step<695:return action
+    native=_IMPL.chassis.players[player]
+    future=_IMPL.chassis.routes[2 if step+1>=648 else native['route']][step+1]
+    commands=[future.get('farmer') or ['PASS'],*(future.get('hands') or [])]
+    following=_IMPL.chassis.routes[2 if step+2>=648 else native['route']][step+2]
+    next_orders=future.get('market') or []
+    prefund=0
+    if len(next_orders)==10 and not any(o[:2] in (['BUY_PRODUCT','WHEAT'],['SELL','WHEAT']) for o in next_orders):
+        later=[following.get('farmer') or ['PASS'],*(following.get('hands') or [])]
+        demand=lambda cs:sum(max(0,int(c[2]) if len(c)>2 else 1) for c in cs if c[:2]==['PICKUP','WHEAT'])
+        if demand(later):prefund=demand(commands)+demand(later)
+    if not prefund and not any(c[:2]==['PICKUP','WHEAT'] for c in commands):return action
+    orders=action.get('market') or []
+    if len(orders)>10 or not _r97_budget(obs,orders):
+        _R97_REPORT['supply_budget_declines']+=1;return action
+    farm,private=_PLANNER_NS['_clone_state'](obs['farms'][player],obs['private'])
+    for actor,c in enumerate([action.get('farmer') or ['PASS'],*(action.get('hands') or [])][:len(private['inventories'])]):
+        _PLANNER_NS['_apply_unit_action'](farm,private,actor,c,10,day,24,100)
+    positions=[tuple(farm['farmer']),*map(tuple,farm['hands'])];night=step%24==23
+    access=((4,4),(5,4),(4,5),(5,5))
+    if night:positions=[(4,4)]
+    else:
+        for order in orders:
+            if order and order[0]=='HIRE':positions.append(min(access,key=lambda p:(positions.count(p),access.index(p))))
+    need=sum(max(0,int(c[2]) if len(c)>2 else 1) for pos,c in zip(positions,commands) if pos in access and c[:2]==['PICKUP','WHEAT'])
+    need=max(need,prefund)
+    if not need:return action
+    original_stock,original_buys,_=_r97_market_stock(private['shed'],orders)
+    original_final,original_loss=_r97_delivery(original_stock,private,night)
+    if original_final.get('WHEAT',0)>=need:return action
+    result=copy.deepcopy(action);proposed=result['market'];blocked=False
+    def project(candidate):
+        stock,buys,sales=_r97_market_stock(private['shed'],candidate)
+        final,loss=_r97_delivery(stock,private,night)
+        safe=all(buys.get(i,0)>=q for i,q in original_buys.items()) and all(q<=original_loss.get(item,0) for item,q in loss.items())
+        return final,sales,safe
+    # Hold an existing grain sale first. Preserve all order indices and every
+    # originally funded buy; no extra overnight overflow may be introduced.
+    for index in range(len(proposed)-1,-1,-1):
+        if proposed[index][:2]!=['SELL','WHEAT']:continue
+        final,sales,safe=project(proposed);shortage=max(0,need-final.get('WHEAT',0))
+        if not shortage:break
+        sold=sales.get(index,0)
+        if not sold:continue
+        old=proposed[index][2];proposed[index][2]=max(0,sold-shortage)
+        after,_,safe=project(proposed)
+        if not safe or after.get('WHEAT',0)<=final.get('WHEAT',0):proposed[index][2]=old
+    final,_,safe=project(proposed);shortage=max(0,need-final.get('WHEAT',0))
+    if shortage:
+        last_sale=max((i for i,o in enumerate(proposed) if o[:2]==['SELL','WHEAT']),default=-1)
+        index=next((i for i in range(len(proposed)-1,last_sale,-1) if proposed[i][:2]==['BUY_PRODUCT','WHEAT']),None)
+        if index is not None:proposed[index][2]=max(0,int(proposed[index][2]))+shortage
+        elif len(proposed)<10:proposed.append(['BUY_PRODUCT','WHEAT',shortage])
+        else:_R97_REPORT['supply_slot_declines']+=1;return action
+    final,_,safe=project(proposed)
+    if not safe or final.get('WHEAT',0)<need:
+        _R97_REPORT['supply_capacity_declines']+=1;return action
+    if not _r97_budget(obs,proposed):
+        _R97_REPORT['supply_budget_declines']+=1;return action
+    if prefund:
+        _R97_REPORT['supply_prefund_changes']+=1
+        _R97_REPORT['supply_prefund_units']+=max(0,final.get('WHEAT',0)-original_final.get('WHEAT',0))
+    if step<288:
+        _R97_REPORT['supply_early_changes']+=1
+        _R97_REPORT['supply_early_units']+=max(0,final.get('WHEAT',0)-original_final.get('WHEAT',0))
+    _R97_REPORT['supply_guard_changes']+=1
+    _R97_REPORT['supply_grain_protected']+=final.get('WHEAT',0)-original_final.get('WHEAT',0)
+    _R97_REPORT['supply_buy_units']+=sum(max(0,int(o[2])) for o in proposed if o[:2]==['BUY_PRODUCT','WHEAT'])-sum(max(0,int(o[2])) for o in orders if o[:2]==['BUY_PRODUCT','WHEAT'])
+    return result
+
+def agent(observation,configuration=None):
+    result=_R97_PARENT(observation,configuration)
+    try:
+        player=int(observation['player']);step=int(observation['step'])
+        if player not in _R97_LAST or step<=_R97_LAST[player]:
+            _R97_REPORT.update(supply_guard_changes=0,supply_grain_protected=0,supply_buy_units=0,supply_early_changes=0,supply_early_units=0,supply_prefund_changes=0,supply_prefund_units=0,supply_slot_declines=0,supply_capacity_declines=0,supply_budget_declines=0,supply_errors=0)
+        _R97_LAST[player]=step
+        if configuration is None or all(configuration.get(k,v)==v for k,v in [('boardSize',10),('turnsPerDay',24),('shedCapacity',100),('maxMarketOrdersPerTurn',10),('farmHandCostMult',1)]):result=_r97_supply(observation,result)
+    except Exception:_R97_REPORT['supply_errors']=_R97_REPORT.get('supply_errors',0)+1
+    _R97_REPORT.update(getattr(_R97_PARENT,'telemetry',{}))
+    return result
+
+agent.telemetry=_R97_REPORT
+agent=globals().pop('agent')
+
+"""Original funded planting and first-dawn labor contract, Ahmed Berat Ozer."""
+_R124_PARENT=agent
+_R124_STATES={}
+_R124_REPORT={}
+
+def _r124_labor_reserve(native):
+    n=sum(bool(o) and o[0]=='HIRE' for o in native[24].get('market',[]))
+    return sum(_v219_fib(i) for i in range(n)),n
+
+def _r124_seed_budget(obs,action,reserve):
+    if not any(o and o[0]=='BUY_SEED' for o in action.get('market',[])):return action
+    player=int(obs['player']);budget=dict(obs,farms=[dict(f) for f in obs['farms']]);budget['farms'][player]['money']-=reserve
+    if _r97_budget(budget,action.get('market',[])):return action
+    result=copy.deepcopy(action)
+    for i in range(len(result['market'])-1,-1,-1):
+        order=result['market'][i]
+        if len(order)<3 or order[0]!='BUY_SEED':continue
+        before=max(0,int(order[2]));order[2]=before
+        while order[2]>0 and not _r97_budget(budget,result['market']):order[2]-=1
+        n=before-order[2]
+        if n:
+            _R124_REPORT['opening_seed_budget_units']+=n
+            _R124_REPORT['opening_seed_budget_cost']+=n*{'WHEAT':10,'CARROT':20,'TOMATO':50,'STRAWBERRY':100,'MELON':80}[order[1]]
+        if _r97_budget(budget,result['market']):break
+    return result
+
+def _r124_atomic(obs,action,state):
+    commands=[action.get('farmer') or ['PASS'],*(action.get('hands') or [])]
+    demand={}
+    for c in commands:
+        if len(c)>1 and c[0]=='PLANT':demand[c[1]]=demand.get(c[1],0)+1
+    if not demand:return action
+    available=obs['private']['seeds'];blocked={p for p,n in demand.items() if n>available.get(p,0)}
+    farm,private=_PLANNER_NS['_clone_state'](obs['farms'][obs['player']],obs['private'])
+    changed=False;kept=[]
+    for actor,c in enumerate(commands):
+        if len(c)>1 and c[0]=='PLANT':
+            pos=None if actor>=len(private['inventories']) else farm['farmer'] if actor==0 else farm['hands'][actor-1]
+            valid=pos is not None and farm['tiles'][pos[1]][pos[0]] is None and private['seeds'].get(c[1],0)>0
+            if not valid:
+                commands[actor]=['PASS'];changed=True;_R124_REPORT['opening_atomic_dropped']+=1
+            elif c[1] in blocked:
+                kept.append(dict(xy=list(pos),crop=c[1],birth=0));_R124_REPORT['opening_atomic_rescued_requests']+=1
+        if actor<len(private['inventories']):_PLANNER_NS['_apply_unit_action'](farm,private,actor,commands[actor],10,0,24,100)
+    if kept:state['pending_plants']=kept
+    if changed:
+        action=dict(action,farmer=commands[0],hands=commands[1:])
+    return action
+
+def agent(observation,configuration=None):
+    result=_R124_PARENT(observation,configuration)
+    try:
+        player=int(observation['player']);step=int(observation['step']);state=_R124_STATES.get(player)
+        if state is None or step<=state['step']:
+            state=_R124_STATES[player]={'step':-1,'pending_plants':[]}
+            _R124_REPORT.update(opening_seed_budget_units=0,opening_seed_budget_cost=0,opening_atomic_dropped=0,opening_atomic_rescued_requests=0,opening_atomic_rescued_confirmed=0,opening_atomic_plant_errors=0,opening_day1_cash=0,opening_day1_hires_requested=0,opening_day1_hires_confirmed=0,opening_day1_hire_shortfalls=0,opening_contract_errors=0)
+        state['step']=step;farm=observation['farms'][player]
+        for p in state.pop('pending_plants',[]):
+            x,y=p['xy'];t=farm['tiles'][y][x]
+            if isinstance(t,dict) and t.get('crop')==p['crop'] and t.get('planted_day')==p['birth']:_R124_REPORT['opening_atomic_rescued_confirmed']+=1
+            else:_R124_REPORT['opening_atomic_plant_errors']+=1
+        standard=configuration is None or all(configuration.get(k,v)==v for k,v in [('boardSize',10),('turnsPerDay',24),('shedCapacity',100),('maxMarketOrdersPerTurn',10),('farmHandCostMult',1)])
+        if standard and 0<=step<24:
+            native=_ROUTES[_IMPL.chassis.players[player]['route']];reserve,hires=_r124_labor_reserve(native)
+            result=_r124_seed_budget(observation,result,reserve);result=_r124_atomic(observation,result,state)
+        if step==24:
+            _R124_REPORT['opening_day1_cash']=farm['money'];state['hires']=sum(bool(o) and o[0]=='HIRE' for o in result.get('market',[]));_R124_REPORT['opening_day1_hires_requested']=state['hires']
+        if step==25:
+            actual=len(farm['hands']);_R124_REPORT['opening_day1_hires_confirmed']=actual;_R124_REPORT['opening_day1_hire_shortfalls']=max(0,state.get('hires',0)-actual)
+    except Exception:_R124_REPORT['opening_contract_errors']=_R124_REPORT.get('opening_contract_errors',0)+1
+    _R124_REPORT.update(getattr(_R124_PARENT,'telemetry',{}))
+    return result
+agent.telemetry=_R124_REPORT
+agent=globals().pop('agent')
+
+"""Fund urgent grain at the first quote slot; avoid unwatered last-hour plants.
+Original safety contracts by Ahmed Berat Ozer, EXP258.
+"""
+_R127_PARENT=agent
+_R127_STATES={}
+_R127_REPORT={}
+
+def _r127_fields(obs,action):
+    farm,private=_PLANNER_NS['_clone_state'](obs['farms'][obs['player']],obs['private'])
+    commands=[action.get('farmer') or ['PASS'],*(action.get('hands') or [])]
+    demand={}
+    for c in commands:
+        if len(c)>1 and c[0]=='PLANT':demand[c[1]]=demand.get(c[1],0)+1
+    blocked={p for p,n in demand.items() if n>private['seeds'].get(p,0)}
+    for actor,c in enumerate(commands[:len(private['inventories'])]):
+        if len(c)>1 and c[0]=='PLANT' and c[1] in blocked:continue
+        _PLANNER_NS['_apply_unit_action'](farm,private,actor,c,10,int(obs['step'])//24,24,100)
+    return farm,private
+
+def _r127_last_hour(obs,action):
+    if int(obs['step'])%24!=23:return action
+    commands=[action.get('farmer') or ['PASS'],*(action.get('hands') or [])]
+    if not any(c and c[0]=='PLANT' for c in commands):return action
+    result=copy.deepcopy(action);changed=False
+    # Removing rejected requests can unblock the engine's atomic crop batch.
+    # Recompute until every retained request ends the turn with a watered crop.
+    for _ in range(len(commands)+1):
+        farm,_=_r127_fields(obs,result);original=obs['farms'][obs['player']]
+        positions=[original['farmer'],*original['hands']];drop=[]
+        for actor,c in enumerate(commands):
+            if not c or c[0]!='PLANT':continue
+            tile=None
+            if actor<len(positions):
+                x,y=positions[actor];tile=farm['tiles'][y][x]
+            if not (isinstance(tile,dict) and tile.get('kind')=='PLANT' and tile.get('crop')==c[1] and tile.get('planted_day')==int(obs['step'])//24 and tile.get('watered_today')):drop.append(actor)
+        if not drop:break
+        for actor in drop:commands[actor]=['PASS']
+        result['farmer']=commands[0];result['hands']=commands[1:];changed=True
+        _R127_REPORT['last_hour_plants_dropped']+=len(drop)
+    return result if changed else action
+
+def _r127_prefix_bound(obs,quantity):
+    inventory=int(obs['market']['inventory']['WHEAT'])
+    # Both players quote one unit before either commits. Before own unit j,
+    # at most j-1 own and j-1 opponent wheat purchases have depleted inventory.
+    return sum(_r37_market_price('WHEAT',inventory-(2*j-1)) for j in range(1,quantity+1))
+
+def _r127_priority(obs,action,state):
+    step=int(obs['step']);player=int(obs['player'])
+    if not 144<=step<695:return action
+    orders=action.get('market') or []
+    if len(orders)>9 or any(o[:2] in (['BUY_PRODUCT','WHEAT'],['SELL','WHEAT']) for o in orders):return action
+    native=_IMPL.chassis.players[player]
+    future=_IMPL.chassis.routes[2 if step+1>=648 else native['route']][step+1]
+    commands=[future.get('farmer') or ['PASS'],*(future.get('hands') or [])]
+    if not any(c[:2]==['PICKUP','WHEAT'] for c in commands):return action
+    if not _r97_budget(obs,orders):return action
+    farm,private=_r127_fields(obs,action);night=step%24==23
+    access=((4,4),(5,4),(4,5),(5,5));positions=[tuple(farm['farmer']),*map(tuple,farm['hands'])]
+    if night:positions=[(4,4)]
+    else:
+        for o in orders:
+            if o and o[0]=='HIRE':positions.append(min(access,key=lambda p:(positions.count(p),access.index(p))))
+    need=sum(max(0,int(c[2]) if len(c)>2 else 1) for pos,c in zip(positions,commands) if pos in access and c[:2]==['PICKUP','WHEAT'])
+    stock,buys,_=_r97_market_stock(private['shed'],orders);before,loss=_r97_delivery(stock,private,night)
+    shortage=max(0,need-before.get('WHEAT',0))
+    if not shortage or shortage>100-sum(private['shed'].values()):return action
+    cost=_r127_prefix_bound(obs,shortage)
+    budget=dict(obs,farms=[dict(f) for f in obs['farms']]);budget['farms'][player]['money']-=cost
+    if not _r97_budget(budget,orders):return action
+    proposed=[['BUY_PRODUCT','WHEAT',shortage],*copy.deepcopy(orders)]
+    stock,after_buys,_=_r97_market_stock(private['shed'],proposed);after,after_loss=_r97_delivery(stock,private,night)
+    if after.get('WHEAT',0)<need or any(after_buys.get(i+1,0)<q for i,q in buys.items()) or any(q>loss.get(p,0) for p,q in after_loss.items()):return action
+    state['pending_grain']=(step+1,after.get('WHEAT',0),shortage)
+    _R127_REPORT['priority_grain_orders']+=1;_R127_REPORT['priority_grain_units']+=shortage
+    return dict(action,market=proposed)
+
+def agent(observation,configuration=None):
+    result=_R127_PARENT(observation,configuration)
+    try:
+        player=int(observation['player']);step=int(observation['step']);state=_R127_STATES.get(player)
+        if state is None or step<=state['step']:
+            state=_R127_STATES[player]={'step':-1}
+            _R127_REPORT.update(last_hour_plants_dropped=0,priority_grain_orders=0,priority_grain_units=0,priority_grain_confirmed=0,priority_grain_shortfalls=0,priority_contract_errors=0)
+        pending=state.pop('pending_grain',None)
+        if pending and step==pending[0]:
+            if observation['private']['shed'].get('WHEAT',0)>=pending[1]:_R127_REPORT['priority_grain_confirmed']+=pending[2]
+            else:_R127_REPORT['priority_grain_shortfalls']+=1
+        state['step']=step
+        standard=configuration is None or all(configuration.get(k,v)==v for k,v in [('boardSize',10),('turnsPerDay',24),('shedCapacity',100),('maxMarketOrdersPerTurn',10),('farmHandCostMult',1)])
+        if standard:result=_r127_priority(observation,_r127_last_hour(observation,result),state)
+    except Exception:_R127_REPORT['priority_contract_errors']=_R127_REPORT.get('priority_contract_errors',0)+1
+    _R127_REPORT.update(getattr(_R127_PARENT,'telemetry',{}))
+    return result
+agent.telemetry=_R127_REPORT
+agent=globals().pop('agent')
+
+"""Observed-input service order and guaranteed first-sale funding, Ahmed Berat Ozer."""
+_R128_PARENT=agent
+_R128_STATES={}
+_R128_REPORT={}
+
+def _r128_commands(action):
+    return [action.get('farmer') or ['PASS'],*(action.get('hands') or [])]
+
+def _r128_future(obs,offset=1):
+    step=int(obs['step'])+offset;native=_IMPL.chassis.players[int(obs['player'])]
+    return _IMPL.chassis.routes[2 if step>=648 else native['route']][step]
+
+def _r128_sale_credit(obs,action):
+    orders=action.get('market') or []
+    if not orders or len(orders[0])<3 or orders[0][0]!='SELL' or orders[0][1]=='WHEAT':return 0
+    item=orders[0][1]
+    if item not in obs['market']['inventory']:return 0
+    _,private=_r127_fields(obs,action)
+    q=min(max(0,int(orders[0][2])),max(0,int(private['shed'].get(item,0))))
+    inventory=int(obs['market']['inventory'][item])
+    return sum(_r37_market_price(item,inventory+2*j) for j in range(q))
+
+def _r128_next_need(obs,farm,orders,advanced):
+    step=int(obs['step']);access=((4,4),(5,4),(4,5),(5,5))
+    positions=[tuple(farm['farmer']),*map(tuple,farm['hands'])]
+    if step%24==23:positions=[(4,4)]
+    else:
+        for order in orders:
+            if order and order[0]=='HIRE':positions.append(min(access,key=lambda p:(positions.count(p),access.index(p))))
+    return sum(max(0,int(c[2]) if len(c)>2 else 1) for actor,(p,c) in enumerate(zip(positions,_r128_commands(_r128_future(obs)))) if actor not in advanced and p in access and c[:2]==['PICKUP','WHEAT'])
+
+def _r128_field_safe(obs,before,after,advanced):
+    orders=before.get('market') or []
+    if not _r97_budget(obs,orders):return False,None
+    oldfarm,oldprivate=_r127_fields(obs,before);farm,private=_r127_fields(obs,after)
+    oldcommands=_r128_commands(before);commands=_r128_commands(after)
+    for i,c in enumerate(oldcommands[:len(private['inventories'])]):
+        if c and c[0]=='PICKUP' and c==commands[i]:
+            item=c[1]
+            if private['inventories'][i].get(item,0)<oldprivate['inventories'][i].get(item,0):return False,None
+    oldstock,oldbuys,oldsales=_r97_market_stock(oldprivate['shed'],orders)
+    stock,buys,sales=_r97_market_stock(private['shed'],orders)
+    oldfinal,oldloss=_r97_delivery(oldstock,oldprivate,int(obs['step'])%24==23)
+    final,loss=_r97_delivery(stock,private,int(obs['step'])%24==23)
+    if any(buys.get(i,0)<q for i,q in oldbuys.items()) or any(sales.get(i,0)<q for i,q in oldsales.items()) or any(q>oldloss.get(p,0) for p,q in loss.items()):return False,None
+    need=_r128_next_need(obs,farm,orders,advanced)
+    pending=_R127_STATES.get(int(obs['player']),{}).get('pending_grain')
+    if pending and pending[0]==int(obs['step'])+1:need=max(need,pending[1])
+    if final.get('WHEAT',0)<min(need,oldfinal.get('WHEAT',0)):return False,None
+    return True,private
+
+def _r128_food_need(obs,farm,private,actor):
+    farm,private=copy.deepcopy(farm),copy.deepcopy(private);missing=0;day=int(obs['step'])//24
+    for offset in range(1,min(5,24-int(obs['step'])%24)):
+        cs=_r128_commands(_r128_future(obs,offset));c=cs[actor] if actor<len(cs) else ['PASS']
+        if c[:2]==['PICKUP','WHEAT']:break
+        if c==['FEED']:
+            x,y=farm['farmer'] if actor==0 else farm['hands'][actor-1];tile=farm['tiles'][y][x]
+            if isinstance(tile,dict) and tile.get('animal') and not tile.get('fed_today') and private['inventories'][actor].get('WHEAT',0)<=0:
+                private['inventories'][actor]['WHEAT']=1;missing+=1
+        _PLANNER_NS['_apply_unit_action'](farm,private,actor,c,10,day,24,100)
+    return missing
+
+def _r128_service(obs,action,state):
+    step=int(obs['step']);farm=obs['farms'][obs['player']];private=obs['private'];positions=[farm['farmer'],*farm['hands']]
+    for item in state.pop('arrivals',[]):
+        if item['step']!=step or item['actor']>=len(private['inventories']) or private['inventories'][item['actor']].get('WHEAT',0)<item['expected']:_R128_REPORT['service_arrival_errors']+=1
+        else:_R128_REPORT['service_confirmed_units']+=item['quantity']
+    old_pending=state.pop('swaps',{});result=action;cs=_r128_commands(result)
+    for actor,pending in old_pending.items():
+        if step!=pending['step'] or actor>=len(positions) or list(positions[actor])!=pending['xy'] or cs[actor]!=pending['pickup']:
+            _R128_REPORT['service_swap_errors']+=1;continue
+        x,y=positions[actor];tile=farm['tiles'][y][x]
+        if not isinstance(tile,dict) or tile.get('animal')!=pending['animal'] or tile.get('placed_day')!=pending['birth']:
+            _R128_REPORT['service_swap_errors']+=1;continue
+        if private['inventories'][actor].get('WHEAT',0)<pending['quantity']+1:
+            _R128_REPORT['service_swap_errors']+=1;continue
+        cs[actor]=['PASS'] if tile.get('fed_today') else ['FEED']
+        _R128_REPORT['service_swaps_completed']+=1
+    if old_pending:
+        proposed=dict(result,farmer=cs[0],hands=cs[1:]);safe,_=_r128_field_safe(obs,result,proposed,{})
+        if safe:result=proposed
+        else:_R128_REPORT['service_swap_errors']+=1
+    if not 144<=step<647:return result
+    cs=_r128_commands(result);future=_r128_commands(_r128_future(obs));proposed=copy.deepcopy(result);commands=_r128_commands(proposed)
+    swaps={};arrivals=[];prefetches=0
+    projected_farm,projected_private=_r127_fields(obs,result)
+    for actor,c in enumerate(cs[:len(private['inventories'])]):
+        x,y=positions[actor]
+        if (x,y) not in ((4,4),(5,4),(4,5),(5,5)):continue
+        held=max(0,int(private['inventories'][actor].get('WHEAT',0)));tile=farm['tiles'][y][x]
+        nxt=future[actor] if actor<len(future) else ['PASS']
+        if c==['FEED'] and held==0 and step%24<=21 and isinstance(tile,dict) and tile.get('animal') and not tile.get('fed_today') and nxt[:2]==['PICKUP','WHEAT']:
+            q=max(0,int(nxt[2]) if len(nxt)>2 else 1)
+            if not q:continue
+            commands[actor]=['PICKUP','WHEAT',q+1]
+            swaps[actor]=dict(step=step+1,xy=[x,y],animal=tile['animal'],birth=tile.get('placed_day'),quantity=q,pickup=copy.deepcopy(nxt))
+            arrivals.append(dict(step=step+1,actor=actor,expected=q+1,quantity=q+1))
+        elif c==['PASS']:
+            q=_r128_food_need(obs,projected_farm,projected_private,actor)
+            if q:
+                commands[actor]=['PICKUP','WHEAT',q];prefetches+=1
+                arrivals.append(dict(step=step+1,actor=actor,expected=held+q,quantity=q))
+    if not arrivals:return result
+    proposed['farmer']=commands[0];proposed['hands']=commands[1:]
+    safe,after=_r128_field_safe(obs,result,proposed,swaps)
+    if not safe or any(after['inventories'][p['actor']].get('WHEAT',0)<p['expected'] for p in arrivals):
+        _R128_REPORT['service_capacity_declines']+=1;return result
+    state['swaps']=swaps;state['arrivals']=arrivals
+    _R128_REPORT['service_swaps_started']+=len(swaps);_R128_REPORT['service_idle_preloads']+=prefetches
+    _R128_REPORT['service_requested_units']+=sum(p['quantity'] for p in arrivals)
+    return proposed
+
+def _r128_credit_supply(obs,action,state):
+    step=int(obs['step'])
+    if not 144<=step<695 or _r97_budget(obs,action.get('market') or []):return action
+    credit=_r128_sale_credit(obs,action)
+    if not credit:return action
+    budget=dict(obs,farms=[dict(f) for f in obs['farms']]);budget['farms'][obs['player']]['money']+=credit
+    if not _r97_budget(budget,action.get('market') or []):return action
+    result=_r97_supply(budget,action)
+    if result==action:return action
+    assert result['market'][0]==action['market'][0]
+    _,private=_r127_fields(obs,result);stock,_,_=_r97_market_stock(private['shed'],result['market']);final,_=_r97_delivery(stock,private,step%24==23)
+    quantity=lambda a:sum(max(0,int(o[2])) for o in a.get('market',[]) if len(o)>2 and o[:2]==['BUY_PRODUCT','WHEAT'])
+    extra=max(0,quantity(result)-quantity(action));state['credit_pending']=(step+1,final.get('WHEAT',0),extra)
+    _R128_REPORT['sale_credit_orders']+=1;_R128_REPORT['sale_credit_lower_bound']+=credit;_R128_REPORT['sale_credit_grain_units']+=extra
+    return result
+
+def agent(observation,configuration=None):
+    result=_R128_PARENT(observation,configuration)
+    try:
+        player=int(observation['player']);step=int(observation['step']);state=_R128_STATES.get(player)
+        if state is None or step<=state['step']:
+            state=_R128_STATES[player]={'step':-1}
+            _R128_REPORT.update(service_requested_units=0,service_confirmed_units=0,service_idle_preloads=0,service_swaps_started=0,service_swaps_completed=0,service_capacity_declines=0,service_arrival_errors=0,service_swap_errors=0,sale_credit_orders=0,sale_credit_lower_bound=0,sale_credit_grain_units=0,sale_credit_confirmed_units=0,sale_credit_errors=0,service_errors=0)
+        state['step']=step;pending=state.pop('credit_pending',None)
+        if pending:
+            if pending[0]!=step or observation['private']['shed'].get('WHEAT',0)<pending[1]:_R128_REPORT['sale_credit_errors']+=1
+            else:_R128_REPORT['sale_credit_confirmed_units']+=pending[2]
+        standard=configuration is None or all(configuration.get(k,v)==v for k,v in [('boardSize',10),('turnsPerDay',24),('shedCapacity',100),('maxMarketOrdersPerTurn',10),('farmHandCostMult',1)])
+        if standard:result=_r128_credit_supply(observation,_r128_service(observation,result,state),state)
+    except Exception:_R128_REPORT['service_errors']=_R128_REPORT.get('service_errors',0)+1
+    _R128_REPORT.update(getattr(_R128_PARENT,'telemetry',{}));_R128_REPORT.update(_R97_REPORT)
+    return result
+agent.telemetry=_R128_REPORT
+agent=globals().pop('agent')
+
+
+# Replay-derived invariants: preserve day-1 labor liquidity and rescue animals
+# that would otherwise end a second consecutive day without feed.
+_R60_SURVIVAL_PARENT=agent
+_R60_SURVIVAL_REPORT=dict(opening_changed_turns=0,opening_seed_units_suppressed=0,
+    endangered_observations=0,rescue_changed_turns=0,rescue_moves=0,
+    rescue_feed_requests=0,rescue_confirmed=0,rescue_failed=0,rescue_errors=0)
+_R60_SURVIVAL_STATES={}
+_R60_OPENING_RESERVE=4
+_R60_SEED_COST={'WHEAT':10,'CARROT':20,'TOMATO':50,'STRAWBERRY':100,'MELON':80}
+_R60_ANIMAL_PRODUCT={'GOOSE':'EGG','COW':'MILK','SHEEP':'WOOL'}
+_R60_ANIMAL_COST={'GOOSE':300,'COW':400,'SHEEP':500}
+_R60_ANIMAL_INTERVAL={'GOOSE':1,'COW':2,'SHEEP':3}
+_R60_MOVE={'NORTH':(0,-1),'SOUTH':(0,1),'EAST':(1,0),'WEST':(-1,0)}
+
+def _r60_opening_liquidity(obs,action):
+    """Do not trade away the four fixed dollars needed for three day-1 hires."""
+    if int(obs['step'])//24!=0 or int(obs['step'])%24<18:return action
+    orders=action.get('market',[]) or []
+    # This guard is intentionally narrow. The verified opening tail contains only
+    # fixed-price wheat seed purchases; any other expenditure keeps parent policy.
+    if any(o and o[0] in ('BUY_LAND','BUY_ANIMAL','BUY_PRODUCT','HIRE') for o in orders):return action
+    cash=max(0,int(float(obs['farms'][obs['player']]['money'])))
+    changed=False;result=[]
+    for order in orders:
+        if len(order)>=3 and order[:2]==['BUY_SEED','WHEAT']:
+            requested=max(0,int(order[2]));keep=min(requested,max(0,cash-_R60_OPENING_RESERVE)//_R60_SEED_COST['WHEAT'])
+            if keep:
+                replacement=list(order);replacement[2]=keep;result.append(replacement);cash-=keep*_R60_SEED_COST['WHEAT']
+            if keep<requested:
+                changed=True;_R60_SURVIVAL_REPORT['opening_seed_units_suppressed']+=requested-keep
+        else:result.append(copy.deepcopy(order))
+    if not changed:return action
+    guarded=copy.deepcopy(action);guarded['market']=result
+    _R60_SURVIVAL_REPORT['opening_changed_turns']+=1
+    return guarded
+
+def _r60_commands(action,count):
+    commands=[copy.deepcopy(action.get('farmer') or ['PASS'])]
+    commands.extend(copy.deepcopy(action.get('hands') or []))
+    commands.extend([['PASS'] for _ in range(max(0,count-len(commands)))])
+    return commands[:count]
+
+def _r60_risks(obs):
+    day=int(obs['step'])//24;prices=obs['market']['prices'];farm=obs['farms'][obs['player']]
+    risks=[]
+    for y,row in enumerate(farm['tiles']):
+        for x,tile in enumerate(row):
+            if not isinstance(tile,dict) or not tile.get('animal'):continue
+            if tile.get('fed_today') or int(tile.get('consecutive_unfed',0))<1:continue
+            animal=tile['animal'];product=_R60_ANIMAL_PRODUCT[animal]
+            remaining=max(0,29-day);future=(remaining+_R60_ANIMAL_INTERVAL[animal]-1)//_R60_ANIMAL_INTERVAL[animal]
+            loss=_R60_ANIMAL_COST[animal]+future*max(1,int(prices.get(product,1)))
+            risks.append((loss,(x,y),animal))
+    return sorted(risks,reverse=True)
+
+def _r60_parent_feeds(obs,commands,targets):
+    farm=obs['farms'][obs['player']];private=obs['private']
+    positions=[tuple(farm['farmer'])]+[tuple(p) for p in farm['hands']]
+    safe=set()
+    for actor,(pos,command) in enumerate(zip(positions,commands)):
+        inv=private['inventories'][actor] if actor<len(private['inventories']) else {}
+        if command and command[0]=='FEED' and inv.get('WHEAT',0)>0 and pos in targets:safe.add(pos)
+    return safe
+
+def _r60_step_toward(start,target):
+    x,y=start;tx,ty=target
+    if x<tx:return ['EAST']
+    if x>tx:return ['WEST']
+    if y<ty:return ['SOUTH']
+    if y>ty:return ['NORTH']
+    return ['FEED']
+
+def _r60_survival_guard(obs,action,state):
+    """Use the last two actions only when an observed animal would escape tonight."""
+    pending=state.pop('pending_feeds',[])
+    if pending:
+        farm=obs['farms'][obs['player']]
+        for x,y in pending:
+            tile=farm['tiles'][y][x]
+            if not isinstance(tile,dict) or tile.get('fed_today'):_R60_SURVIVAL_REPORT['rescue_confirmed']+=1
+            else:_R60_SURVIVAL_REPORT['rescue_failed']+=1
+    day=int(obs['step'])//24;hour=int(obs['step'])%24
+    # Survival after the season has no terminal value, and hour 22 is the final
+    # actionable observation on the standard 719-action horizon.
+    if day>=29 or hour<22:return action
+    risks=_r60_risks(obs)
+    if not risks:return action
+    _R60_SURVIVAL_REPORT['endangered_observations']+=1
+    farm=obs['farms'][obs['player']];private=obs['private']
+    positions=[tuple(farm['farmer'])]+[tuple(p) for p in farm['hands']]
+    commands=_r60_commands(action,len(positions));targets={xy for _,xy,_ in risks}
+    protected=_r60_parent_feeds(obs,commands,targets);assigned=set();requested=[];changed=False
+    for _,target,_ in risks:
+        if target in protected:continue
+        remaining_moves=23-hour
+        options=[]
+        for actor,(pos,inv) in enumerate(zip(positions,private['inventories'])):
+            if actor in assigned or int(inv.get('WHEAT',0))<=0:continue
+            distance=abs(pos[0]-target[0])+abs(pos[1]-target[1])
+            if distance>remaining_moves:continue
+            command=commands[actor];op=command[0] if command else 'PASS'
+            # Prefer a clean carrier and an otherwise idle command. A carried animal
+            # is especially expensive to strand, so it receives the largest penalty.
+            animal_cargo=sum(max(0,int(inv.get(a,0))) for a in _R60_ANIMAL_PRODUCT)
+            other_cargo=sum(max(0,int(v)) for k,v in inv.items() if k!='WHEAT')
+            importance={'PASS':0,'CARE':1,'COLLECT_FERTILIZER':1,'WATER':2,
+                        'HARVEST':3,'PLACE':4,'PLANT':4,'FEED':5}.get(op,2)
+            options.append((bool(animal_cargo),bool(other_cargo),distance,importance,actor,pos))
+        if not options:continue
+        *_,actor,pos=min(options);command=_r60_step_toward(pos,target)
+        if commands[actor]!=command:
+            commands[actor]=command;changed=True
+            if command[0]=='FEED':
+                requested.append(target);_R60_SURVIVAL_REPORT['rescue_feed_requests']+=1
+            else:_R60_SURVIVAL_REPORT['rescue_moves']+=1
+        assigned.add(actor)
+    if not changed:return action
+    guarded=copy.deepcopy(action);guarded['farmer']=commands[0];guarded['hands']=commands[1:]
+    if requested:state['pending_feeds']=requested
+    _R60_SURVIVAL_REPORT['rescue_changed_turns']+=1
+    return guarded
+
+def agent(observation,configuration=None):
+    result=_R60_SURVIVAL_PARENT(observation,configuration)
+    try:
+        step=int(observation['step']);player=int(observation['player']);state=_R60_SURVIVAL_STATES.get(player)
+        if state is None or step<=state.get('step',-1):
+            state=_R60_SURVIVAL_STATES[player]={'step':-1}
+            for key in _R60_SURVIVAL_REPORT:_R60_SURVIVAL_REPORT[key]=0
+        state['step']=step
+        if configuration is None or all(configuration.get(k,v)==v for k,v in [('boardSize',10),('turnsPerDay',24),('maxMarketOrdersPerTurn',10)]):
+            # opening liquidity bypassed for v41 plans
+            result=_r60_survival_guard(observation,result,state)
+    except Exception:_R60_SURVIVAL_REPORT['rescue_errors']+=1
+    _R60_SURVIVAL_COMBINED.update(getattr(_R60_SURVIVAL_PARENT,'telemetry',{}));_R60_SURVIVAL_COMBINED.update(_R60_SURVIVAL_REPORT)
+    return result
+_R60_SURVIVAL_COMBINED={}
+agent.telemetry=_R60_SURVIVAL_COMBINED
+agent=globals().pop('agent')
+
+
+# --- BEGIN FROZEN CURRENT GENOME ---
+# Generated by training/promote_current_genome.py from best_genome.json.
+import sys as _current_genome_sys
+import types as _current_genome_types
+
+_current_genome_runtime = _current_genome_types.ModuleType("_frozen_current_genome_runtime")
+_current_genome_sys.modules[_current_genome_runtime.__name__] = _current_genome_runtime
+exec('# --- BEGIN CURRENT GENOME RUNTIME ---\nfrom dataclasses import asdict, dataclass, replace\nimport json\nimport random\nfrom typing import Any\n\n\nOPENING_FAMILIES = (\n    "inherit",\n    "rank1_staged",\n    "rank2_wheat",\n    "rank3_balanced",\n    "public_q30",\n    "combined_q5",\n)\nHERD_POLICIES = ("inherit", "price", "price_opponent", "yarn_gate")\nHERD_PROFILES = ("leader", "rank1_255", "balanced", "sheep", "wide")\nPLACEMENT_POLICIES = ("inherit", "center_cows", "center_value", "band_cows", "alternate")\nSERVICE_POLICIES = ("inherit", "care_first", "harvest_first", "fertilizer_first")\nEXTENSION_POLICIES = ("inherit", "off", "price", "broad")\nTERMINAL_MODES = ("inherit", "no_care", "no_feed_care")\nWOOL_POLICIES = ("inherit", "liquidate")\n\n\n# Only the market portion is transplanted.  Unit routes remain under the\n# incumbent\'s state-aware planner, avoiding illegal replay imitation.\nOPENING_MARKETS: dict[str, tuple[tuple[tuple[Any, ...], ...], ...]] = {\n    "inherit": (),\n    "rank1_staged": (\n        (("BUY_ANIMAL", "COW", 1), ("BUY_PRODUCT", "WHEAT", 5)),\n        (("SELL", "WHEAT", 1), ("HIRE",), ("HIRE",), ("HIRE",), ("HIRE",),\n         ("BUY_ANIMAL", "COW", 1), ("BUY_ANIMAL", "SHEEP", 3)),\n        (("SELL", "WHEAT", 1),),\n        (("SELL", "WHEAT", 1), ("BUY_PRODUCT", "WHEAT", 1)),\n        (("SELL", "WHEAT", 1), ("BUY_PRODUCT", "WHEAT", 1)),\n        (("SELL", "WHEAT", 1), ("BUY_PRODUCT", "WHEAT", 1)),\n        (("BUY_SEED", "MELON", 2), ("BUY_PRODUCT", "WHEAT", 1)),\n        (),\n        (("BUY_SEED", "MELON", 2),),\n        (),\n        (),\n        (("BUY_SEED", "MELON", 2),),\n    ),\n    "rank2_wheat": (\n        (("BUY_PRODUCT", "WHEAT", 30), ("SELL", "WHEAT", 1000),\n         ("HIRE",), ("HIRE",), ("HIRE",), ("HIRE",), ("HIRE",), ("HIRE",),\n         ("BUY_ANIMAL", "COW", 3), ("BUY_ANIMAL", "SHEEP", 3)),\n        (("BUY_SEED", "WHEAT", 18), ("HIRE",), ("BUY_SEED", "MELON", 1)),\n        (), (), (),\n        (("BUY_PRODUCT", "WHEAT", 2),),\n        (("BUY_PRODUCT", "WHEAT", 2),),\n        (("BUY_PRODUCT", "WHEAT", 1),),\n        (("BUY_PRODUCT", "WHEAT", 1),),\n    ),\n    "rank3_balanced": (\n        (("BUY_PRODUCT", "WHEAT", 13), ("BUY_PRODUCT", "WHEAT", 36),\n         ("SELL", "WHEAT", 36)),\n        (("SELL", "WHEAT", 9), ("BUY_SEED", "WHEAT", 7),\n         ("BUY_SEED", "MELON", 12), ("HIRE",), ("HIRE",), ("HIRE",),\n         ("HIRE",), ("HIRE",), ("BUY_ANIMAL", "COW", 2),\n         ("BUY_ANIMAL", "SHEEP", 2)),\n        (),\n        (("SELL", "WHEAT", 1), ("BUY_PRODUCT", "WHEAT", 1)),\n        (("BUY_PRODUCT", "WHEAT", 1),),\n        (("SELL", "WHEAT", 2), ("BUY_PRODUCT", "WHEAT", 1)),\n        (("SELL", "WHEAT", 1), ("BUY_PRODUCT", "WHEAT", 1)),\n        (("SELL", "WHEAT", 1), ("BUY_PRODUCT", "WHEAT", 1)),\n        (("SELL", "WHEAT", 1), ("BUY_PRODUCT", "WHEAT", 1)),\n        (("SELL", "WHEAT", 1), ("BUY_PRODUCT", "WHEAT", 1)),\n        (("SELL", "WHEAT", 1), ("BUY_PRODUCT", "WHEAT", 1)),\n        (("BUY_PRODUCT", "WHEAT", 1),),\n    ),\n    "public_q30": (\n        (("BUY_PRODUCT", "WHEAT", 13), ("BUY_PRODUCT", "WHEAT", 30),\n         ("SELL", "WHEAT", 30)),\n    ),\n    "combined_q5": (\n        (("BUY_PRODUCT", "WHEAT", 18), ("SELL", "WHEAT", 5)),\n    ),\n}\n\n\nPROFILE_TARGETS = {\n    "leader": ((13, 4), (9, 8), (5, 12)),\n    # 255 aligned public games, conditioned on eventual herd majority.  Rounded\n    # from cow-heavy 9.44/3.76 and sheep-heavy 6.21/11.82.\n    "rank1_255": ((10, 4), (8, 7), (6, 12)),\n    "balanced": ((11, 6), (8, 8), (6, 10)),\n    "sheep": ((9, 8), (7, 10), (4, 13)),\n    "wide": ((14, 3), (9, 9), (4, 14)),\n}\n\n\n@dataclass(frozen=True)\nclass CurrentGenome:\n    opening_seat0: str = "inherit"\n    opening_seat1: str = "inherit"\n    opening_prefix: int = 0\n    herd_policy: str = "inherit"\n    herd_profile: str = "leader"\n    adaptive_day: int = 6\n    herd_deadband: int = 20\n    opponent_weight: int = 0\n    placement_policy: str = "inherit"\n    placement_radius: int = 2\n    service_policy: str = "inherit"\n    service_day: int = 6\n    extension_policy: str = "inherit"\n    extension_wool_min: int = 220\n    extension_wheat_max: int = 45\n    extension_min_shops: int = 3\n    extension_min_yarn: int = 2\n    extension_stop_day: int = 29\n    wheat_pressure: int = 0\n    pressure_start_day: int = 12\n    pressure_end_day: int = 28\n    pressure_hour: int = 1\n    wool_policy: str = "inherit"\n    wool_start_day: int = 8\n    wool_end_day: int = 29\n    wool_sell_hour: int = 23\n    wool_keep: int = 0\n    wool_min_price: int = 0\n    stop_hiring_day: int = 30\n    terminal_mode: str = "inherit"\n    terminal_day: int = 30\n\n    def normalized(self) -> "CurrentGenome":\n        values = asdict(self)\n        for name in ("opening_seat0", "opening_seat1"):\n            values[name] = _choice(values[name], OPENING_FAMILIES)\n        values["opening_prefix"] = _nearest(values["opening_prefix"], (0, 1, 2, 4, 8, 12))\n        values["herd_policy"] = _choice(values["herd_policy"], HERD_POLICIES)\n        values["herd_profile"] = _choice(values["herd_profile"], HERD_PROFILES)\n        values["adaptive_day"] = _clip(values["adaptive_day"], 0, 20)\n        values["herd_deadband"] = _nearest(values["herd_deadband"], (0, 10, 20, 35, 50))\n        values["opponent_weight"] = _nearest(values["opponent_weight"], (-20, -10, 0, 10, 20))\n        values["placement_policy"] = _choice(values["placement_policy"], PLACEMENT_POLICIES)\n        values["placement_radius"] = _clip(values["placement_radius"], 1, 4)\n        values["service_policy"] = _choice(values["service_policy"], SERVICE_POLICIES)\n        values["service_day"] = _clip(values["service_day"], 0, 24)\n        values["extension_policy"] = _choice(values["extension_policy"], EXTENSION_POLICIES)\n        values["extension_wool_min"] = _nearest(values["extension_wool_min"], (160, 180, 200, 220, 240, 260, 300))\n        values["extension_wheat_max"] = _nearest(values["extension_wheat_max"], (25, 35, 45, 55, 70, 90))\n        values["extension_min_shops"] = _clip(values["extension_min_shops"], 0, 5)\n        values["extension_min_yarn"] = _clip(values["extension_min_yarn"], 0, 3)\n        values["extension_stop_day"] = _clip(values["extension_stop_day"], 12, 29)\n        values["wheat_pressure"] = _nearest(values["wheat_pressure"], (0, 2, 4, 6, 8, 12))\n        values["pressure_start_day"] = _clip(values["pressure_start_day"], 8, 24)\n        values["pressure_end_day"] = _clip(\n            values["pressure_end_day"], values["pressure_start_day"] + 1, 29\n        )\n        values["pressure_hour"] = _clip(values["pressure_hour"], 0, 3)\n        values["wool_policy"] = _choice(values["wool_policy"], WOOL_POLICIES)\n        values["wool_start_day"] = _clip(values["wool_start_day"], 4, 28)\n        values["wool_end_day"] = _clip(\n            values["wool_end_day"], values["wool_start_day"], 29\n        )\n        values["wool_sell_hour"] = _nearest(values["wool_sell_hour"], (1, 12, 20, 23))\n        values["wool_keep"] = _nearest(values["wool_keep"], (0, 2, 4, 8, 12))\n        values["wool_min_price"] = _nearest(\n            values["wool_min_price"], (0, 150, 180, 200, 220, 250)\n        )\n        values["stop_hiring_day"] = _clip(values["stop_hiring_day"], 24, 30)\n        values["terminal_mode"] = _choice(values["terminal_mode"], TERMINAL_MODES)\n        values["terminal_day"] = _clip(values["terminal_day"], 26, 30)\n        return CurrentGenome(**values)\n\n    def to_dict(self) -> dict[str, Any]:\n        return asdict(self.normalized())\n\n    def key(self) -> str:\n        return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))\n\n\ndef _choice(value: Any, choices: tuple[str, ...]) -> str:\n    value = str(value)\n    return value if value in choices else choices[0]\n\n\ndef _clip(value: Any, low: int, high: int) -> int:\n    return max(low, min(high, int(value)))\n\n\ndef _nearest(value: Any, choices: tuple[int, ...]) -> int:\n    value = int(value)\n    return min(choices, key=lambda item: (abs(item - value), item))\n\n\ndef _animal_counts(farm: dict[str, Any]) -> dict[str, int]:\n    result = {"COW": 0, "SHEEP": 0}\n    for row in farm.get("tiles", []) or []:\n        for tile in row:\n            if isinstance(tile, dict) and tile.get("animal") in result:\n                result[tile["animal"]] += 1\n    return result\n\n\ndef _copy_action(action: Any) -> dict[str, Any]:\n    action = action if isinstance(action, dict) else {}\n    return {\n        "farmer": list(action.get("farmer") or ["PASS"]),\n        "hands": [list(command) for command in action.get("hands", [])],\n        "market": [list(order) for order in action.get("market", [])],\n    }\n\n\ndef _herd_target(obs: dict[str, Any], genome: CurrentGenome, own: dict[str, int]):\n    prices = (obs.get("market", {}) or {}).get("prices", {}) or {}\n    signal = int(prices.get("MILK", 0)) - int(prices.get("WOOL", 0))\n    farms = obs.get("farms", []) or []\n    player = int(obs.get("player", 0))\n    if genome.herd_policy == "yarn_gate":\n        # A one-level tree on day-6 state generalized to 244/253 games in\n        # five-fold validation: no YARN_STORE -> cow-heavy, present -> sheep-heavy.\n        shops = (obs.get("town", {}) or {}).get("unlocked_shops", []) or []\n        signal = -100 if "YARN_STORE" in shops else 100\n    elif genome.herd_policy == "price_opponent" and len(farms) > 1:\n        opponent = _animal_counts(farms[1 - player])\n        signal += genome.opponent_weight * (opponent["COW"] - opponent["SHEEP"])\n    high, neutral, low = PROFILE_TARGETS[genome.herd_profile]\n    if signal > genome.herd_deadband:\n        return {"COW": high[0], "SHEEP": high[1]}\n    if signal < -genome.herd_deadband:\n        return {"COW": low[0], "SHEEP": low[1]}\n    return {"COW": neutral[0], "SHEEP": neutral[1]}\n\n\ndef _rewrite_animal_orders(\n    obs: dict[str, Any], action: dict[str, Any], genome: CurrentGenome\n) -> dict[str, Any]:\n    day = int(obs.get("step", 0)) // 24\n    if genome.herd_policy == "inherit" or day < genome.adaptive_day:\n        return action\n    farms = obs.get("farms", []) or []\n    player = int(obs.get("player", 0))\n    if player >= len(farms):\n        return action\n    counts = _animal_counts(farms[player])\n    target = _herd_target(obs, genome, counts)\n    rewritten: list[list[Any]] = []\n    changed = False\n    for order in action["market"]:\n        if len(order) < 3 or order[0] != "BUY_ANIMAL" or order[1] not in counts:\n            rewritten.append(order)\n            continue\n        quantity = max(0, int(order[2]))\n        allocation = {"COW": 0, "SHEEP": 0}\n        for _ in range(quantity):\n            cow_need = target["COW"] - counts["COW"]\n            sheep_need = target["SHEEP"] - counts["SHEEP"]\n            cow_fill = counts["COW"] / max(1, target["COW"])\n            sheep_fill = counts["SHEEP"] / max(1, target["SHEEP"])\n            species = "COW" if (cow_need > 0 and (sheep_need <= 0 or cow_fill <= sheep_fill)) else "SHEEP"\n            allocation[species] += 1\n            counts[species] += 1\n        for species in ("COW", "SHEEP"):\n            if allocation[species]:\n                rewritten.append(["BUY_ANIMAL", species, allocation[species]])\n        changed = changed or allocation.get(order[1], 0) != quantity\n    if len(rewritten) <= 10 and changed:\n        action["market"] = rewritten\n    return action\n\n\ndef _preferred_animal(\n    obs: dict[str, Any], genome: CurrentGenome, position: tuple[int, int]\n) -> str | None:\n    policy = genome.placement_policy\n    if policy == "inherit":\n        return None\n    farms = obs.get("farms", []) or []\n    player = int(obs.get("player", 0))\n    size = len(farms[player].get("tiles", [])) if player < len(farms) else 10\n    x, y = position\n    center = (size - 1) / 2.0\n    central = abs(x - center) + abs(y - center) <= genome.placement_radius\n    if policy == "center_cows":\n        return "COW" if central else "SHEEP"\n    if policy == "center_value":\n        prices = (obs.get("market", {}) or {}).get("prices", {}) or {}\n        high = "COW" if int(prices.get("MILK", 0)) >= int(prices.get("WOOL", 0)) else "SHEEP"\n        return high if central else ("SHEEP" if high == "COW" else "COW")\n    if policy == "band_cows":\n        return "COW" if abs(y - center) <= max(0.5, genome.placement_radius / 2) else "SHEEP"\n    return "COW" if (x + y) % 2 == 0 else "SHEEP"\n\n\ndef _repair_animal_commands(\n    obs: dict[str, Any], action: dict[str, Any], genome: CurrentGenome\n):\n    private = obs.get("private", {}) or {}\n    shed = private.get("shed", {}) or {}\n    inventories = private.get("inventories", []) or []\n    farms = obs.get("farms", []) or []\n    player = int(obs.get("player", 0))\n    farm = farms[player] if player < len(farms) else {}\n    positions = [farm.get("farmer", [0, 0]), *(farm.get("hands", []) or [])]\n    commands = [action["farmer"], *action["hands"]]\n    for actor, command in enumerate(commands):\n        if len(command) < 2 or command[0] not in ("PICKUP", "PLACE"):\n            continue\n        requested = command[1]\n        if requested not in ("COW", "SHEEP"):\n            continue\n        alternate = "SHEEP" if requested == "COW" else "COW"\n        stock = shed if command[0] == "PICKUP" else (\n            inventories[actor] if actor < len(inventories) else {}\n        )\n        if command[0] == "PLACE" and actor < len(positions):\n            preferred = _preferred_animal(obs, genome, tuple(positions[actor]))\n            x, y = positions[actor]\n            tiles = farm.get("tiles", []) or []\n            tile = tiles[y][x] if 0 <= y < len(tiles) and 0 <= x < len(tiles[y]) else None\n            if (preferred in ("COW", "SHEEP") and int(stock.get(preferred, 0)) > 0\n                    and isinstance(tile, dict) and tile.get("kind") == "PASTURE"\n                    and "animal" not in tile):\n                command[1] = preferred\n                requested = preferred\n                alternate = "SHEEP" if requested == "COW" else "COW"\n        if int(stock.get(requested, 0)) <= 0 < int(stock.get(alternate, 0)):\n            command[1] = alternate\n    return action\n\n\ndef _service_animal_tiles(\n    obs: dict[str, Any], action: dict[str, Any], genome: CurrentGenome\n):\n    day = int(obs.get("step", 0)) // 24\n    if genome.service_policy == "inherit" or day < genome.service_day:\n        return action\n    farms = obs.get("farms", []) or []\n    player = int(obs.get("player", 0))\n    if player >= len(farms):\n        return action\n    farm = farms[player]\n    private = obs.get("private", {}) or {}\n    inventories = private.get("inventories", []) or []\n    positions = [farm.get("farmer", [0, 0]), *(farm.get("hands", []) or [])]\n    commands = [action["farmer"], *action["hands"]]\n    orders = {\n        "care_first": ("CARE", "HARVEST", "COLLECT_FERTILIZER"),\n        "harvest_first": ("HARVEST", "COLLECT_FERTILIZER", "CARE"),\n        "fertilizer_first": ("COLLECT_FERTILIZER", "HARVEST", "CARE"),\n    }[genome.service_policy]\n    service_ops = {"PASS", "FEED", "CARE", "HARVEST", "COLLECT_FERTILIZER"}\n    tiles = farm.get("tiles", []) or []\n    for actor, command in enumerate(commands[:len(positions)]):\n        if not command or command[0] not in service_ops:\n            continue\n        x, y = positions[actor]\n        tile = tiles[y][x] if 0 <= y < len(tiles) and 0 <= x < len(tiles[y]) else None\n        if not isinstance(tile, dict) or tile.get("animal") not in ("COW", "SHEEP"):\n            continue\n        inventory = inventories[actor] if actor < len(inventories) else {}\n        if not tile.get("fed_today") and int(inventory.get("WHEAT", 0)) > 0:\n            commands[actor] = ["FEED"]\n            continue\n        available = {\n            "CARE": not tile.get("cared_today"),\n            "HARVEST": int(tile.get("yield_units", 0)) > 0,\n            "COLLECT_FERTILIZER": bool(tile.get("fertilizer_available")),\n        }\n        selected = next((operation for operation in orders if available[operation]), None)\n        commands[actor] = [selected] if selected else command\n    action["farmer"], action["hands"] = commands[0], commands[1:]\n    return action\n\n\ndef _install_extension_gate(module: Any, genome: CurrentGenome) -> None:\n    """Parameterize the incumbent\'s complete SE sheep-expansion subsystem.\n\n    The underlying block already owns purchase confirmation, dedicated workers,\n    pasture construction, placement, feeding, harvesting, fertilizer collection,\n    sales, and daily rescue wheat.  We only alter whether that coherent block is\n    allowed to start; no partial route is synthesized here.\n    """\n    if not hasattr(module, "_v233_eligible"):\n        return\n    original = getattr(module, "_CURRENT_GENOME_V233_ELIGIBLE", module._v233_eligible)\n    module._CURRENT_GENOME_V233_ELIGIBLE = original\n    if genome.extension_policy == "inherit":\n        module._v233_eligible = original\n        return\n    if genome.extension_policy == "off":\n        module._v233_eligible = lambda obs, native: False\n        return\n\n    def eligible(obs, native):\n        try:\n            farm = obs["farms"][int(obs["player"])]\n            private = obs["private"]\n            prices = obs["market"]["prices"]\n            shops = obs["town"]["unlocked_shops"]\n            if len(farm["tiles"]) != 10 or set(farm["unlocked_quadrants"]) != {"NW", "NE", "SW"}:\n                return False\n            if any(farm["tiles"][y][x] != "LOCKED" for y in (5, 6) for x in range(5, 8)):\n                return False\n            if private["shed"].get("SHEEP", 0) or any(\n                inventory.get("SHEEP", 0) for inventory in private["inventories"]\n            ):\n                return False\n            if len(shops) < genome.extension_min_shops:\n                return False\n            if (genome.extension_policy == "price"\n                    and shops.count("YARN_STORE") < genome.extension_min_yarn):\n                return False\n            if int(prices.get("WOOL", 0)) < genome.extension_wool_min:\n                return False\n            if int(prices.get("WHEAT", 10**9)) > genome.extension_wheat_max:\n                return False\n            # Keep all of the incumbent\'s future-route conflict exclusions.\n            native_day = getattr(module, "_v219_native_day")\n            for day in range(12, 30):\n                for action in native_day(native, day):\n                    if any(order and (order[0] == "BUY_LAND" or order[:2] == ["BUY_ANIMAL", "SHEEP"])\n                           for order in action.get("market", [])):\n                        return False\n                    commands = [action.get("farmer"), *action.get("hands", [])]\n                    if any(command and command[0] in ("PICKUP", "PLACE") and len(command) > 1\n                           and command[1] == "SHEEP" for command in commands):\n                        return False\n            return True\n        except (KeyError, TypeError, ValueError, IndexError, AttributeError):\n            return False\n\n    module._v233_eligible = eligible\n\n\ndef _install_extension_hiring(module: Any, genome: CurrentGenome) -> None:\n    """Keep the original two SE workers but bound V233\'s daily re-hiring."""\n    if not hasattr(module, "_v233_request"):\n        return\n    original = getattr(module, "_CURRENT_GENOME_V233_REQUEST", module._v233_request)\n    module._CURRENT_GENOME_V233_REQUEST = original\n    if genome.extension_stop_day >= 29:\n        module._v233_request = original\n        return\n\n    def request(obs, action, state, native):\n        day = int(obs.get("step", 0)) // 24\n        stable = state.get("_current_genome_stable_workers")\n        if state.get("committed") and day > genome.extension_stop_day:\n            if stable is None and state.get("workers"):\n                stable = tuple(sorted(state["workers"])[:2])\n                state["_current_genome_stable_workers"] = stable\n            if stable:\n                hands = len(obs["farms"][int(obs["player"])].get("hands", []))\n                rows = (((5, 5), (6, 5), (7, 5)),\n                        ((5, 6), (6, 6), (7, 6)))\n                state["workers"] = {\n                    actor: list(rows[index]) for index, actor in enumerate(stable)\n                    if 0 < actor <= hands\n                }\n            state["requested_day"] = day\n            return action\n        result = original(obs, action, state, native)\n        if (state.get("committed") and state.get("workers")\n                and "_current_genome_stable_workers" not in state):\n            state["_current_genome_stable_workers"] = tuple(sorted(state["workers"])[:2])\n        return result\n\n    module._v233_request = request\n\n\ndef _apply_wheat_pressure(\n    obs: dict[str, Any], action: dict[str, Any], genome: CurrentGenome\n) -> dict[str, Any]:\n    """Retain shared feed-market pressure without forcing livestock expansion."""\n    quantity = genome.wheat_pressure\n    step = int(obs.get("step", 0))\n    day, hour = divmod(step, 24)\n    if (quantity <= 0 or not genome.pressure_start_day <= day <= genome.pressure_end_day\n            or hour != genome.pressure_hour):\n        return action\n    private = obs.get("private", {}) or {}\n    shed = private.get("shed", {}) or {}\n    orders = action["market"]\n    projected = sum(max(0, int(value)) for value in shed.values())\n    for order in orders:\n        if len(order) < 3:\n            continue\n        if order[0] in ("BUY_PRODUCT", "BUY_ANIMAL"):\n            projected += max(0, int(order[2]))\n        elif order[0] == "SELL":\n            projected -= min(max(0, int(order[2])), max(0, int(shed.get(order[1], 0))))\n    quantity = min(quantity, max(0, 96 - projected))\n    farms = obs.get("farms", []) or []\n    player = int(obs.get("player", 0))\n    money = int(farms[player].get("money", 0)) if player < len(farms) else 0\n    price = int((obs.get("market", {}) or {}).get("prices", {}).get("WHEAT", 10**9))\n    quantity = min(quantity, max(0, (money - 3000) // max(1, price + 10)))\n    if quantity <= 0:\n        return action\n    existing = next((order for order in orders if len(order) >= 3\n                     and order[:2] == ["BUY_PRODUCT", "WHEAT"]), None)\n    if existing is not None:\n        existing[2] = int(existing[2]) + quantity\n    elif len(orders) < 10:\n        orders.append(["BUY_PRODUCT", "WHEAT", quantity])\n    return action\n\n\ndef _apply_wool_liquidation(\n    obs: dict[str, Any], action: dict[str, Any], genome: CurrentGenome\n) -> dict[str, Any]:\n    """Monetize existing sheep output while retaining wool-market pressure."""\n    if genome.wool_policy != "liquidate":\n        return action\n    step = int(obs.get("step", 0))\n    day, hour = divmod(step, 24)\n    if not genome.wool_start_day <= day <= genome.wool_end_day:\n        return action\n    if hour != genome.wool_sell_hour:\n        return action\n    prices = (obs.get("market", {}) or {}).get("prices", {}) or {}\n    if int(prices.get("WOOL", 0)) < genome.wool_min_price:\n        return action\n    shed = (obs.get("private", {}) or {}).get("shed", {}) or {}\n    available = max(0, int(shed.get("WOOL", 0)) - genome.wool_keep)\n    if available <= 0:\n        return action\n    orders = action["market"]\n    existing = next((order for order in orders if len(order) >= 3\n                     and order[:2] == ["SELL", "WOOL"]), None)\n    if existing is not None:\n        existing[2] = max(int(existing[2]), available)\n    elif len(orders) < 10:\n        orders.append(["SELL", "WOOL", available])\n    return action\n\n\ndef configure_module(module: Any, genome: CurrentGenome):\n    """Wrap a freshly loaded current agent without relying on private symbols."""\n    genome = genome.normalized()\n    # Preserve the unwrapped policy so a later search can replace the frozen\n    # genome instead of accidentally stacking overlays.  This makes repeated\n    # current-genome-search -> current-genome-use cycles well defined.\n    parent = getattr(module, "_CURRENT_GENOME_PARENT", module.agent)\n    module._CURRENT_GENOME_PARENT = parent\n    module._FROZEN_CURRENT_GENOME = genome.to_dict()\n    _install_extension_gate(module, genome)\n    _install_extension_hiring(module, genome)\n\n    def genome_agent(observation, configuration=None):\n        result = _copy_action(parent(observation, configuration))\n        if not isinstance(observation, dict):\n            return result\n        step = int(observation.get("step", -1))\n        player = int(observation.get("player", 0))\n        family = genome.opening_seat0 if player == 0 else genome.opening_seat1\n        trajectory = OPENING_MARKETS.get(family, ())\n        if 0 <= step < genome.opening_prefix and step < len(trajectory):\n            result["market"] = [list(order) for order in trajectory[step]]\n        # The complete extension block confirms six SHEEP on the next turn;\n        # preserving that order keeps its purchase/worker state machine atomic.\n        extension_order = any(order and order[0] == "BUY_LAND" for order in result["market"]) and any(\n            len(order) >= 3 and order[:2] == ["BUY_ANIMAL", "SHEEP"] and int(order[2]) == 6\n            for order in result["market"]\n        )\n        if not extension_order:\n            result = _rewrite_animal_orders(observation, result, genome)\n        result = _apply_wheat_pressure(observation, result, genome)\n        result = _apply_wool_liquidation(observation, result, genome)\n        if genome.herd_policy != "inherit" or genome.placement_policy != "inherit":\n            result = _repair_animal_commands(observation, result, genome)\n        result = _service_animal_tiles(observation, result, genome)\n        day = step // 24\n        if day >= genome.stop_hiring_day:\n            result["market"] = [\n                order for order in result["market"] if not order or order[0] != "HIRE"\n            ]\n        if day >= genome.terminal_day and genome.terminal_mode != "inherit":\n            blocked = {"CARE"}\n            if genome.terminal_mode == "no_feed_care":\n                blocked.add("FEED")\n            commands = [result["farmer"], *result["hands"]]\n            commands = [["PASS"] if command and command[0] in blocked else command for command in commands]\n            result["farmer"], result["hands"] = commands[0], commands[1:]\n        return result\n\n    genome_agent.telemetry = getattr(parent, "telemetry", {})\n    module.agent = genome_agent\n    return genome_agent\n\n\ndef current_genome() -> CurrentGenome:\n    return CurrentGenome()\n\n\ndef anchor_genomes() -> list[CurrentGenome]:\n    base = current_genome()\n    anchors = [\n        base,\n        replace(base, opening_seat0="rank1_staged", opening_seat1="rank1_staged", opening_prefix=2),\n        replace(base, opening_seat0="rank2_wheat", opening_seat1="rank2_wheat", opening_prefix=2),\n        replace(base, opening_seat0="rank3_balanced", opening_seat1="rank3_balanced", opening_prefix=2),\n        replace(base, opening_seat0="rank1_staged", opening_seat1="rank2_wheat", opening_prefix=2),\n        replace(base, opening_seat0="rank3_balanced", opening_seat1="rank1_staged", opening_prefix=2),\n        replace(base, herd_policy="price", herd_profile="leader", adaptive_day=6, herd_deadband=20),\n        replace(base, herd_policy="yarn_gate", herd_profile="rank1_255", adaptive_day=6, herd_deadband=0),\n        replace(base, herd_policy="yarn_gate", herd_profile="leader", adaptive_day=6, herd_deadband=0),\n        replace(base, herd_policy="price_opponent", herd_profile="balanced", adaptive_day=6, opponent_weight=10),\n        replace(base, herd_policy="price_opponent", herd_profile="sheep", adaptive_day=8, opponent_weight=-10),\n        replace(base, herd_policy="price", placement_policy="center_cows", placement_radius=2),\n        replace(base, herd_policy="price", placement_policy="center_value", placement_radius=3),\n        replace(base, herd_policy="price", placement_policy="band_cows", placement_radius=2,\n                service_policy="harvest_first", service_day=8),\n        replace(base, service_policy="care_first", service_day=6),\n        replace(base, service_policy="harvest_first", service_day=8),\n        replace(base, extension_policy="price", extension_wool_min=200,\n                extension_wheat_max=55, extension_min_shops=3, extension_min_yarn=1),\n        replace(base, extension_policy="broad", extension_wool_min=180,\n                extension_wheat_max=70, extension_min_shops=2, extension_min_yarn=0),\n        replace(base, extension_stop_day=12),\n        replace(base, extension_stop_day=14),\n        replace(base, extension_stop_day=16),\n        replace(base, extension_stop_day=20),\n        replace(base, extension_stop_day=24),\n        replace(base, extension_policy="off"),\n        replace(base, extension_policy="off", wheat_pressure=2),\n        replace(base, extension_policy="off", wheat_pressure=4),\n        replace(base, extension_policy="off", wheat_pressure=6),\n        replace(base, extension_policy="off", wheat_pressure=8),\n        replace(base, wheat_pressure=4, pressure_start_day=10, pressure_end_day=27),\n        replace(base, wool_policy="liquidate", wool_sell_hour=1),\n        replace(base, wool_policy="liquidate", wool_sell_hour=12),\n        replace(base, wool_policy="liquidate", wool_sell_hour=20),\n        replace(base, wool_policy="liquidate", wool_sell_hour=23),\n        replace(base, extension_policy="off", wool_policy="liquidate",\n                wool_sell_hour=23, wool_min_price=180),\n        replace(base, extension_policy="off", wheat_pressure=2,\n                wool_policy="liquidate", wool_sell_hour=23, wool_min_price=180),\n        replace(base, stop_hiring_day=28, terminal_mode="no_care", terminal_day=28),\n    ]\n    return list({value.key(): value.normalized() for value in anchors}.values())\n\n\ndef mutate(genome: CurrentGenome, rng: random.Random, changes: int = 1) -> CurrentGenome:\n    values = genome.normalized().to_dict()\n    fields: dict[str, tuple[Any, ...]] = {\n        "opening_seat0": OPENING_FAMILIES,\n        "opening_seat1": OPENING_FAMILIES,\n        "opening_prefix": (0, 1, 2, 4, 8, 12),\n        "herd_policy": HERD_POLICIES,\n        "herd_profile": HERD_PROFILES,\n        "adaptive_day": (0, 4, 6, 8, 10, 12, 16),\n        "herd_deadband": (0, 10, 20, 35, 50),\n        "opponent_weight": (-20, -10, 0, 10, 20),\n        "placement_policy": PLACEMENT_POLICIES,\n        "placement_radius": (1, 2, 3, 4),\n        "service_policy": SERVICE_POLICIES,\n        "service_day": (0, 4, 6, 8, 10, 12, 16, 20, 24),\n        "extension_policy": EXTENSION_POLICIES,\n        "extension_wool_min": (160, 180, 200, 220, 240, 260, 300),\n        "extension_wheat_max": (25, 35, 45, 55, 70, 90),\n        "extension_min_shops": (0, 1, 2, 3, 4, 5),\n        "extension_min_yarn": (0, 1, 2, 3),\n        "extension_stop_day": (12, 14, 16, 18, 20, 22, 24, 26, 28, 29),\n        "wheat_pressure": (0, 2, 4, 6, 8, 12),\n        "pressure_start_day": (8, 10, 12, 14, 16, 18, 20, 22, 24),\n        "pressure_end_day": (18, 20, 22, 24, 26, 27, 28, 29),\n        "pressure_hour": (0, 1, 2, 3),\n        "wool_policy": WOOL_POLICIES,\n        "wool_start_day": (4, 6, 8, 10, 12, 14, 16, 20, 24, 28),\n        "wool_end_day": (12, 16, 20, 24, 27, 28, 29),\n        "wool_sell_hour": (1, 12, 20, 23),\n        "wool_keep": (0, 2, 4, 8, 12),\n        "wool_min_price": (0, 150, 180, 200, 220, 250),\n        "stop_hiring_day": (24, 26, 27, 28, 29, 30),\n        "terminal_mode": TERMINAL_MODES,\n        "terminal_day": (26, 27, 28, 29, 30),\n    }\n    groups = (\n        ("opening_seat0", "opening_seat1", "opening_prefix"),\n        ("herd_policy", "herd_profile", "adaptive_day", "herd_deadband", "opponent_weight",\n         "placement_policy", "placement_radius", "service_policy", "service_day"),\n        ("extension_policy", "extension_wool_min", "extension_wheat_max",\n         "extension_min_shops", "extension_min_yarn", "extension_stop_day", "wheat_pressure",\n         "pressure_start_day", "pressure_end_day", "pressure_hour",\n         "wool_policy", "wool_start_day", "wool_end_day", "wool_sell_hour",\n         "wool_keep", "wool_min_price"),\n        ("stop_hiring_day", "terminal_mode", "terminal_day"),\n    )\n    for _ in range(max(1, changes)):\n        group = rng.choice(groups)\n        name = rng.choice(group)\n        choices = [value for value in fields[name] if value != values[name]]\n        values[name] = rng.choice(choices)\n    return CurrentGenome(**values).normalized()\n\n\ndef crossover(first: CurrentGenome, second: CurrentGenome, rng: random.Random):\n    a, b = first.to_dict(), second.to_dict()\n    values = dict(a)\n    for group in (\n        ("opening_seat0", "opening_seat1", "opening_prefix"),\n        ("herd_policy", "herd_profile", "adaptive_day", "herd_deadband", "opponent_weight",\n         "placement_policy", "placement_radius", "service_policy", "service_day"),\n        ("extension_policy", "extension_wool_min", "extension_wheat_max",\n         "extension_min_shops", "extension_min_yarn", "extension_stop_day", "wheat_pressure",\n         "pressure_start_day", "pressure_end_day", "pressure_hour",\n         "wool_policy", "wool_start_day", "wool_end_day", "wool_sell_hour",\n         "wool_keep", "wool_min_price"),\n        ("stop_hiring_day", "terminal_mode", "terminal_day"),\n    ):\n        source = b if rng.random() < 0.5 else a\n        for name in group:\n            values[name] = source[name]\n    return CurrentGenome(**values).normalized()\n\n', _current_genome_runtime.__dict__)
+_CurrentGenome = _current_genome_runtime.CurrentGenome
+_FROZEN_CURRENT_GENOME = {'opening_seat0': 'inherit',
+ 'opening_seat1': 'inherit',
+ 'opening_prefix': 2,
+ 'herd_policy': 'inherit',
+ 'herd_profile': 'leader',
+ 'adaptive_day': 6,
+ 'herd_deadband': 20,
+ 'opponent_weight': 0,
+ 'placement_policy': 'inherit',
+ 'placement_radius': 2,
+ 'service_policy': 'inherit',
+ 'service_day': 6,
+ 'extension_policy': 'inherit',
+ 'extension_wool_min': 220,
+ 'extension_wheat_max': 45,
+ 'extension_min_shops': 3,
+ 'extension_min_yarn': 2,
+ 'extension_stop_day': 28,
+ 'wheat_pressure': 0,
+ 'pressure_start_day': 12,
+ 'pressure_end_day': 28,
+ 'pressure_hour': 1,
+ 'wool_policy': 'liquidate',
+ 'wool_start_day': 8,
+ 'wool_end_day': 29,
+ 'wool_sell_hour': 12,
+ 'wool_keep': 2,
+ 'wool_min_price': 0,
+ 'stop_hiring_day': 30,
+ 'terminal_mode': 'inherit',
+ 'terminal_day': 30}
+
+
+class _CurrentGenomeModuleProxy:
+    def __getattr__(self, name):
+        try:
+            return globals()[name]
+        except KeyError as error:
+            raise AttributeError(name) from error
+
+    def __setattr__(self, name, value):
+        globals()[name] = value
+
+
+_configured_current_genome_agent = _current_genome_runtime.configure_module(
+    _CurrentGenomeModuleProxy(), _CurrentGenome(**_FROZEN_CURRENT_GENOME)
+)
+
+try:
+    del kaggle_agent
+except NameError:
+    pass
+
+
+def kaggle_agent(obs, config=None):
+    return _configured_current_genome_agent(obs, config)
+
+
+agent = kaggle_agent
+# --- END FROZEN CURRENT GENOME ---
