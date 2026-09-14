@@ -56,6 +56,51 @@ class _CopyProxy:
         return getattr(_copy, name)
 
 
+def _install_fast_view(module: ModuleType) -> None:
+    view_cls = module.__dict__.get("_View")
+    if view_cls is None:
+        return
+    original = getattr(view_cls, "__init__", None)
+    if not callable(original) or getattr(original, "_runtime_accelerated", False):
+        return
+
+    def accelerated(self, observation, player, cfg):
+        try:
+            if type(observation) is not dict:
+                raise TypeError
+            farms = observation["farms"]
+            if type(farms) not in (list, tuple):
+                raise TypeError
+            self.farm = farms[player] if player < len(farms) else {}
+            self.rival = farms[1 - player] if len(farms) >= 2 and 1 - player < len(farms) else {}
+            if type(self.farm) is not dict:
+                raise TypeError
+            private = observation.get("private") or {}
+            market = observation.get("market") or {}
+            if type(private) is not dict or type(market) is not dict:
+                raise TypeError
+            # Observation containers are read-only throughout a View lifetime. Keep
+            # aliases instead of rebuilding the same dictionaries every callback.
+            self.shed = private.get("shed") or {}
+            self.seeds = private.get("seeds") or {}
+            self.invs = private.get("inventories") or []
+            self.prices = market.get("prices") or {}
+            self.money = float(self.farm.get("money", 0.0) or 0.0)
+            self.tiles = self.farm.get("tiles") or []
+            self.board = len(self.tiles) or cfg["board_size"]
+            farmer = self.farm.get("farmer")
+            hands = self.farm.get("hands") or []
+            self.positions = [farmer, *hands]
+            self.hires_today = int(self.farm.get("hires_today", 0) or 0)
+            self.quadrants = len(self.farm.get("unlocked_quadrants") or [])
+        except Exception:
+            original(self, observation, player, cfg)
+
+    accelerated._runtime_accelerated = True
+    accelerated._python_fallback = original
+    view_cls.__init__ = accelerated
+
+
 def _install_fast_gain(module: ModuleType) -> None:
     ns = module.__dict__
     original = ns.get("_r51_input_gain")
@@ -221,6 +266,7 @@ def optimize_agent_module(module: ModuleType) -> ModuleType:
     planner = module.__dict__.get("_PLANNER_NS")
     if isinstance(planner, dict) and planner.get("deepcopy") is _copy.deepcopy:
         planner["deepcopy"] = fast_deepcopy
+    _install_fast_view(module)
     _install_fast_gain(module)
     _install_native_market_price(module)
     _install_native_start(module)
