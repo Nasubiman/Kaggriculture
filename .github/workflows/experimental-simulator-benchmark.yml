@@ -1,0 +1,38 @@
+name: Experimental simulator benchmark
+
+on:
+  push:
+    branches:
+      - experimental/faster-simulator
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Run parity and benchmark
+        run: python scripts/benchmark_experimental_simulation.py --seeds 1 --repeats 2
+      - name: Print benchmark result
+        if: always()
+        run: |
+          if [ -f reports/experimental_simulation_benchmark.json ]; then
+            cat reports/experimental_simulation_benchmark.json
+          fi
+      - name: Upload benchmark result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: experimental-simulator-benchmark
+          path: reports/experimental_simulation_benchmark.json
+          if-no-files-found: ignore
