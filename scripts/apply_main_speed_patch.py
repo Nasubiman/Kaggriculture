@@ -4,7 +4,8 @@
 The patch deliberately leaves kaggle-environments untouched. Only this agent
 module gets a local ``copy`` proxy whose ``deepcopy`` specializes exact builtin
 containers and falls back to stdlib for custom/Kaggle objects. It also removes
-allocations from shed-adjacency checks and can reuse an identical _View snapshot.
+allocations from shed-adjacency checks, reuses an identical _View snapshot,
+and avoids copying the same route action twice on every normal turn.
 
 Before patching, the original is copied verbatim to
 training/reference_main_pre_main_speed.py for parity tests.
@@ -123,20 +124,37 @@ def main() -> None:
         raise RuntimeError(f"expected one _shed_adjacent body, found {text.count(old_shed)}")
     text = text.replace(old_shed, new_shed, 1)
 
-    # Install the cache helper immediately after the sole _View class, before Chassis.
     chassis_anchor = "\n\n# --------------------------------------------------------------------------- chassis\nclass Chassis:"
     if chassis_anchor not in text:
         raise RuntimeError("could not find _View/Chassis boundary")
     text = text.replace(chassis_anchor, VIEW_CACHE_HELPER + chassis_anchor, 1)
 
-    old = "view = _View(observation, player, cfg)"
-    count = text.count(old)
-    if count < 1:
-        raise RuntimeError(f"could not find _View construction site: {count}")
-    text = text.replace(old, "view = _cached_view(observation, player, cfg)")
+    old_view = "view = _View(observation, player, cfg)"
+    view_count = text.count(old_view)
+    if view_count < 1:
+        raise RuntimeError(f"could not find _View construction site: {view_count}")
+    text = text.replace(old_view, "view = _cached_view(observation, player, cfg)")
+
+    # The old code deep-copies the route action, then immediately deep-copies it
+    # again into ``raw`` solely for the exception path. On the overwhelmingly
+    # common successful path that second copy is discarded. Recreate the same
+    # pristine route action only if an exception actually occurs.
+    old_raw = '''        action = self._route_action(route, step)\n        raw = copy.deepcopy(action)\n        try:\n'''
+    new_raw = '''        action = self._route_action(route, step)\n        try:\n'''
+    if text.count(old_raw) != 1:
+        raise RuntimeError(f"expected one eager raw copy, found {text.count(old_raw)}")
+    text = text.replace(old_raw, new_raw, 1)
+    old_except = '''        except Exception:\n            self.diagnostics["layer_fallbacks"] += 1\n            return raw\n'''
+    new_except = '''        except Exception:\n            self.diagnostics["layer_fallbacks"] += 1\n            return self._route_action(route, step)\n'''
+    if text.count(old_except) != 1:
+        raise RuntimeError(f"expected one layer fallback, found {text.count(old_except)}")
+    text = text.replace(old_except, new_except, 1)
 
     MAIN.write_text(text)
-    print(f"patched main.py: local fast deepcopy + view cache + shed adjacency ({count} view sites)")
+    print(
+        "patched main.py: local fast deepcopy + lazy fallback copy + "
+        f"view cache + shed adjacency ({view_count} view sites)"
+    )
 
 
 if __name__ == "__main__":
