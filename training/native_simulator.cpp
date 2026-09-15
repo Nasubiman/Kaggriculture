@@ -80,9 +80,24 @@ static void apply_player_actions(py::dict farm, py::dict priv, py::object action
     }
 }
 
+static void apply_two_player_actions(py::sequence farms,
+                                     py::dict private0, py::object action0,
+                                     py::dict private1, py::object action1,
+                                     int day) {
+    // Default hot path is always exactly two players. Keep both batches inside
+    // one pybind call so the interpreter crosses Python/C++ only once per turn.
+    auto farm0 = py::cast<py::dict>(farms[0]);
+    auto farm1 = py::cast<py::dict>(farms[1]);
+    apply_player_actions(farm0, private0, action0, day);
+    apply_player_actions(farm1, private1, action1, day);
+}
+
 } // namespace
 
 PYBIND11_MODULE(_kaggriculture_simulator, m) {
     m.def("apply_player_actions", &apply_player_actions,
           py::arg("farm"), py::arg("private"), py::arg("action"), py::arg("day"));
+    m.def("apply_two_player_actions", &apply_two_player_actions,
+          py::arg("farms"), py::arg("private0"), py::arg("action0"),
+          py::arg("private1"), py::arg("action1"), py::arg("day"));
 }
