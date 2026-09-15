@@ -33,10 +33,13 @@ jobs:
         run: python scripts/build_native_speedups.py
       - name: Apply guarded main.py speed patch
         run: python scripts/apply_main_speed_patch.py
-      - name: Verify main.py parity and benchmark
-        run: python scripts/benchmark_main_speed.py --seeds 1 --repeats 2
+      # Native parity is the fastest high-value guard while the runtime hot path
+      # is under active development.  Fail here before spending several minutes
+      # on the independent main.py official-parity/timing suite.
       - name: Verify native agent parity and benchmark
         run: python scripts/benchmark_native_agent_runtime.py
+      - name: Verify main.py parity and benchmark
+        run: python scripts/benchmark_main_speed.py --seeds 1 --repeats 2
       - name: Profile native-enabled agent runtime
         run: python scripts/profile_native_agent_runtime.py
       - name: Run simulator parity and benchmark
