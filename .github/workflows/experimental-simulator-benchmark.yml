@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - experimental/faster-simulator
+      - experimental/faster-simulator-v4
   workflow_dispatch:
 
 concurrency:
@@ -30,7 +31,7 @@ jobs:
       - name: Normalize native simulator source
         run: python scripts/prepare_native_simulator_source.py
       - name: Build optional native accelerator
-        run: python scripts/build_native_speedups.py
+        run: python scripts/build_native_speedups_turbo.py
       - name: Apply guarded main.py speed patch
         run: python scripts/apply_main_speed_patch.py
       - name: Verify main.py parity and benchmark
