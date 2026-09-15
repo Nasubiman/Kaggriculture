@@ -10,11 +10,14 @@ try:
     import _kaggriculture_sales as _sales_native
 except Exception:
     _sales_native = None
+try:
+    import _kaggriculture_r97 as _r97_native
+except Exception:
+    _r97_native = None
 
 
 def _install_input(module: ModuleType) -> None:
-    if _input_native is None or not hasattr(_input_native, "r51_input_control"):
-        return
+    if _input_native is None or not hasattr(_input_native, "r51_input_control"):return
     ns=module.__dict__;original=ns.get("_r51_input_control");impl=ns.get("_IMPL")
     v219=ns.get("_V219_STATES");v233=ns.get("_V233_STATES");report=ns.get("_R51_INPUT_REPORT")
     if not callable(original) or impl is None or not isinstance(v219,dict) or not isinstance(v233,dict) or not isinstance(report,dict) or getattr(original,"_native_accelerated",False):return
@@ -34,10 +37,30 @@ def _install_sales(module: ModuleType) -> None:
     accelerated._native_accelerated=True;accelerated._python_fallback=original;ns["_r37_quote_priority"]=accelerated
 
 
+def _install_r97(module: ModuleType) -> None:
+    if _r97_native is None:return
+    ns=module.__dict__
+    hooks=(
+        ("_r97_market_stock","market_stock"),
+        ("_r97_delivery","delivery"),
+        ("_r97_budget","budget"),
+    )
+    for pyname,native_name in hooks:
+        original=ns.get(pyname);native=getattr(_r97_native,native_name,None)
+        if not callable(original) or native is None or getattr(original,"_native_accelerated",False):continue
+        def make(native=native,original=original):
+            def accelerated(*args):
+                try:return native(*args)
+                except Exception:return original(*args)
+            accelerated._native_accelerated=True;accelerated._python_fallback=original
+            return accelerated
+        ns[pyname]=make()
+
+
 def install_native_extra(module: ModuleType) -> ModuleType:
-    # The benchmark deliberately sets agent_runtime._native=None for its Python baseline.
+    # benchmark_native_agent_runtime sets agent_runtime._native=None for Python baseline.
     try:
         import agent_runtime
         if agent_runtime._native is None:return module
     except Exception:return module
-    _install_input(module);_install_sales(module);return module
+    _install_input(module);_install_sales(module);_install_r97(module);return module
