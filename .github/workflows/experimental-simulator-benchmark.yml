@@ -38,6 +38,8 @@ jobs:
         run: python scripts/benchmark_main_speed.py --seeds 1 --repeats 2
       - name: Verify native agent parity and benchmark
         run: python scripts/benchmark_native_agent_runtime.py
+      - name: Verify parity-safe native reference opponents
+        run: python scripts/benchmark_native_opponent_runtime.py
       - name: Profile native-enabled agent runtime
         run: python scripts/profile_native_agent_runtime.py
       - name: Run simulator parity and benchmark
@@ -47,7 +49,7 @@ jobs:
       - name: Print benchmark results
         if: always()
         run: |
-          for f in reports/main_speed_benchmark.json reports/native_agent_runtime_benchmark.json reports/experimental_simulation_benchmark.json; do
+          for f in reports/main_speed_benchmark.json reports/native_agent_runtime_benchmark.json reports/native_opponent_runtime_benchmark.json reports/experimental_simulation_benchmark.json; do
             if [ -f "$f" ]; then
               echo "=== $f ==="
               cat "$f"
@@ -61,5 +63,6 @@ jobs:
           path: |
             reports/main_speed_benchmark.json
             reports/native_agent_runtime_benchmark.json
+            reports/native_opponent_runtime_benchmark.json
             reports/experimental_simulation_benchmark.json
           if-no-files-found: ignore
