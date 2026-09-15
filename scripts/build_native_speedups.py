@@ -53,7 +53,9 @@ def _prepare_service(text):
     for old,new,label in (
       ('auto after=py::cast<py::dict>(safe[1]),ainv=py::cast<py::sequence>(after["inventories"]);','auto after=py::cast<py::dict>(safe[1]);auto ainv=py::cast<py::sequence>(after["inventories"]);','service result sequence type'),
       ('tile.contains("fed_today")?tile["fed_today"]:py::bool_(false)','tile.contains("fed_today")?py::reinterpret_borrow<py::object>(tile["fed_today"]):py::object(py::bool_(false))','service fed_today object ternary'),
-      ('tile.contains("placed_day")?py::reinterpret_borrow<py::object>(tile["placed_day"]):py::none()','tile.contains("placed_day")?py::reinterpret_borrow<py::object>(tile["placed_day"]):py::object(py::none())','service placed_day object ternary')):
+      ('tile.contains("placed_day")?py::reinterpret_borrow<py::object>(tile["placed_day"]):py::none()','tile.contains("placed_day")?py::reinterpret_borrow<py::object>(tile["placed_day"]):py::object(py::none())','service placed_day object ternary'),
+      ('static void commit(py::dict dst,py::dict src){dst.attr("clear")();dst.attr("update")(src);}','static void commit(py::dict dst,py::dict src){if(dst.ptr()==src.ptr())return;dst.attr("clear")();dst.attr("update")(src);}','service alias-safe commit'),
+      ('py::dict ws=py::cast<py::dict>(kag_unit::clone(state)),wr=py::cast<py::dict>(kag_unit::clone(report));','py::dict ws=state,wr=report;','service in-place state')):
         text=_replace_once(text,old,new,label)
     return text
 
