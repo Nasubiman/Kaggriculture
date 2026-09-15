@@ -59,13 +59,12 @@ def _install_native_deepcopy(module: ModuleType, agent_runtime) -> None:
 
 
 def _install_similarity_adapter(module: ModuleType, agent_runtime) -> None:
-    """Feed the native similarity kernel plain dict wrappers, without copying tiles.
+    """Feed the native similarity kernel plain sequence shells without deep-copying tiles.
 
-    Kaggle observations/farms can be Struct objects.  The original native kernel
-    accepts dict at those outer levels, so the generic wrapper installed by
-    agent_runtime otherwise raises and immediately executes the Python fallback.
-    Only the tiny outer shell is rebuilt here; the large tile matrices remain
-    shared references and therefore cost no deep copy.
+    Kaggle observations/farms (and, depending on the path, tile rows) can be
+    Struct-like objects.  The current native kernel assumes plain Python sequence
+    rows.  Rebuilding only the two small row shells avoids the exception/fallback
+    loop while the tile objects themselves remain shared references.
     """
     native=getattr(agent_runtime,"_native",None)
     native_similarity=getattr(native,"r37_similarity",None) if native is not None else None
@@ -75,11 +74,13 @@ def _install_similarity_adapter(module: ModuleType, agent_runtime) -> None:
     def accelerated(observation):
         try:
             farms=observation["farms"]
+            own_tiles=[list(row) for row in farms[0]["tiles"]]
+            rival_tiles=[list(row) for row in farms[1]["tiles"]]
             thin={
-                "player": observation["player"],
+                "player": int(observation["player"]),
                 "farms": [
-                    {"unlocked_quadrants": farms[0]["unlocked_quadrants"], "tiles": farms[0]["tiles"]},
-                    {"unlocked_quadrants": farms[1]["unlocked_quadrants"], "tiles": farms[1]["tiles"]},
+                    {"unlocked_quadrants": list(farms[0]["unlocked_quadrants"]), "tiles": own_tiles},
+                    {"unlocked_quadrants": list(farms[1]["unlocked_quadrants"]), "tiles": rival_tiles},
                 ],
             }
             return native_similarity(thin)
