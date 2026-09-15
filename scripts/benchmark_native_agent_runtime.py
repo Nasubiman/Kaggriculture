@@ -43,7 +43,24 @@ def fp(value):
     ).hexdigest()
 
 
-def wrap(agent, trace):
+def _chassis_state(module, player):
+    if module is None:
+        return None
+    try:
+        state = module._IMPL.chassis.players.get(int(player))
+        if not state:
+            return None
+        # Copy through JSON so later turns cannot mutate the diagnostic snapshot.
+        return json.loads(json.dumps({
+            "route": state.get("route"),
+            "sell_state": state.get("sell_state"),
+            "pending": state.get("pending"),
+        }, sort_keys=True))
+    except Exception as exc:
+        return {"snapshot_error": f"{type(exc).__name__}: {exc}"}
+
+
+def wrap(agent, trace, module=None):
     def recorded(obs):
         observation = {k: obs[k] for k in (
             "step", "player", "farms", "private", "market", "town", "day", "hour"
@@ -56,6 +73,7 @@ def wrap(agent, trace):
             "before": before,
             "action_fp": fp(action),
             "action": json.dumps(action, sort_keys=True, separators=(",", ":")),
+            "chassis_state": _chassis_state(module, obs["player"]),
         })
         return action
     return recorded
@@ -80,10 +98,11 @@ def play_fast(opponent: Path, seed: int, seat: int, use_native: bool, verify: bo
     candidate_module = load_module(ROOT / "main.py", f"candidate_{use_native}_{seed}_{seat}", use_native)
     candidate = candidate_module.agent
     rival = load_module(opponent, f"opponent_{use_native}_{seed}_{seat}", False).agent
-    agents = [candidate, rival] if seat == 0 else [rival, candidate]
     trace = []
     if verify:
-        agents = [wrap(a, trace) for a in agents]
+        candidate = wrap(candidate, trace, candidate_module)
+        rival = wrap(rival, trace)
+    agents = [candidate, rival] if seat == 0 else [rival, candidate]
     gc.collect()
     start = time.perf_counter()
     final = runner.run_fast_episode(agents, seed=seed)
@@ -97,11 +116,13 @@ def play_fast(opponent: Path, seed: int, seat: int, use_native: bool, verify: bo
 
 
 def play_official(opponent: Path, seed: int, seat: int, use_native: bool):
-    candidate = load_module(ROOT / "main.py", f"official_candidate_{use_native}_{seed}_{seat}", use_native).agent
+    candidate_module = load_module(ROOT / "main.py", f"official_candidate_{use_native}_{seed}_{seat}", use_native)
+    candidate = candidate_module.agent
     rival = load_module(opponent, f"official_opponent_{use_native}_{seed}_{seat}", False).agent
-    agents = [candidate, rival] if seat == 0 else [rival, candidate]
     trace = []
-    agents = [wrap(a, trace) for a in agents]
+    candidate = wrap(candidate, trace, candidate_module)
+    rival = wrap(rival, trace)
+    agents = [candidate, rival] if seat == 0 else [rival, candidate]
     env = make("kaggriculture", configuration={"episodeSteps": 720, "seed": seed}, debug=False)
     env.run(agents)
     final = env.steps[-1]
@@ -115,10 +136,13 @@ def explain_mismatch(expected, actual, diagnostics):
     limit = min(len(etrace), len(atrace))
     for i in range(limit):
         if etrace[i] != atrace[i]:
+            lo = max(0, i - 4)
             print("FIRST_NATIVE_DIVERGENCE", json.dumps({
                 "trace_index": i,
                 "expected": etrace[i],
                 "actual": atrace[i],
+                "expected_context": etrace[lo:i + 1],
+                "actual_context": atrace[lo:i + 1],
                 "diagnostics": diagnostics,
             }, sort_keys=True), flush=True)
             return
