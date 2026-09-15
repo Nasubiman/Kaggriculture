@@ -10,10 +10,6 @@ try:
     import _kaggriculture_sales as _sales_native
 except Exception:
     _sales_native = None
-try:
-    import _kaggriculture_r97 as _r97_native
-except Exception:
-    _r97_native = None
 
 
 def _install_input(module: ModuleType) -> None:
@@ -28,25 +24,20 @@ def _install_input(module: ModuleType) -> None:
 
 
 def _install_sales(module: ModuleType) -> None:
-    if _sales_native is None or not hasattr(_sales_native,"r37_quote_priority"):return
+    if _sales_native is None:return
     ns=module.__dict__;original=ns.get("_r37_quote_priority")
-    if not callable(original) or getattr(original,"_native_accelerated",False):return
-    def accelerated(observation,order,stock):
-        try:return _sales_native.r37_quote_priority(observation,order,stock)
-        except Exception:return original(observation,order,stock)
-    accelerated._native_accelerated=True;accelerated._python_fallback=original;ns["_r37_quote_priority"]=accelerated
+    if callable(original) and hasattr(_sales_native,"r37_quote_priority") and not getattr(original,"_native_accelerated",False):
+        def accelerated(observation,order,stock):
+            try:return _sales_native.r37_quote_priority(observation,order,stock)
+            except Exception:return original(observation,order,stock)
+        accelerated._native_accelerated=True;accelerated._python_fallback=original;ns["_r37_quote_priority"]=accelerated
 
 
 def _install_r97(module: ModuleType) -> None:
-    if _r97_native is None:return
+    if _sales_native is None:return
     ns=module.__dict__
-    hooks=(
-        ("_r97_market_stock","market_stock"),
-        ("_r97_delivery","delivery"),
-        ("_r97_budget","budget"),
-    )
-    for pyname,native_name in hooks:
-        original=ns.get(pyname);native=getattr(_r97_native,native_name,None)
+    for pyname,native_name in (("_r97_market_stock","market_stock"),("_r97_delivery","delivery"),("_r97_budget","budget")):
+        original=ns.get(pyname);native=getattr(_sales_native,native_name,None)
         if not callable(original) or native is None or getattr(original,"_native_accelerated",False):continue
         def make(native=native,original=original):
             def accelerated(*args):
