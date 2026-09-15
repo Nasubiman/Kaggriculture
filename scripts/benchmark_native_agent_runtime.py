@@ -18,18 +18,22 @@ import agent_runtime
 import experimental_fast_kaggriculture_v3 as runner
 from kaggle_environments import make
 
+_NATIVE_SLOTS = ("_native", "_reserve_native", "_controller_native", "_chassis_native", "_budget_native")
+
 
 def load_module(path: Path, name: str, use_native: bool):
     spec = importlib.util.spec_from_file_location(name, path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    saved = agent_runtime._native
+    saved = {slot: getattr(agent_runtime, slot, None) for slot in _NATIVE_SLOTS}
     try:
         if not use_native:
-            agent_runtime._native = None
+            for slot in _NATIVE_SLOTS:
+                setattr(agent_runtime, slot, None)
         agent_runtime.optimize_agent_module(module)
     finally:
-        agent_runtime._native = saved
+        for slot, value in saved.items():
+            setattr(agent_runtime, slot, value)
     return module
 
 
