@@ -1,0 +1,52 @@
+name: Reference runtime v2
+
+on:
+  push:
+    branches:
+      - agent/reference-runtime-v2-20260915
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install pybind11
+      - name: Normalize native simulator source
+        run: python scripts/prepare_native_simulator_source.py
+      - name: Build native accelerators
+        run: python scripts/build_native_speedups_turbo.py
+      - name: Apply guarded main.py speed patch
+        run: python scripts/apply_main_speed_patch.py
+      - name: Verify and benchmark reference policies
+        run: python scripts/benchmark_native_opponent_runtime.py
+      - name: Verify unknown references stay untouched
+        run: |
+          PYTHONPATH=training python - <<'PY'
+          import types
+          import reference_runtime
+          module = types.ModuleType("unknown_reference")
+          marker = object()
+          module.marker = marker
+          result = reference_runtime.optimize_reference_agent_module(module, "unvalidated_future_model")
+          assert result is module
+          assert module.marker is marker
+          assert "_REFERENCE_NATIVE_POLICY" not in module.__dict__
+          print("unknown reference policy: untouched")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reference-runtime-v2
+          path: reports/native_opponent_runtime_benchmark.json
+          if-no-files-found: ignore
