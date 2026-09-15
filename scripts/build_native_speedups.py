@@ -16,6 +16,7 @@ MODULES = (
     (ROOT / "training" / "native_reserve_v2.cpp", ROOT / "training" / f"_kaggriculture_reserve{EXT}"),
     (ROOT / "training" / "native_controller.cpp", ROOT / "training" / f"_kaggriculture_controller{EXT}"),
     (ROOT / "training" / "native_chassis.cpp", ROOT / "training" / f"_kaggriculture_chassis{EXT}"),
+    (ROOT / "training" / "native_budget.cpp", ROOT / "training" / f"_kaggriculture_budget{EXT}"),
 )
 
 
