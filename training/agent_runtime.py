@@ -28,6 +28,11 @@ try:
 except Exception:
     _chassis_native = None
 
+try:
+    import _kaggriculture_budget as _budget_native
+except Exception:
+    _budget_native = None
+
 
 def fast_deepcopy(value: Any, memo: dict[int, Any] | None = None) -> Any:
     if type(value) in _ATOMIC:
@@ -269,6 +274,26 @@ def _install_native_projected_shed(module: ModuleType) -> None:
     chassis_cls._projected_shed = accelerated
 
 
+def _install_native_budget(module: ModuleType) -> None:
+    if _budget_native is None or not hasattr(_budget_native, "budget_guard"):
+        return
+    chassis_cls = module.__dict__.get("Chassis")
+    if chassis_cls is None:
+        return
+    original = getattr(chassis_cls, "_budget_guard", None)
+    if not callable(original) or getattr(original, "_native_accelerated", False):
+        return
+    def accelerated(self, action, view, route, step):
+        try:
+            _budget_native.budget_guard(self, action, view, route, int(step))
+            return None
+        except Exception:
+            return original(self, action, view, route, step)
+    accelerated._native_accelerated = True
+    accelerated._python_fallback = original
+    chassis_cls._budget_guard = accelerated
+
+
 def _install_native_chassis(module: ModuleType) -> None:
     if _chassis_native is None or not hasattr(_chassis_native, "chassis_act"):
         return
@@ -281,9 +306,6 @@ def _install_native_chassis(module: ModuleType) -> None:
     if not callable(original) or getattr(original, "_native_accelerated", False):
         return
     def accelerated(self, observation, configuration=None):
-        # Native core deliberately targets the exact two-player dict observations
-        # used by official Kaggriculture and the fast runners. Everything else
-        # retains the Python implementation.
         if type(observation) is not dict:
             return original(self, observation, configuration)
         farms = observation.get("farms") or []
@@ -375,6 +397,7 @@ def optimize_agent_module(module: ModuleType) -> ModuleType:
     _install_native_joint_plans(module)
     _install_native_similarity(module)
     _install_native_projected_shed(module)
+    _install_native_budget(module)
     _install_native_chassis(module)
     _install_native_v231(module)
     _install_native_reserve(module)
