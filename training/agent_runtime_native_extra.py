@@ -42,6 +42,27 @@ def _plain_mapping(value,keys=()):
     except Exception:return {key:_field(value,key) for key in keys if _field(value,key,None) is not None}
 
 
+def _apply_r36_due(action,state,step):
+    """Consume R36 sale debt at the Chassis boundary.
+
+    main.py normally does this inside its monkey-patched Chassis suppression.
+    Native chassis bypasses Python method dispatch, so replay the extra R36 part
+    before the action enters the later agent wrappers.  Keeping this at the
+    chassis boundary is important: V231 and later wrappers must observe exactly
+    the same zero-quantity SELL slots as the Python chassis path.
+    """
+    debts=state.get("sell_state",{}).get("r36_debts",{})
+    due=debts.pop(step,{})
+    if not due:return
+    for order in action.get("market",[]):
+        if len(order)>=3 and order[0]=="SELL":
+            remaining=due.get(order[1],0)
+            if remaining>0:
+                removed=min(max(0,int(order[2])),remaining)
+                order[2]=int(order[2])-removed
+                due[order[1]]=remaining-removed
+
+
 def _install_native_deepcopy(module: ModuleType, agent_runtime) -> None:
     native=getattr(agent_runtime,"_native",None)
     native_copy=getattr(native,"deepcopy_builtin",None) if native is not None else None
@@ -51,9 +72,6 @@ def _install_native_deepcopy(module: ModuleType, agent_runtime) -> None:
         accelerated=current
     else:
         def accelerated(value,memo=None):
-            # Existing memo belongs to an outer Python deepcopy operation. Keep
-            # that path in Python so aliases shared with the outer object graph
-            # continue to use the same memo table.
             if memo is not None:return current(value,memo)
             try:return native_copy(value)
             except Exception:return current(value)
@@ -101,14 +119,7 @@ def _install_similarity_adapter(module: ModuleType, agent_runtime) -> None:
 
 
 def _install_struct_chassis(module: ModuleType,agent_runtime) -> None:
-    """Keep Struct observations on the native Chassis path using shallow shells.
-
-    The base runtime deliberately accepts only exact dict observations.  Kaggle's
-    fast runner supplies Struct-like mappings, so that guard sent every turn back
-    through Python Chassis.act and rebuilt _View.  The C++ kernel only needs a
-    handful of mapping records; adapt those records shallowly and keep tiles,
-    positions, and other large sequences shared by reference.
-    """
+    """Keep Struct observations on the native Chassis path using shallow shells."""
     if _chassis_native is None or not hasattr(_chassis_native,"chassis_act"):return
     chassis_cls=module.__dict__.get("Chassis");view_cls=module.__dict__.get("_View")
     if chassis_cls is None or view_cls is None:return
@@ -122,8 +133,6 @@ def _install_struct_chassis(module: ModuleType,agent_runtime) -> None:
     private_keys=("shed","seeds","inventories")
     market_keys=("prices",)
     def accelerated(self,observation,configuration=None):
-        # Exact dict observations are already handled efficiently by the base
-        # wrapper.  Only adapt the Struct-like path here.
         if type(observation) is dict:return current(self,observation,configuration)
         st=None;step=0
         try:
@@ -149,10 +158,9 @@ def _install_struct_chassis(module: ModuleType,agent_runtime) -> None:
             if route not in self.routes:
                 route=st["route"] if st["route"] in self.routes else next(iter(self.routes))
             st["route"]=route
-            # EXP-167 monkey-patches Chassis._sell_lead so the ordinary lead-sale
-            # layer is disabled while R36 reservation logic owns steps 216..695.
-            # The C++ chassis bypasses Python method dispatch, so mirror that
-            # override through the configuration flag only for the native call.
+            # EXP-167 disables the ordinary lead-sale layer while R36 owns this
+            # window. C++ bypasses Python method dispatch, so mirror the override
+            # through the existing configuration gate for the duration of one call.
             r36_window=216<=step<696
             had_sell_lead="sell_lead" in self.cfg
             previous_sell_lead=self.cfg.get("sell_lead")
@@ -163,13 +171,14 @@ def _install_struct_chassis(module: ModuleType,agent_runtime) -> None:
                 if r36_window:
                     if had_sell_lead:self.cfg["sell_lead"]=previous_sell_lead
                     else:self.cfg.pop("sell_lead",None)
+            # This belongs at the Chassis boundary, not at _r36_reserve. Later
+            # wrappers may intentionally rewrite/drop zero-quantity market slots.
+            _apply_r36_due(result,st,step)
             diagnostic["native_calls"]+=1
             return result
         except Exception as exc:
             diagnostic["fallbacks"]+=1
             if diagnostic["first"] is None:diagnostic["first"]=f"{type(exc).__name__}: {exc}"
-            # Match the guarded base native wrapper's exceptional behavior after
-            # state/router work has begun; otherwise use the exact Python path.
             if st is None:return original(self,observation,configuration)
             self.diagnostics["layer_fallbacks"]=self.diagnostics.get("layer_fallbacks",0)+1
             try:
@@ -181,41 +190,6 @@ def _install_struct_chassis(module: ModuleType,agent_runtime) -> None:
     accelerated._struct_native_accelerated=True
     accelerated._python_fallback=original
     chassis_cls.act=accelerated
-
-
-def _install_r36_due_suppression(module: ModuleType) -> None:
-    """Restore the R36 monkey-patched suppression skipped by C++ Chassis.
-
-    main.py replaces Chassis._apply_suppression with _r36_suppress, which consumes
-    reservations due on the current step while retaining zero-quantity SELL slots.
-    The C++ chassis calls its internal suppression helper directly, so perform that
-    extra debt step immediately before the native reserve layer runs.
-    """
-    ns=module.__dict__;current=ns.get("_r36_reserve");impl=ns.get("_IMPL")
-    if not callable(current) or impl is None or getattr(current,"_r36_due_suppression",False):return
-    def accelerated(obs,action):
-        try:
-            step=int(obs["step"]);player=int(obs["player"])
-            state=impl.chassis.players.get(player)
-            if state:
-                debts=state.get("sell_state",{}).get("r36_debts",{})
-                due=debts.pop(step,{})
-                if due:
-                    for order in action.get("market",[]):
-                        if len(order)>=3 and order[0]=="SELL":
-                            remaining=due.get(order[1],0)
-                            if remaining>0:
-                                removed=min(max(0,int(order[2])),remaining)
-                                order[2]=int(order[2])-removed
-                                due[order[1]]=remaining-removed
-        except Exception:
-            # Preserve the pre-existing guarded reserve behavior on unusual input.
-            pass
-        return current(obs,action)
-    accelerated._native_accelerated=True
-    accelerated._r36_due_suppression=True
-    accelerated._python_fallback=getattr(current,"_python_fallback",current)
-    ns["_r36_reserve"]=accelerated
 
 
 def _install_input(module: ModuleType) -> None:
@@ -275,5 +249,4 @@ def install_native_extra(module: ModuleType) -> ModuleType:
     _install_native_deepcopy(module,agent_runtime)
     _install_similarity_adapter(module,agent_runtime)
     _install_struct_chassis(module,agent_runtime)
-    _install_r36_due_suppression(module)
     _install_input(module);_install_sales(module);_install_service(module);return module
