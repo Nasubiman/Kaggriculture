@@ -47,10 +47,14 @@ def profile_once(native: bool) -> tuple[float, str]:
     prof.disable()
     elapsed = time.perf_counter() - start
     out = io.StringIO()
-    stats = pstats.Stats(prof, stream=out).strip_dirs().sort_stats("cumulative")
+    # Keep full file paths here.  The candidate and public_v37 rival both use a
+    # file named main.py; strip_dirs() made their hot functions indistinguishable.
+    stats = pstats.Stats(prof, stream=out).sort_stats("cumulative")
     stats.print_stats(100)
     out.write("\n===== self time =====\n")
     stats.sort_stats("tottime").print_stats(100)
+    out.write("\n===== dict.get callers =====\n")
+    stats.print_callers("get' of 'dict")
     diagnostic = getattr(candidate_module, "_NATIVE_SIMILARITY_DIAGNOSTIC", None)
     if diagnostic is not None:
         out.write("\n===== native similarity diagnostic =====\n")
