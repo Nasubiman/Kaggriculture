@@ -59,6 +59,10 @@ def profile_once(native: bool) -> tuple[float, str]:
     if diagnostic is not None:
         out.write("\n===== native similarity diagnostic =====\n")
         out.write(repr(diagnostic) + "\n")
+    chassis_diagnostic = getattr(candidate_module, "_NATIVE_CHASSIS_DIAGNOSTIC", None)
+    if chassis_diagnostic is not None:
+        out.write("\n===== native chassis diagnostic =====\n")
+        out.write(repr(chassis_diagnostic) + "\n")
     return elapsed, out.getvalue()
 
 
