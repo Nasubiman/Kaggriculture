@@ -35,6 +35,10 @@ _NATIVE_DECAY_TWO = (
     getattr(_native_simulator, "decay_two_default", None)
     if _native_simulator is not None else None
 )
+_NATIVE_STEP = (
+    getattr(_native_simulator, "step_default", None)
+    if _native_simulator is not None else None
+)
 _NATIVE_RULES = (
     _NATIVE_APPLY_TWO is not None
     and _NATIVE_MARKET is not None
@@ -144,7 +148,16 @@ def _experimental_interpreter_v2(state: list[Any], env: Any) -> list[Any]:
     action0 = s0.action
     action1 = s1.action
 
-    if _NATIVE_RULES:
+    native_step = _NATIVE_STEP
+    if native_step is not None:
+        native_step(
+            farms,
+            private0, action0,
+            private1, action1,
+            obs0.market, obs0.town,
+            step,
+        )
+    elif _NATIVE_RULES:
         _NATIVE_APPLY_TWO(
             farms,
             private0, action0,
