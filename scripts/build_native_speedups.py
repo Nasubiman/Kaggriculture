@@ -14,6 +14,7 @@ MODULES=(
  (ROOT/"training/native_budget.cpp",ROOT/"training"/f"_kaggriculture_budget{EXT}"),
  (ROOT/"training/native_input_control.cpp",ROOT/"training"/f"_kaggriculture_input{EXT}"),
  (ROOT/"training/native_sales.cpp",ROOT/"training"/f"_kaggriculture_sales{EXT}"),
+ (ROOT/"training/native_service.cpp",ROOT/"training"/f"_kaggriculture_service{EXT}"),
 )
 
 def _host_flags():
@@ -30,7 +31,8 @@ def _prepare_chassis(text):
     for old,new,label in (
       ('invs=private_d.contains(py::str("inventories"))?py::cast<py::sequence>(private_d[py::str("inventories")]):py::list();','invs=private_d.contains(py::str("inventories"))?py::cast<py::sequence>(private_d[py::str("inventories")]):py::cast<py::sequence>(py::list());','chassis inventories sequence'),
       ('tiles=farm.contains(py::str("tiles"))?py::cast<py::sequence>(farm[py::str("tiles")]):py::list();','tiles=farm.contains(py::str("tiles"))?py::cast<py::sequence>(farm[py::str("tiles")]):py::cast<py::sequence>(py::list());','chassis tiles sequence'),
-      ('hands=farm.contains(py::str("hands"))?py::cast<py::sequence>(farm[py::str("hands")]):py::list();','hands=farm.contains(py::str("hands"))?py::cast<py::sequence>(farm[py::str("hands")]):py::cast<py::sequence>(py::list());','chassis hands sequence')):
+      ('hands=farm.contains(py::str("hands"))?py::cast<py::sequence>(farm[py::str("hands")]):py::list();','hands=farm.contains(py::str("hands"))?py::cast<py::sequence>(farm[py::str("hands")]):py::cast<py::sequence>(py::list());','chassis hands sequence'),
+      ('py::dict action=py::cast<py::dict>(clone_obj(raw));View v(obs,player,board);','py::dict action=raw;View v(obs,player,board);','single route action clone')):
         text=_replace_once(text,old,new,label)
     return text
 
