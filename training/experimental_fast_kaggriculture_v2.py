@@ -13,6 +13,35 @@ try:
 except Exception:
     _native_simulator = None
 
+# Resolve native entry points once. Attribute lookup/hasattr in the interpreter
+# runs hundreds of times per episode, so keep the hot loop on local callables.
+_NATIVE_APPLY_PLAYER = (
+    getattr(_native_simulator, "apply_player_actions", None)
+    if _native_simulator is not None else None
+)
+_NATIVE_APPLY_TWO = (
+    getattr(_native_simulator, "apply_two_player_actions", None)
+    if _native_simulator is not None else None
+)
+_NATIVE_MARKET = (
+    getattr(_native_simulator, "process_market_default", None)
+    if _native_simulator is not None else None
+)
+_NATIVE_TOWN = (
+    getattr(_native_simulator, "town_consume_default", None)
+    if _native_simulator is not None else None
+)
+_NATIVE_DECAY_TWO = (
+    getattr(_native_simulator, "decay_two_default", None)
+    if _native_simulator is not None else None
+)
+_NATIVE_RULES = (
+    _NATIVE_APPLY_TWO is not None
+    and _NATIVE_MARKET is not None
+    and _NATIVE_TOWN is not None
+    and _NATIVE_DECAY_TWO is not None
+)
+
 
 def _fast_spawn_hand(farm: Any, board_size: int) -> list[int]:
     half = board_size >> 1
@@ -97,8 +126,9 @@ base._HELPER_GLOBALS["_do_hire"] = _fast_do_hire
 
 
 def _apply_player_actions_v2(farm: Any, private: Any, action: Any, day: int) -> None:
-    if _native_simulator is not None:
-        _native_simulator.apply_player_actions(farm, private, action, day)
+    native_apply = _NATIVE_APPLY_PLAYER
+    if native_apply is not None:
+        native_apply(farm, private, action, day)
         return
     base._apply_player_actions(farm, private, action, day=day)
 
@@ -109,28 +139,29 @@ def _experimental_interpreter_v2(state: list[Any], env: Any) -> list[Any]:
     step = obs0.get("step", 0)
     day = step // base._DEFAULT_TURNS_PER_DAY
     farms = obs0.farms
+    private0 = s0.observation.private
+    private1 = s1.observation.private
+    action0 = s0.action
+    action1 = s1.action
 
-    if _native_simulator is not None and hasattr(_native_simulator, "apply_two_player_actions"):
-        _native_simulator.apply_two_player_actions(
+    if _NATIVE_RULES:
+        _NATIVE_APPLY_TWO(
             farms,
-            s0.observation.private, s0.action,
-            s1.observation.private, s1.action,
+            private0, action0,
+            private1, action1,
             day,
         )
-    else:
-        _apply_player_actions_v2(farms[0], s0.observation.private, s0.action, day)
-        _apply_player_actions_v2(farms[1], s1.observation.private, s1.action, day)
-
-    if _native_simulator is not None and hasattr(_native_simulator, "process_market_default"):
-        _native_simulator.process_market_default(
+        _NATIVE_MARKET(
             farms,
-            s0.observation.private, s0.action,
-            s1.observation.private, s1.action,
+            private0, action0,
+            private1, action1,
             obs0.market,
         )
-        _native_simulator.town_consume_default(obs0.market, obs0.town, step)
-        _native_simulator.decay_two_default(farms, step)
+        _NATIVE_TOWN(obs0.market, obs0.town, step)
+        _NATIVE_DECAY_TWO(farms, step)
     else:
+        _apply_player_actions_v2(farms[0], private0, action0, day)
+        _apply_player_actions_v2(farms[1], private1, action1, day)
         base._fast_process_market(state, env)
         base._fast_town_consume_default(env, state, step)
         base._fast_decay_plants_default(farms[0], step)
@@ -168,6 +199,7 @@ def _run_two_player_steps_v2(agent0, agent1, *, env, state, stop_step):
     s1.observation.step = step
     env.state = state
     interpreter = _experimental_interpreter_v2
+    active = base._ACTIVE
     while step < stop_step:
         s0.action = agent0(s0.observation)
         s1.action = agent1(s1.observation)
@@ -176,7 +208,7 @@ def _run_two_player_steps_v2(agent0, agent1, *, env, state, stop_step):
         s0, s1 = state[0], state[1]
         s0.observation.step = step
         s1.observation.step = step
-        if s0.status != base._ACTIVE and s1.status != base._ACTIVE:
+        if s0.status != active and s1.status != active:
             break
     env.state = state
     return state
