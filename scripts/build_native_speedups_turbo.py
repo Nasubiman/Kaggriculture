@@ -3,8 +3,8 @@
 
 This wrapper deliberately leaves the regular native builder untouched.  It adds
 link-time/compiler optimizations and a few source rewrites that remove repeated
-work from the simulator hot path.  The existing trajectory-parity benchmarks
-remain the acceptance test.
+work from hot paths.  The existing trajectory-parity benchmarks remain the
+acceptance test.
 """
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ import build_native_speedups as base
 
 _original_host_flags = base._host_flags
 _original_prepare_planner = base._prepare_planner
+_original_prepare_service = base._prepare_service
 _original_prepare_simulator = base._prepare_simulator
 
 
@@ -56,6 +57,34 @@ def _turbo_prepare_planner(text: str) -> str:
         'if(!ae||!be){++total;if(equal_py(py::handle(ac),py::handle(bc))&&equal_py(py::handle(aa),py::handle(ba)))++matches;}'
     )
     text = base._replace_once(text, old, new, 'planner similarity borrowed dict lookup')
+    return text
+
+
+def _turbo_prepare_service(text: str) -> str:
+    text = _original_prepare_service(text)
+
+    # food_need used to clone the projected farm/private structures before it
+    # knew whether the look-ahead contained a FEED at all.  Most calls only see
+    # PASS/movement/PICKUP, so scan the same <=4 future commands first.  If FEED
+    # is present, fall through to the original cloned simulation unchanged.
+    old = (
+        'static int food_need(py::dict obs,py::dict farm_in,py::dict private_in,int actor,py::object impl){'
+        'py::dict farm=py::cast<py::dict>(kag_unit::clone(farm_in)),priv=py::cast<py::dict>(kag_unit::clone(private_in));'
+        'int step=as_int(obs["step"]),day=step/24,missing=0,stop=std::min(5,24-step%24);'
+    )
+    new = (
+        'static int food_need(py::dict obs,py::dict farm_in,py::dict private_in,int actor,py::object impl){'
+        'int step=as_int(obs["step"]),day=step/24,missing=0,stop=std::min(5,24-step%24);'
+        'bool needs_sim=false;'
+        'for(int offset=1;offset<stop;++offset){'
+        'py::dict fa=future_action(obs,offset,impl);py::list cs=commands(fa);'
+        'py::object command=actor<py::len(cs)?py::reinterpret_borrow<py::object>(cs[actor]):py::object(pass());'
+        'auto c=py::cast<py::sequence>(command);if(op2(c,"PICKUP","WHEAT"))break;'
+        'if(py::len(c)==1&&py::cast<std::string>(c[0])=="FEED"){needs_sim=true;break;}}'
+        'if(!needs_sim)return 0;'
+        'py::dict farm=py::cast<py::dict>(kag_unit::clone(farm_in)),priv=py::cast<py::dict>(kag_unit::clone(private_in));'
+    )
+    text = base._replace_once(text, old, new, 'service lazy food predictor clone')
     return text
 
 
@@ -105,6 +134,7 @@ def _turbo_prepare_simulator(text: str) -> str:
 
 base._host_flags = _turbo_host_flags
 base._prepare_planner = _turbo_prepare_planner
+base._prepare_service = _turbo_prepare_service
 base._prepare_simulator = _turbo_prepare_simulator
 
 
