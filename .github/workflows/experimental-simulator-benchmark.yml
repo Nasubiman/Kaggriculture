@@ -6,6 +6,10 @@ on:
       - experimental/faster-simulator
   workflow_dispatch:
 
+concurrency:
+  group: experimental-simulator-benchmark-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
