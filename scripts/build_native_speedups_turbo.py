@@ -137,6 +137,17 @@ def _turbo_prepare_planner(text: str) -> str:
 def _turbo_prepare_service(text: str) -> str:
     text = _original_prepare_service(text)
 
+    # Keep the imported helper module alive with a raw process-lifetime
+    # reference. A function-local static py::object is destroyed during C++
+    # teardown and can DECREF after CPython has already finalized, which aborts
+    # long benchmark/search processes that exercised the service layer.
+    text = base._replace_once(
+        text,
+        'static py::object sales(){static py::object m=py::module_::import("_kaggriculture_sales");return m;}',
+        'static py::object sales(){static PyObject*m=PyImport_ImportModule("_kaggriculture_sales");if(!m)throw py::error_already_set();return py::reinterpret_borrow<py::object>(m);}',
+        'service finalization-safe sales module',
+    )
+
     # food_need used to clone the projected farm/private structures before it
     # knew whether the look-ahead contained a FEED at all.  Most calls only see
     # PASS/movement/PICKUP, so scan the same <=4 future commands first.  If FEED
