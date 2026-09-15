@@ -59,12 +59,13 @@ def _install_native_deepcopy(module: ModuleType, agent_runtime) -> None:
 
 
 def _install_similarity_adapter(module: ModuleType, agent_runtime) -> None:
-    """Feed the native similarity kernel plain sequence shells without deep-copying tiles.
+    """Give the dict-typed native kernel a tiny outer shell and share tile data.
 
-    Kaggle observations/farms (and, depending on the path, tile rows) can be
-    Struct-like objects.  The current native kernel assumes plain Python sequence
-    rows.  Rebuilding only the two small row shells avoids the exception/fallback
-    loop while the tile objects themselves remain shared references.
+    Kaggle observations/farms can be Struct-like objects, while the native kernel
+    currently requires plain dicts for the outer observation/farm records.  Only
+    those records need adapting: tiles and quadrants are read-only inside the
+    kernel, so keep their original references instead of allocating row copies on
+    every similarity check.
     """
     native=getattr(agent_runtime,"_native",None)
     native_similarity=getattr(native,"r37_similarity",None) if native is not None else None
@@ -76,13 +77,11 @@ def _install_similarity_adapter(module: ModuleType, agent_runtime) -> None:
     def accelerated(observation):
         try:
             farms=observation["farms"]
-            own_tiles=[list(row) for row in farms[0]["tiles"]]
-            rival_tiles=[list(row) for row in farms[1]["tiles"]]
             thin={
                 "player": int(observation["player"]),
                 "farms": [
-                    {"unlocked_quadrants": list(farms[0]["unlocked_quadrants"]), "tiles": own_tiles},
-                    {"unlocked_quadrants": list(farms[1]["unlocked_quadrants"]), "tiles": rival_tiles},
+                    {"unlocked_quadrants": farms[0]["unlocked_quadrants"], "tiles": farms[0]["tiles"]},
+                    {"unlocked_quadrants": farms[1]["unlocked_quadrants"], "tiles": farms[1]["tiles"]},
                 ],
             }
             return native_similarity(thin)
