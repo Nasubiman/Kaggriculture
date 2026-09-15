@@ -3,7 +3,7 @@
 
 This module layers additional default-rule specializations over
 ``experimental_fast_kaggriculture`` without modifying the stable runner or the
-first experimental implementation.  Importing this module patches only the
+first experimental implementation. Importing this module patches only the
 first experimental module's private dispatch table, then reuses its public API.
 """
 from __future__ import annotations
@@ -128,7 +128,7 @@ base._HELPER_GLOBALS["_do_hire"] = _fast_do_hire
 
 
 def _apply_player_actions_v2(farm: Any, private: Any, action: Any, day: int) -> None:
-    """Dispatch the whole player's unit-action batch in one C++ call when built."""
+    """Single-player fallback used when the batch native entry is unavailable."""
     if _native_simulator is not None:
         _native_simulator.apply_player_actions(farm, private, action, day)
         return
@@ -144,8 +144,16 @@ def _experimental_interpreter_v2(state: list[Any], env: Any) -> list[Any]:
     day = step // base._DEFAULT_TURNS_PER_DAY
     farms = obs0.farms
 
-    _apply_player_actions_v2(farms[0], s0.observation.private, s0.action, day)
-    _apply_player_actions_v2(farms[1], s1.observation.private, s1.action, day)
+    if _native_simulator is not None and hasattr(_native_simulator, "apply_two_player_actions"):
+        _native_simulator.apply_two_player_actions(
+            farms,
+            s0.observation.private, s0.action,
+            s1.observation.private, s1.action,
+            day,
+        )
+    else:
+        _apply_player_actions_v2(farms[0], s0.observation.private, s0.action, day)
+        _apply_player_actions_v2(farms[1], s1.observation.private, s1.action, day)
 
     base._fast_process_market(state, env)
     base._fast_town_consume_default(env, state, step)
