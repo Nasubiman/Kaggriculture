@@ -50,21 +50,30 @@ def _install_native_deepcopy(module: ModuleType, agent_runtime) -> None:
         if existing is current or getattr(existing,"_native_accelerated",False):
             planner["deepcopy"]=accelerated
     # apply_main_speed_patch installs its own copy-compatible proxy before this
-    # runtime optimizer runs.  Replace only that known proxy shape so calls made
-    # through main.py's ``copy.deepcopy`` use the same native copier too.  The
+    # runtime optimizer runs. Replace only that known proxy shape so calls made
+    # through main.py's ``copy.deepcopy`` use the same native copier too. The
     # replacement still proxies every other copy-module attribute to stdlib.
     module_copy=module.__dict__.get("copy")
     if module_copy is not None and type(module_copy).__name__ in {"_AgentCopyProxy","_CopyProxy"}:
         module.__dict__["copy"]=agent_runtime._CopyProxy()
 
 
+def _plain_rows(rows):
+    """Normalize only Struct-like rows; keep already-plain list rows zero-copy."""
+    return rows if type(rows) is list and all(type(row) is list for row in rows) else [row if type(row) is list else list(row) for row in rows]
+
+
+def _plain_list(value):
+    return value if type(value) is list else list(value)
+
+
 def _install_similarity_adapter(module: ModuleType, agent_runtime) -> None:
     """Feed the native similarity kernel plain sequence shells without deep-copying tiles.
 
     Kaggle observations/farms (and, depending on the path, tile rows) can be
-    Struct-like objects.  The current native kernel assumes plain Python sequence
-    rows.  Rebuilding only the two small row shells avoids the exception/fallback
-    loop while the tile objects themselves remain shared references.
+    Struct-like objects. The native kernel assumes plain Python sequence rows.
+    Already-normalized lists are now reused directly; only Struct-like shells are
+    rebuilt, while the tile objects themselves always remain shared references.
     """
     native=getattr(agent_runtime,"_native",None)
     native_similarity=getattr(native,"r37_similarity",None) if native is not None else None
@@ -74,13 +83,12 @@ def _install_similarity_adapter(module: ModuleType, agent_runtime) -> None:
     def accelerated(observation):
         try:
             farms=observation["farms"]
-            own_tiles=[list(row) for row in farms[0]["tiles"]]
-            rival_tiles=[list(row) for row in farms[1]["tiles"]]
+            own=farms[0];rival=farms[1]
             thin={
                 "player": int(observation["player"]),
                 "farms": [
-                    {"unlocked_quadrants": list(farms[0]["unlocked_quadrants"]), "tiles": own_tiles},
-                    {"unlocked_quadrants": list(farms[1]["unlocked_quadrants"]), "tiles": rival_tiles},
+                    {"unlocked_quadrants": _plain_list(own["unlocked_quadrants"]), "tiles": _plain_rows(own["tiles"])},
+                    {"unlocked_quadrants": _plain_list(rival["unlocked_quadrants"]), "tiles": _plain_rows(rival["tiles"])},
                 ],
             }
             return native_similarity(thin)
