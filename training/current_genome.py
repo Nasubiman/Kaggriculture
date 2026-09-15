@@ -132,6 +132,9 @@ class CurrentGenome:
     wool_sell_hour: int = 23
     wool_keep: int = 0
     wool_min_price: int = 0
+    wool_sell_interval: int = 1
+    wool_sell_offset: int = 0
+    wool_sell_cap: int = 0
     stop_hiring_day: int = 30
     terminal_mode: str = "inherit"
     terminal_day: int = 30
@@ -167,10 +170,19 @@ class CurrentGenome:
         values["wool_end_day"] = _clip(
             values["wool_end_day"], values["wool_start_day"], 29
         )
-        values["wool_sell_hour"] = _nearest(values["wool_sell_hour"], (1, 12, 20, 23))
+        values["wool_sell_hour"] = _clip(values["wool_sell_hour"], 0, 23)
         values["wool_keep"] = _nearest(values["wool_keep"], (0, 2, 4, 8, 12))
         values["wool_min_price"] = _nearest(
             values["wool_min_price"], (0, 150, 180, 200, 220, 250)
+        )
+        values["wool_sell_interval"] = _nearest(
+            values["wool_sell_interval"], (1, 2, 3, 4, 5, 6, 7)
+        )
+        values["wool_sell_offset"] = _clip(
+            values["wool_sell_offset"], 0, values["wool_sell_interval"] - 1
+        )
+        values["wool_sell_cap"] = _nearest(
+            values["wool_sell_cap"], (0, 1, 2, 4, 6, 8, 12, 16, 24)
         )
         values["stop_hiring_day"] = _clip(values["stop_hiring_day"], 24, 30)
         values["terminal_mode"] = _choice(values["terminal_mode"], TERMINAL_MODES)
@@ -524,11 +536,15 @@ def _apply_wool_liquidation(
         return action
     if hour != genome.wool_sell_hour:
         return action
+    if day % genome.wool_sell_interval != genome.wool_sell_offset:
+        return action
     prices = (obs.get("market", {}) or {}).get("prices", {}) or {}
     if int(prices.get("WOOL", 0)) < genome.wool_min_price:
         return action
     shed = (obs.get("private", {}) or {}).get("shed", {}) or {}
     available = max(0, int(shed.get("WOOL", 0)) - genome.wool_keep)
+    if genome.wool_sell_cap > 0:
+        available = min(available, genome.wool_sell_cap)
     if available <= 0:
         return action
     orders = action["market"]
@@ -638,6 +654,12 @@ def anchor_genomes() -> list[CurrentGenome]:
         replace(base, wool_policy="liquidate", wool_sell_hour=12),
         replace(base, wool_policy="liquidate", wool_sell_hour=20),
         replace(base, wool_policy="liquidate", wool_sell_hour=23),
+        replace(base, wool_policy="liquidate", wool_sell_hour=1,
+                wool_sell_interval=2, wool_sell_offset=0),
+        replace(base, wool_policy="liquidate", wool_sell_hour=1,
+                wool_sell_interval=2, wool_sell_offset=1),
+        replace(base, wool_policy="liquidate", wool_sell_hour=1, wool_sell_cap=4),
+        replace(base, wool_policy="liquidate", wool_sell_hour=1, wool_sell_cap=8),
         replace(base, extension_policy="off", wool_policy="liquidate",
                 wool_sell_hour=23, wool_min_price=180),
         replace(base, extension_policy="off", wheat_pressure=2,
@@ -675,9 +697,12 @@ def mutate(genome: CurrentGenome, rng: random.Random, changes: int = 1) -> Curre
         "wool_policy": WOOL_POLICIES,
         "wool_start_day": (4, 6, 8, 10, 12, 14, 16, 20, 24, 28),
         "wool_end_day": (12, 16, 20, 24, 27, 28, 29),
-        "wool_sell_hour": (1, 12, 20, 23),
+        "wool_sell_hour": tuple(range(24)),
         "wool_keep": (0, 2, 4, 8, 12),
         "wool_min_price": (0, 150, 180, 200, 220, 250),
+        "wool_sell_interval": (1, 2, 3, 4, 5, 6, 7),
+        "wool_sell_offset": (0, 1, 2, 3, 4, 5, 6),
+        "wool_sell_cap": (0, 1, 2, 4, 6, 8, 12, 16, 24),
         "stop_hiring_day": (24, 26, 27, 28, 29, 30),
         "terminal_mode": TERMINAL_MODES,
         "terminal_day": (26, 27, 28, 29, 30),
@@ -690,7 +715,8 @@ def mutate(genome: CurrentGenome, rng: random.Random, changes: int = 1) -> Curre
          "extension_min_shops", "extension_min_yarn", "extension_stop_day", "wheat_pressure",
          "pressure_start_day", "pressure_end_day", "pressure_hour",
          "wool_policy", "wool_start_day", "wool_end_day", "wool_sell_hour",
-         "wool_keep", "wool_min_price"),
+         "wool_keep", "wool_min_price", "wool_sell_interval",
+         "wool_sell_offset", "wool_sell_cap"),
         ("stop_hiring_day", "terminal_mode", "terminal_day"),
     )
     for _ in range(max(1, changes)):
@@ -712,7 +738,8 @@ def crossover(first: CurrentGenome, second: CurrentGenome, rng: random.Random):
          "extension_min_shops", "extension_min_yarn", "extension_stop_day", "wheat_pressure",
          "pressure_start_day", "pressure_end_day", "pressure_hour",
          "wool_policy", "wool_start_day", "wool_end_day", "wool_sell_hour",
-         "wool_keep", "wool_min_price"),
+         "wool_keep", "wool_min_price", "wool_sell_interval",
+         "wool_sell_offset", "wool_sell_cap"),
         ("stop_hiring_day", "terminal_mode", "terminal_day"),
     ):
         source = b if rng.random() < 0.5 else a

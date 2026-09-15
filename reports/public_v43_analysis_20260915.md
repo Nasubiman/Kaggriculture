@@ -62,3 +62,7 @@ In the same final league gate it won 96% against both public-v41 variants, 97%
 against public-v38, 100% against results5, and 95% against the pre-v43 incumbent.
 It was promoted to `main.py`; its standalone source and genome are preserved under
 `candidates/v43_wool_first_20260915/`.
+
+The subsequent 24-hour wool-market search on 2026-09-16 replaced hour 1 with hour
+5 and improved the independently measured v43 win rate from 84.0% to 91.0%. See
+`reports/wool_market_search_20260916.md` for the full search and league gate.
