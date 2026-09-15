@@ -83,17 +83,20 @@ copy = _AgentCopyProxy()
 # Diagnostics are exported to telemetry but never feed the decision path. Keep
 # local report counters because a few native accelerators write them, but stop
 # repeatedly copying accumulated dictionaries through the wrapper chain.
+# Important: consume horizontal whitespace only at the end. Using ``\s*`` here
+# also consumed the following newline and could turn ``stmt;\nfor`` into the
+# invalid ``stmt;for`` after deleting an update call.
 _PARENT_TELEMETRY_RE = re.compile(
     r"[A-Za-z_][A-Za-z0-9_]*\.update\(getattr\("
-    r"[A-Za-z_][A-Za-z0-9_]*\s*,\s*['\"]telemetry['\"]\s*,\s*\{\}\s*\)\)\s*;?"
+    r"[A-Za-z_][A-Za-z0-9_]*\s*,\s*['\"]telemetry['\"]\s*,\s*\{\}\s*\)\)[ \t]*;?"
 )
 _DIRECT_PARENT_TELEMETRY_RE = re.compile(
     r"[A-Za-z_][A-Za-z0-9_]*\.update\("
-    r"[A-Za-z_][A-Za-z0-9_]*\.telemetry\)\s*;?"
+    r"[A-Za-z_][A-Za-z0-9_]*\.telemetry\)[ \t]*;?"
 )
 _REPORT_AGGREGATION_RE = re.compile(
     r"(?:[A-Z][A-Z0-9_]*(?:REPORT|COMBINED))\.update\("
-    r"[A-Z][A-Z0-9_]*REPORT\)\s*;?"
+    r"[A-Z][A-Z0-9_]*REPORT\)[ \t]*;?"
 )
 
 
@@ -146,6 +149,9 @@ def main() -> None:
         )
     text = text.replace(final_wrapper, flattened, 1)
 
+    # Fail in the patch step rather than later in a benchmark if a future source
+    # shape makes one of the textual transforms syntactically unsafe.
+    compile(text, str(MAIN), "exec")
     MAIN.write_text(text)
     print(
         "patched main.py: fast deepcopy + lazy fallback + removed diagnostic "
