@@ -50,7 +50,13 @@ def wrap(agent, trace):
         )}
         before = fp(observation)
         action = agent(obs)
-        trace.append((before, fp(action)))
+        trace.append({
+            "step": int(obs["step"]),
+            "player": int(obs["player"]),
+            "before": before,
+            "action_fp": fp(action),
+            "action": json.dumps(action, sort_keys=True, separators=(",", ":")),
+        })
         return action
     return recorded
 
@@ -71,7 +77,8 @@ def terminal_fp(final):
 
 
 def play_fast(opponent: Path, seed: int, seat: int, use_native: bool, verify: bool):
-    candidate = load_module(ROOT / "main.py", f"candidate_{use_native}_{seed}_{seat}", use_native).agent
+    candidate_module = load_module(ROOT / "main.py", f"candidate_{use_native}_{seed}_{seat}", use_native)
+    candidate = candidate_module.agent
     rival = load_module(opponent, f"opponent_{use_native}_{seed}_{seat}", False).agent
     agents = [candidate, rival] if seat == 0 else [rival, candidate]
     trace = []
@@ -82,7 +89,11 @@ def play_fast(opponent: Path, seed: int, seat: int, use_native: bool, verify: bo
     final = runner.run_fast_episode(agents, seed=seed)
     elapsed = time.perf_counter() - start
     state, rewards = terminal_fp(final)
-    return elapsed, (trace, state), rewards
+    diagnostics = {
+        "chassis": getattr(candidate_module, "_NATIVE_CHASSIS_DIAGNOSTIC", None),
+        "similarity": getattr(candidate_module, "_NATIVE_SIMILARITY_DIAGNOSTIC", None),
+    }
+    return elapsed, (trace, state), rewards, diagnostics
 
 
 def play_official(opponent: Path, seed: int, seat: int, use_native: bool):
@@ -98,6 +109,33 @@ def play_official(opponent: Path, seed: int, seat: int, use_native: bool):
     return trace, state, rewards
 
 
+def explain_mismatch(expected, actual, diagnostics):
+    etrace, estate = expected
+    atrace, astate = actual
+    limit = min(len(etrace), len(atrace))
+    for i in range(limit):
+        if etrace[i] != atrace[i]:
+            print("FIRST_NATIVE_DIVERGENCE", json.dumps({
+                "trace_index": i,
+                "expected": etrace[i],
+                "actual": atrace[i],
+                "diagnostics": diagnostics,
+            }, sort_keys=True), flush=True)
+            return
+    if len(etrace) != len(atrace):
+        print("FIRST_NATIVE_DIVERGENCE", json.dumps({
+            "trace_length_expected": len(etrace),
+            "trace_length_actual": len(atrace),
+            "diagnostics": diagnostics,
+        }, sort_keys=True), flush=True)
+        return
+    print("FIRST_NATIVE_DIVERGENCE", json.dumps({
+        "terminal_expected": estate,
+        "terminal_actual": astate,
+        "diagnostics": diagnostics,
+    }, sort_keys=True), flush=True)
+
+
 def main():
     if not agent_runtime.native_acceleration_available():
         raise SystemExit("native accelerator was not imported")
@@ -106,9 +144,11 @@ def main():
     tasks = [(ROOT / "test" / m / "main.py", 13_094_000, seat) for m in models for seat in (0, 1)]
 
     for opponent, seed, seat in tasks:
-        _, expected, expected_rewards = play_fast(opponent, seed, seat, False, True)
-        _, actual, actual_rewards = play_fast(opponent, seed, seat, True, True)
-        assert actual == expected, f"native fast mismatch {opponent.parent.name} seat={seat}"
+        _, expected, expected_rewards, _ = play_fast(opponent, seed, seat, False, True)
+        _, actual, actual_rewards, diagnostics = play_fast(opponent, seed, seat, True, True)
+        if actual != expected:
+            explain_mismatch(expected, actual, diagnostics)
+            raise AssertionError(f"native fast mismatch {opponent.parent.name} seat={seat}")
         assert actual_rewards == expected_rewards
         print(f"native fast parity OK: {opponent.parent.name} seat={seat}", flush=True)
 
@@ -128,7 +168,7 @@ def main():
             variants.reverse()
         for opponent, seed, seat in timing_tasks:
             for use_native, name in variants:
-                elapsed, _, _ = play_fast(opponent, seed + repeat * 17, seat, use_native, False)
+                elapsed, _, _, _ = play_fast(opponent, seed + repeat * 17, seat, use_native, False)
                 samples[name].append(elapsed)
 
     result = {}
