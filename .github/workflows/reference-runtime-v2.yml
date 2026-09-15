@@ -24,8 +24,8 @@ jobs:
           python -m pip install pybind11
       - name: Normalize native simulator source
         run: python scripts/prepare_native_simulator_source.py
-      - name: Build native accelerators
-        run: python scripts/build_native_speedups_turbo.py
+      - name: Build policy-aware native accelerators
+        run: python scripts/build_native_speedups_policy.py
       - name: Apply guarded main.py speed patch
         run: python scripts/apply_main_speed_patch.py
       - name: Verify and benchmark reference policies
