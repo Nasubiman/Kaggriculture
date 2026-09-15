@@ -10,9 +10,8 @@ Transformations:
    JSON-like containers, with stdlib fallback for every other object type;
 2. remove the second eager copy of each route action that exists only to serve
    an exceptional fallback path, and reconstruct it only if that path is taken;
-3. remove parent->child telemetry dictionary propagation.  Telemetry is
-   diagnostic-only and copying the full accumulated report through every wrapper
-   is pure hot-path overhead; local counters themselves are left intact.
+3. remove diagnostic telemetry/report propagation between wrapper layers while
+   preserving each layer's own state and counters.
 """
 from __future__ import annotations
 
@@ -66,12 +65,10 @@ def _fast_deepcopy(value, memo=None):
         for item in value:
             add(_fast_deepcopy(item, memo))
         return out
-    # Tuple/custom/Kaggle Struct objects retain exact stdlib deepcopy behavior.
     return _STD_DEEPCOPY(value, memo)
 
 
 class _AgentCopyProxy:
-    """Module-local copy proxy; never mutates Python's stdlib copy module."""
     deepcopy = staticmethod(_fast_deepcopy)
 
     def __getattr__(self, name):
@@ -81,12 +78,20 @@ class _AgentCopyProxy:
 copy = _AgentCopyProxy()
 '''
 
-# Copying a parent's cumulative telemetry into the next overlay never changes an
-# action or policy state.  Match only the explicit diagnostic propagation form;
-# report-to-report updates and local counter resets are intentionally preserved.
+# Diagnostics are exported to telemetry but never feed the decision path.  Keep
+# local report counters because a few native accelerators write them, but stop
+# repeatedly copying accumulated dictionaries through the wrapper chain.
 _PARENT_TELEMETRY_RE = re.compile(
     r"[A-Za-z_][A-Za-z0-9_]*\.update\(getattr\("
     r"[A-Za-z_][A-Za-z0-9_]*\s*,\s*['\"]telemetry['\"]\s*,\s*\{\}\s*\)\)\s*;?"
+)
+_DIRECT_PARENT_TELEMETRY_RE = re.compile(
+    r"[A-Za-z_][A-Za-z0-9_]*\.update\("
+    r"[A-Za-z_][A-Za-z0-9_]*\.telemetry\)\s*;?"
+)
+_REPORT_AGGREGATION_RE = re.compile(
+    r"(?:[A-Z][A-Z0-9_]*(?:REPORT|COMBINED))\.update\("
+    r"[A-Z][A-Z0-9_]*REPORT\)\s*;?"
 )
 
 
@@ -105,9 +110,6 @@ def main() -> None:
         raise RuntimeError(f"expected one PRODUCTS insertion anchor, found {text.count(anchor)}")
     text = text.replace(anchor, FAST_COPY_HELPER + anchor, 1)
 
-    # _route_action already returns a fresh deepcopy. The immediately following
-    # ``raw = copy.deepcopy(action)`` is used only if a later layer raises.
-    # Defer creation of that pristine fallback until the exceptional path.
     old_raw = '''        action = self._route_action(route, step)\n        raw = copy.deepcopy(action)\n        try:\n'''
     new_raw = '''        action = self._route_action(route, step)\n        try:\n'''
     if text.count(old_raw) != 1:
@@ -120,16 +122,22 @@ def main() -> None:
         raise RuntimeError(f"expected one layer fallback, found {text.count(old_except)}")
     text = text.replace(old_except, new_except, 1)
 
-    text, telemetry_removed = _PARENT_TELEMETRY_RE.subn("", text)
-    if telemetry_removed < 10:
+    text, inherited_removed = _PARENT_TELEMETRY_RE.subn("", text)
+    text, direct_removed = _DIRECT_PARENT_TELEMETRY_RE.subn("", text)
+    text, aggregate_removed = _REPORT_AGGREGATION_RE.subn("", text)
+    total_removed = inherited_removed + direct_removed + aggregate_removed
+    if inherited_removed < 10 or total_removed < 18:
         raise RuntimeError(
-            f"expected many parent telemetry propagations, removed only {telemetry_removed}"
+            "expected broad diagnostic propagation removal, got "
+            f"inherited={inherited_removed}, direct={direct_removed}, "
+            f"aggregate={aggregate_removed}"
         )
 
     MAIN.write_text(text)
     print(
-        "patched main.py: local fast deepcopy + lazy fallback action copy + "
-        f"removed {telemetry_removed} parent telemetry propagations"
+        "patched main.py: fast deepcopy + lazy fallback + removed diagnostic "
+        f"propagation inherited={inherited_removed}, direct={direct_removed}, "
+        f"aggregate={aggregate_removed}"
     )
 
 
