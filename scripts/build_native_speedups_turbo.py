@@ -14,6 +14,7 @@ import build_native_speedups as base
 
 
 _original_host_flags = base._host_flags
+_original_prepare_chassis = base._prepare_chassis
 _original_prepare_planner = base._prepare_planner
 _original_prepare_service = base._prepare_service
 _original_prepare_simulator = base._prepare_simulator
@@ -26,6 +27,79 @@ def _turbo_host_flags():
         # -flto applies to both phases.  These flags do not relax FP semantics.
         flags += ["-flto", "-fno-semantic-interposition", "-fno-plt"]
     return flags
+
+
+def _turbo_prepare_chassis(text: str) -> str:
+    text = _original_prepare_chassis(text)
+
+    # View is constructed once per native Chassis turn.  Avoid repeatedly
+    # allocating temporary py::str keys for the common required/optional dict
+    # lookups. PyDict_GetItemString returns borrowed references, which is enough
+    # because the observation/farm dictionaries own the values for the call.
+    helper = (
+        'static py::handle dict_required(py::dict d,const char*k){'
+        'PyObject*v=PyDict_GetItemString(d.ptr(),k);if(!v)throw py::key_error(k);return py::handle(v);}\n'
+    )
+    text = base._replace_once(
+        text,
+        'namespace {\n',
+        'namespace {\n' + helper,
+        'chassis borrowed dict helper',
+    )
+    for old, new, label in (
+        (
+            'auto farms=py::reinterpret_borrow<py::sequence>(obs[py::str("farms")]);',
+            'auto farms=py::reinterpret_borrow<py::sequence>(dict_required(obs,"farms"));',
+            'chassis farms borrowed lookup',
+        ),
+        (
+            'private_d=py::cast<py::dict>(obs[py::str("private")]);',
+            'private_d=py::cast<py::dict>(dict_required(obs,"private"));',
+            'chassis private borrowed lookup',
+        ),
+        (
+            'market=py::cast<py::dict>(obs[py::str("market")]);',
+            'market=py::cast<py::dict>(dict_required(obs,"market"));',
+            'chassis market borrowed lookup',
+        ),
+        (
+            'auto f=py::reinterpret_borrow<py::sequence>(farm[py::str("farmer")]);',
+            'auto f=py::reinterpret_borrow<py::sequence>(dict_required(farm,"farmer"));',
+            'chassis farmer borrowed lookup',
+        ),
+        (
+            'shed=private_d.contains(py::str("shed"))?py::cast<py::dict>(private_d[py::str("shed")]):py::dict();',
+            'if(PyObject*v=PyDict_GetItemString(private_d.ptr(),"shed"))shed=py::cast<py::dict>(py::handle(v));else shed=py::dict();',
+            'chassis shed borrowed lookup',
+        ),
+        (
+            'seeds=private_d.contains(py::str("seeds"))?py::cast<py::dict>(private_d[py::str("seeds")]):py::dict();',
+            'if(PyObject*v=PyDict_GetItemString(private_d.ptr(),"seeds"))seeds=py::cast<py::dict>(py::handle(v));else seeds=py::dict();',
+            'chassis seeds borrowed lookup',
+        ),
+        (
+            'prices=market.contains(py::str("prices"))?py::cast<py::dict>(market[py::str("prices")]):py::dict();',
+            'if(PyObject*v=PyDict_GetItemString(market.ptr(),"prices"))prices=py::cast<py::dict>(py::handle(v));else prices=py::dict();',
+            'chassis prices borrowed lookup',
+        ),
+        (
+            'money=farm.contains(py::str("money"))?as_double(farm[py::str("money")]):0.0;',
+            'if(PyObject*v=PyDict_GetItemString(farm.ptr(),"money"))money=as_double(py::handle(v));else money=0.0;',
+            'chassis money borrowed lookup',
+        ),
+        (
+            'hires_today=farm.contains(py::str("hires_today"))?as_int(farm[py::str("hires_today")]):0;',
+            'if(PyObject*v=PyDict_GetItemString(farm.ptr(),"hires_today"))hires_today=as_int(py::handle(v));else hires_today=0;',
+            'chassis hires borrowed lookup',
+        ),
+        (
+            'if(farm.contains(py::str("unlocked_quadrants")))quadrants=(int)py::len(farm[py::str("unlocked_quadrants")]);',
+            'if(PyObject*v=PyDict_GetItemString(farm.ptr(),"unlocked_quadrants"))quadrants=(int)py::len(py::handle(v));',
+            'chassis quadrants borrowed lookup',
+        ),
+    ):
+        text = base._replace_once(text, old, new, label)
+    return text
 
 
 def _turbo_prepare_planner(text: str) -> str:
@@ -133,6 +207,7 @@ def _turbo_prepare_simulator(text: str) -> str:
 
 
 base._host_flags = _turbo_host_flags
+base._prepare_chassis = _turbo_prepare_chassis
 base._prepare_planner = _turbo_prepare_planner
 base._prepare_service = _turbo_prepare_service
 base._prepare_simulator = _turbo_prepare_simulator
