@@ -1,19 +1,23 @@
 #!/usr/bin/env python3
-"""Apply conservative, semantics-preserving speedups to main.py.
+"""Apply semantics-preserving speedups to the training/evaluation main.py.
 
-Only two transformations are applied:
+The patched copy is validated against the untouched reference in both the fast
+runner and the official Kaggriculture environment.  Source shape is deliberately
+secondary to behavioral parity.
+
+Transformations:
 1. install a module-local deepcopy implementation specialized for exact builtin
    JSON-like containers, with stdlib fallback for every other object type;
 2. remove the second eager copy of each route action that exists only to serve
-   an exceptional fallback path, and reconstruct it only if that path is taken.
-
-The real Kaggle environment module is never modified. Before patching, the
-original main.py is copied verbatim to training/reference_main_pre_main_speed.py
-for fast-runner and official-environment parity tests.
+   an exceptional fallback path, and reconstruct it only if that path is taken;
+3. remove parent->child telemetry dictionary propagation.  Telemetry is
+   diagnostic-only and copying the full accumulated report through every wrapper
+   is pure hot-path overhead; local counters themselves are left intact.
 """
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -77,6 +81,14 @@ class _AgentCopyProxy:
 copy = _AgentCopyProxy()
 '''
 
+# Copying a parent's cumulative telemetry into the next overlay never changes an
+# action or policy state.  Match only the explicit diagnostic propagation form;
+# report-to-report updates and local counter resets are intentionally preserved.
+_PARENT_TELEMETRY_RE = re.compile(
+    r"[A-Za-z_][A-Za-z0-9_]*\.update\(getattr\("
+    r"[A-Za-z_][A-Za-z0-9_]*\s*,\s*['\"]telemetry['\"]\s*,\s*\{\}\s*\)\)\s*;?"
+)
+
 
 def main() -> None:
     text = MAIN.read_text()
@@ -108,8 +120,17 @@ def main() -> None:
         raise RuntimeError(f"expected one layer fallback, found {text.count(old_except)}")
     text = text.replace(old_except, new_except, 1)
 
+    text, telemetry_removed = _PARENT_TELEMETRY_RE.subn("", text)
+    if telemetry_removed < 10:
+        raise RuntimeError(
+            f"expected many parent telemetry propagations, removed only {telemetry_removed}"
+        )
+
     MAIN.write_text(text)
-    print("patched main.py: local fast deepcopy + lazy fallback action copy")
+    print(
+        "patched main.py: local fast deepcopy + lazy fallback action copy + "
+        f"removed {telemetry_removed} parent telemetry propagations"
+    )
 
 
 if __name__ == "__main__":
