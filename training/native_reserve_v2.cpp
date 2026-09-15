@@ -37,7 +37,7 @@ static py::dict project(py::dict obs,py::dict action,int cap){
 }
 
 static py::tuple r36_reserve(py::dict obs,py::dict action,py::dict state,py::sequence tape,int horizon){
-    int step=py::cast<int>(obs[py::str("step")]);if(step<216||step>=696)return py::make_tuple(0,0);int end=std::min({695,step+horizon,(step/72+1)*72-1});if(end<=step)return py::make_tuple(0,0);
+    int step=py::cast<int>(obs[py::str("step")]);if(step<288||step>=696)return py::make_tuple(0,0);int end=std::min({695,step+horizon,(step/72+1)*72-1});if(end<=step)return py::make_tuple(0,0);
     int player=py::cast<int>(obs[py::str("player")]);auto farms=py::reinterpret_borrow<py::sequence>(obs[py::str("farms")]);auto farm=py::reinterpret_borrow<py::dict>(farms[player]);auto priv=py::reinterpret_borrow<py::dict>(obs[py::str("private")]);auto invs=py::reinterpret_borrow<py::sequence>(priv[py::str("inventories")]);auto cmds=commands(action);
     for(size_t i=0;i<cmds.size()&&i<(size_t)py::len(invs);++i){auto c=py::reinterpret_borrow<py::sequence>(cmds[i]);if(py::len(c)>1&&py::cast<std::string>(c[0])=="PLACE"){std::string item=py::cast<std::string>(c[1]);if(animal(item)){auto inv=py::reinterpret_borrow<py::dict>(invs[i]);py::str k(item);if(inv.contains(k)&&as_int(inv[k])>0)return py::make_tuple(0,0);}}}
     py::dict stock=project(obs,action,100);py::list market;if(action.contains(py::str("market")))market=py::cast<py::list>(action[py::str("market")]);else{market=py::list();action[py::str("market")]=market;}
