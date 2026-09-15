@@ -38,8 +38,30 @@ def _install_input(module: ModuleType) -> None:
 def _install_sales(module: ModuleType) -> None:
     if _sales_native is None:return
     ns=module.__dict__
-    for name,native_name in (("_r37_quote_priority","r37_quote_priority"),("_r97_market_stock","market_stock"),("_r97_delivery","delivery"),("_r97_budget","budget"),("_r127_fields","r127_fields")):
+    for name,native_name in (("_r37_quote_priority","r37_quote_priority"),("_r97_market_stock","market_stock"),("_r97_delivery","delivery")):
         _wrap(ns,name,getattr(_sales_native,native_name,None))
+
+    budget=ns.get("_r97_budget")
+    if callable(budget) and hasattr(_sales_native,"budget") and not getattr(budget,"_native_accelerated",False):
+        def accelerated_budget(obs,orders):
+            # Python's helper intentionally only defines conservative prices for
+            # these two products; preserve its KeyError/fallback semantics for others.
+            if any(o and len(o)>2 and o[0]=="BUY_PRODUCT" and o[1] not in ("WHEAT","FERTILIZER") for o in orders):
+                return budget(obs,orders)
+            try:return _sales_native.budget(obs,orders)
+            except Exception:return budget(obs,orders)
+        accelerated_budget._native_accelerated=True;accelerated_budget._python_fallback=budget;ns["_r97_budget"]=accelerated_budget
+
+    fields=ns.get("_r127_fields")
+    if callable(fields) and hasattr(_sales_native,"r127_fields") and not getattr(fields,"_native_accelerated",False):
+        def accelerated_fields(obs,action):
+            # Normal replay actions always contain a unit command. Missing/false
+            # farmer commands stay on the reference implementation.
+            if not action.get("farmer"):
+                return fields(obs,action)
+            try:return _sales_native.r127_fields(obs,action)
+            except Exception:return fields(obs,action)
+        accelerated_fields._native_accelerated=True;accelerated_fields._python_fallback=fields;ns["_r127_fields"]=accelerated_fields
 
 
 def _install_service(module: ModuleType) -> None:
