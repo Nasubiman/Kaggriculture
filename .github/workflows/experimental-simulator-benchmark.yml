@@ -29,12 +29,14 @@ jobs:
           python -m pip install pybind11
       - name: Normalize native simulator source
         run: python scripts/prepare_native_simulator_source.py
-      - name: Prepare lazy native service predictor
-        run: python scripts/prepare_native_service_source.py
+      - name: Prepare native Struct chassis adapter
+        run: python scripts/prepare_native_chassis_struct.py
       - name: Build optional native accelerator
         run: python scripts/build_native_speedups.py
       - name: Build experimental native R97 supply accelerator
         run: python scripts/build_native_supply.py
+      - name: Activate native Struct chassis adapter
+        run: python scripts/activate_native_chassis_struct.py
       - name: Apply guarded main.py speed patch
         run: python scripts/apply_main_speed_patch.py
       # Native parity is the fastest high-value guard while the runtime hot path
