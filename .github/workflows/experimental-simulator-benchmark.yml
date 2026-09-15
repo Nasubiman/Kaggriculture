@@ -5,6 +5,7 @@ on:
     branches:
       - experimental/faster-simulator
       - experimental/faster-simulator-v4
+      - agent/simulator-v4-next-20260915
   workflow_dispatch:
 
 concurrency:
