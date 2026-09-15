@@ -22,10 +22,12 @@ from reference_runtime import optimize_reference_agent_module
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OPPONENTS = (
+    "public_v43_competitive_20260915",
     "public_v38_low_pressure_20260914",
     "public_v41_competitive_20260914",
     "public_v41_survival_20260914",
-    "results5_20260913", "incumbent_v37_opening",
+    "results5_20260913", "incumbent_pre_v43_20260915",
+    "incumbent_v37_opening",
     "attack_roundtrip_first25", "robust_seat_mix_v1",
 )
 _BASE = ""
