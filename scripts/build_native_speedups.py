@@ -50,12 +50,12 @@ def _prepare_sales(text):
     )
 
 def _prepare_service(text):
-    return _replace_once(
-        text,
-        'auto after=py::cast<py::dict>(safe[1]),ainv=py::cast<py::sequence>(after["inventories"]);',
-        'auto after=py::cast<py::dict>(safe[1]);auto ainv=py::cast<py::sequence>(after["inventories"]);',
-        'service result sequence type',
-    )
+    for old,new,label in (
+      ('auto after=py::cast<py::dict>(safe[1]),ainv=py::cast<py::sequence>(after["inventories"]);','auto after=py::cast<py::dict>(safe[1]);auto ainv=py::cast<py::sequence>(after["inventories"]);','service result sequence type'),
+      ('tile.contains("fed_today")?tile["fed_today"]:py::bool_(false)','tile.contains("fed_today")?py::reinterpret_borrow<py::object>(tile["fed_today"]):py::object(py::bool_(false))','service fed_today object ternary'),
+      ('tile.contains("placed_day")?py::reinterpret_borrow<py::object>(tile["placed_day"]):py::none()','tile.contains("placed_day")?py::reinterpret_borrow<py::object>(tile["placed_day"]):py::object(py::none())','service placed_day object ternary')):
+        text=_replace_once(text,old,new,label)
+    return text
 
 def _prepare_planner(text):
     text=_replace_once(text,'''struct PathItem { int idx=0, x=0, y=0, birth=0; std::string crop; };
