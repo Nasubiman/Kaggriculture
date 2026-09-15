@@ -110,12 +110,25 @@ static void beam_mark(Beam& b,int idx){ b.used[(unsigned)idx>>6] |= 1ULL << (idx
         text=_replace_once(text,old,new,label)
     return text
 
+def _prepare_simulator(text):
+    decay='''static void decay_two_default(py::sequence farms,int step){if(step<96||(step&1))return;decay_farm_default(py::cast<py::dict>(farms[0]),step);decay_farm_default(py::cast<py::dict>(farms[1]),step);}'''
+    fused=decay+'''\n\nstatic void step_default(py::sequence farms,py::dict p0,py::object a0,py::dict p1,py::object a1,py::dict market,py::dict town,int step){\n    const int day=step/24;\n    apply_two_player_actions(farms,p0,a0,p1,a1,day);\n    process_market_default(farms,p0,a0,p1,a1,market);\n    town_consume_default(market,town,step);\n    decay_two_default(farms,step);\n}'''
+    text=_replace_once(text,decay,fused,'fused simulator turn function')
+    text=_replace_once(
+        text,
+        '    m.def("decay_two_default", &decay_two_default);',
+        '    m.def("decay_two_default", &decay_two_default);\n    m.def("step_default", &step_default);',
+        'fused simulator turn export',
+    )
+    return text
+
 def _prepared_source(src,tmpdir):
     if src.name=="native_chassis.cpp": text=_prepare_chassis(src.read_text())
     elif src.name=="native_speedups_v2.cpp": text=_prepare_planner(src.read_text())
     elif src.name=="native_input_control.cpp": text=_prepare_input(src.read_text())
     elif src.name=="native_sales.cpp": text=_prepare_sales(src.read_text())
     elif src.name=="native_service.cpp": text=_prepare_service(src.read_text())
+    elif src.name=="native_simulator.cpp": text=_prepare_simulator(src.read_text())
     else: return src
     out=tmpdir/src.name;out.write_text(text);return out
 
