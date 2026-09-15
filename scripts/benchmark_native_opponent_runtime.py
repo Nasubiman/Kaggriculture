@@ -2,8 +2,9 @@
 """Parity-check and benchmark native acceleration for safe reference opponents.
 
 The candidate stays on the already validated native path in both variants.  We
-only native-accelerate public_v31/v35/v36 here; public_v37 is intentionally left
-out because its Chassis semantics differ from the shared native implementation.
+native-accelerate reference models whose exact trajectory parity has been
+verified here; public_v37 remains intentionally Python-only because its Chassis
+semantics differ from the shared native implementation.
 """
 from __future__ import annotations
 
@@ -17,7 +18,15 @@ import benchmark_native_agent_runtime as base
 from kaggle_environments import make
 
 ROOT = Path(__file__).resolve().parents[1]
-MODELS = ("public_v31", "public_v35", "public_v36")
+MODELS = (
+    "public_v31",
+    "public_v35",
+    "public_v36",
+    "public_v38_low_pressure_20260914",
+    "public_v41_competitive_20260914",
+    "public_v41_survival_20260914",
+)
+PYTHON_ONLY_MODELS = ("public_v37",)
 
 
 def play_fast(opponent: Path, seed: int, seat: int, opponent_native: bool, verify: bool):
@@ -67,8 +76,8 @@ def main() -> None:
         assert actual_rewards == expected_rewards
         print(f"native opponent fast parity OK: {opponent.parent.name} seat={seat}", flush=True)
 
-    # public_v36 is the newest reference model in the parity-safe group, so also
-    # validate both seats through Kaggle's official environment runner.
+    # public_v36 is the newest public model in the original parity-safe group;
+    # retain the official-runner check as a second, independent semantics guard.
     opponent = ROOT / "test" / "public_v36" / "main.py"
     for seat in (0, 1):
         expected = play_official(opponent, 13_096_911, seat, False)
@@ -97,7 +106,7 @@ def main() -> None:
     result = {
         "policy": {
             "native_models": list(MODELS),
-            "python_only_models": ["public_v37"],
+            "python_only_models": list(PYTHON_ONLY_MODELS),
         },
         "by_model": {},
     }
