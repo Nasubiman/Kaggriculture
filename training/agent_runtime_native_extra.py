@@ -10,6 +10,10 @@ try:
     import _kaggriculture_sales as _sales_native
 except Exception:
     _sales_native = None
+try:
+    import _kaggriculture_service as _service_native
+except Exception:
+    _service_native = None
 
 
 def _install_input(module: ModuleType) -> None:
@@ -48,10 +52,32 @@ def _install_r97(module: ModuleType) -> None:
         ns[pyname]=make()
 
 
+def _install_service(module: ModuleType) -> None:
+    if _service_native is None:return
+    ns=module.__dict__;planner=ns.get("_PLANNER_NS");impl=ns.get("_IMPL")
+    if not isinstance(planner,dict) or impl is None:return
+    apply_unit=planner.get("_apply_unit_action")
+    if not callable(apply_unit):return
+    fields=ns.get("_r127_fields")
+    if callable(fields) and hasattr(_service_native,"r127_fields") and not getattr(fields,"_native_accelerated",False):
+        def accelerated_fields(obs,action):
+            try:return _service_native.r127_fields(obs,action,apply_unit)
+            except Exception:return fields(obs,action)
+        accelerated_fields._native_accelerated=True;accelerated_fields._python_fallback=fields
+        ns["_r127_fields"]=accelerated_fields
+    food=ns.get("_r128_food_need")
+    if callable(food) and hasattr(_service_native,"r128_food_need") and not getattr(food,"_native_accelerated",False):
+        def accelerated_food(obs,farm,private,actor):
+            try:return _service_native.r128_food_need(obs,farm,private,actor,impl,apply_unit)
+            except Exception:return food(obs,farm,private,actor)
+        accelerated_food._native_accelerated=True;accelerated_food._python_fallback=food
+        ns["_r128_food_need"]=accelerated_food
+
+
 def install_native_extra(module: ModuleType) -> ModuleType:
     # benchmark_native_agent_runtime sets agent_runtime._native=None for Python baseline.
     try:
         import agent_runtime
         if agent_runtime._native is None:return module
     except Exception:return module
-    _install_input(module);_install_sales(module);_install_r97(module);return module
+    _install_input(module);_install_sales(module);_install_r97(module);_install_service(module);return module
