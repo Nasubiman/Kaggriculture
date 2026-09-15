@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Search a second product-market front-run overlay against one opponent."""
+"""Search an additional product-market front-run overlay against one opponent."""
 
 from __future__ import annotations
 
@@ -19,35 +19,39 @@ from search_wool_market import save
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def hourly_candidates(base: CurrentGenome) -> list[dict]:
+def hourly_candidates(base: CurrentGenome, slot: str) -> list[dict]:
     rows = [row(base, "incumbent")]
+    blocked_item = base.secondary_item if slot == "tertiary" else "inherit"
     for item in SECONDARY_ITEMS:
-        if item == "inherit":
+        if item in ("inherit", blocked_item):
             continue
         for hour in range(24):
-            genome = replace(
-                base,
-                secondary_item=item,
-                secondary_start_day=8,
-                secondary_end_day=29,
-                secondary_sell_hour=hour,
-                secondary_keep=0,
-                secondary_min_price=0,
-                secondary_sell_cap=0,
-            )
+            genome = replace(base, **{
+                f"{slot}_item": item,
+                f"{slot}_start_day": 8,
+                f"{slot}_end_day": 29,
+                f"{slot}_sell_hour": hour,
+                f"{slot}_keep": 0,
+                f"{slot}_min_price": 0,
+                f"{slot}_sell_cap": 0,
+            })
             rows.append(row(genome, f"{item.lower()}_hour_{hour:02d}"))
     return unique(rows)
 
 
-def mutate_secondary(parent: CurrentGenome, rng: random.Random) -> CurrentGenome:
+def mutate_slot(parent: CurrentGenome, rng: random.Random, slot: str) -> CurrentGenome:
+    blocked_item = parent.secondary_item if slot == "tertiary" else None
+    item_choices = tuple(
+        item for item in SECONDARY_ITEMS if item == "inherit" or item != blocked_item
+    )
     fields = {
-        "secondary_item": SECONDARY_ITEMS,
-        "secondary_start_day": (4, 6, 8, 10, 12, 14, 16, 20, 24),
-        "secondary_end_day": (16, 20, 24, 26, 27, 28, 29),
-        "secondary_sell_hour": tuple(range(24)),
-        "secondary_keep": (0, 2, 4, 8, 12, 20),
-        "secondary_min_price": (0, 1, 5, 20, 40, 60, 100, 150, 200),
-        "secondary_sell_cap": (0, 1, 2, 4, 6, 8, 12, 16, 24),
+        f"{slot}_item": item_choices,
+        f"{slot}_start_day": (4, 6, 8, 10, 12, 14, 16, 20, 24),
+        f"{slot}_end_day": (16, 20, 24, 26, 27, 28, 29),
+        f"{slot}_sell_hour": tuple(range(24)),
+        f"{slot}_keep": (0, 2, 4, 8, 12, 20),
+        f"{slot}_min_price": (0, 1, 5, 20, 40, 60, 100, 150, 200),
+        f"{slot}_sell_cap": (0, 1, 2, 4, 6, 8, 12, 16, 24),
     }
     values = parent.to_dict()
     for name in rng.sample(list(fields), rng.choices((1, 2, 3), (5, 3, 1))[0]):
@@ -57,7 +61,8 @@ def mutate_secondary(parent: CurrentGenome, rng: random.Random) -> CurrentGenome
 
 
 def expanded_candidates(
-    base: CurrentGenome, parents: list[dict], count: int, rng: random.Random
+    base: CurrentGenome, parents: list[dict], count: int, rng: random.Random,
+    slot: str,
 ) -> list[dict]:
     rows = [row(base, "incumbent")]
     rows.extend(
@@ -69,7 +74,7 @@ def expanded_candidates(
         attempts += 1
         source = CurrentGenome(**rng.choice(parents)["genome"])
         rows.append(
-            row(mutate_secondary(source, rng), f"secondary_mutation_{attempts}")
+            row(mutate_slot(source, rng, slot), f"{slot}_mutation_{attempts}")
         )
     return unique(rows)[:count]
 
@@ -79,6 +84,7 @@ def main() -> None:
     parser.add_argument("--base", type=Path, default=ROOT / "main.py")
     parser.add_argument("--models-dir", type=Path, default=ROOT / "test")
     parser.add_argument("--opponent", default="public_v43_competitive_20260915")
+    parser.add_argument("--slot", choices=("secondary", "tertiary"), default="secondary")
     parser.add_argument("--workers", type=int, default=20)
     parser.add_argument("--population", type=int, default=192)
     parser.add_argument("--screen-seeds", type=int, default=8)
@@ -106,12 +112,14 @@ def main() -> None:
         stage0 = save(
             output / "stage0_products_hours.json",
             seeds0,
-            evaluate(pool, hourly_candidates(base), [args.opponent], seeds0, base),
+            evaluate(pool, hourly_candidates(base, args.slot), [args.opponent], seeds0, base),
         )
-        stage1_rows = expanded_candidates(base, stage0[:12], args.population, rng)
+        stage1_rows = expanded_candidates(
+            base, stage0[:12], args.population, rng, args.slot
+        )
         seeds1 = [args.seed_start + 100_000 + 31 * index for index in range(args.screen_seeds)]
         stage1 = save(
-            output / "stage1_secondary_screen.json",
+            output / f"stage1_{args.slot}_screen.json",
             seeds1,
             evaluate(pool, stage1_rows, [args.opponent], seeds1, base),
         )
