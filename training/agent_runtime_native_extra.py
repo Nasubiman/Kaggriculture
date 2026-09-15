@@ -149,7 +149,20 @@ def _install_struct_chassis(module: ModuleType,agent_runtime) -> None:
             if route not in self.routes:
                 route=st["route"] if st["route"] in self.routes else next(iter(self.routes))
             st["route"]=route
-            result=_chassis_native.chassis_act(self,thin,st,route,view_cls)
+            # EXP-167 monkey-patches Chassis._sell_lead so the ordinary lead-sale
+            # layer is disabled while R36 reservation logic owns steps 216..695.
+            # The C++ chassis bypasses Python method dispatch, so mirror that
+            # override through the configuration flag only for the native call.
+            r36_window=216<=step<696
+            had_sell_lead="sell_lead" in self.cfg
+            previous_sell_lead=self.cfg.get("sell_lead")
+            if r36_window:self.cfg["sell_lead"]=False
+            try:
+                result=_chassis_native.chassis_act(self,thin,st,route,view_cls)
+            finally:
+                if r36_window:
+                    if had_sell_lead:self.cfg["sell_lead"]=previous_sell_lead
+                    else:self.cfg.pop("sell_lead",None)
             diagnostic["native_calls"]+=1
             return result
         except Exception as exc:
