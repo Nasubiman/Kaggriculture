@@ -14,6 +14,11 @@ from typing import Any
 import experimental_fast_kaggriculture as base
 from kaggle_environments.envs.kaggriculture import kaggriculture
 
+try:
+    import _kaggriculture_simulator as _native_simulator
+except Exception:
+    _native_simulator = None
+
 
 def _fast_spawn_hand(farm: Any, board_size: int) -> list[int]:
     """Official NWSE/min-occupancy spawn rule without dict/list/sort churn."""
@@ -112,7 +117,6 @@ def _fast_end_of_day_default(state: list[Any], env: Any, day: int) -> None:
     if next_day > 0 and next_day % 3 == 0:
         unlocked = obs0.town["unlocked_shops"]
         if len(unlocked) < kaggriculture.MAX_SHOP_INSTANCES:
-            # sorted(SHOPS) is invariant under the pinned rule set.
             unlocked.append(rng.choice(_SORTED_SHOPS))
 
 
@@ -121,6 +125,14 @@ _SORTED_SHOPS = tuple(sorted(kaggriculture.SHOPS))
 # The already-cloned market processor resolves _do_hire dynamically through
 # this shared globals dict, so this replacement affects only experimental code.
 base._HELPER_GLOBALS["_do_hire"] = _fast_do_hire
+
+
+def _apply_player_actions_v2(farm: Any, private: Any, action: Any, day: int) -> None:
+    """Dispatch the whole player's unit-action batch in one C++ call when built."""
+    if _native_simulator is not None:
+        _native_simulator.apply_player_actions(farm, private, action, day)
+        return
+    base._apply_player_actions(farm, private, action, day=day)
 
 
 def _experimental_interpreter_v2(state: list[Any], env: Any) -> list[Any]:
@@ -132,8 +144,8 @@ def _experimental_interpreter_v2(state: list[Any], env: Any) -> list[Any]:
     day = step // base._DEFAULT_TURNS_PER_DAY
     farms = obs0.farms
 
-    base._apply_player_actions(farms[0], s0.observation.private, s0.action, day=day)
-    base._apply_player_actions(farms[1], s1.observation.private, s1.action, day=day)
+    _apply_player_actions_v2(farms[0], s0.observation.private, s0.action, day)
+    _apply_player_actions_v2(farms[1], s1.observation.private, s1.action, day)
 
     base._fast_process_market(state, env)
     base._fast_town_consume_default(env, state, step)
@@ -160,19 +172,11 @@ def _experimental_interpreter_v2(state: list[Any], env: Any) -> list[Any]:
     return state
 
 
-# base._run_two_player_steps resolves this global at call time.  Replacing it
-# keeps all guards/fallbacks/sidecar cleanup from v1 while selecting v2 only for
-# the experimental default hot path.
 base._experimental_interpreter_default = _experimental_interpreter_v2
 
 
 def _run_two_player_steps_v2(agent0, agent1, *, env, state, stop_step):
-    """Same step contract as v1, but no per-turn env.state writes are needed.
-
-    The specialized interpreter mutates and returns the same state list and no
-    longer reads Environment.done.  Environment state is synchronized once at
-    entry and once on exit for callers that inspect it afterward.
-    """
+    """Same step contract as v1, but no per-turn env.state writes are needed."""
     s0, s1 = state[0], state[1]
     if s0.status != base._ACTIVE and s1.status != base._ACTIVE:
         return state
@@ -200,7 +204,6 @@ def _run_two_player_steps_v2(agent0, agent1, *, env, state, stop_step):
 
 base._run_two_player_steps = _run_two_player_steps_v2
 
-# Drop-in API.
 create_fast_episode = base.create_fast_episode
 clone_fast_state = base.clone_fast_state
 run_experimental_fast_episode = base.run_experimental_fast_episode
