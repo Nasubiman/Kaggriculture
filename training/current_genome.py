@@ -31,6 +31,9 @@ SERVICE_POLICIES = ("inherit", "care_first", "harvest_first", "fertilizer_first"
 EXTENSION_POLICIES = ("inherit", "off", "price", "broad")
 TERMINAL_MODES = ("inherit", "no_care", "no_feed_care")
 WOOL_POLICIES = ("inherit", "liquidate")
+SECONDARY_ITEMS = (
+    "inherit", "WHEAT", "STRAWBERRY", "EGG", "MILK", "FERTILIZER"
+)
 
 
 # Only the market portion is transplanted.  Unit routes remain under the
@@ -135,6 +138,13 @@ class CurrentGenome:
     wool_sell_interval: int = 1
     wool_sell_offset: int = 0
     wool_sell_cap: int = 0
+    secondary_item: str = "inherit"
+    secondary_start_day: int = 8
+    secondary_end_day: int = 29
+    secondary_sell_hour: int = 0
+    secondary_keep: int = 0
+    secondary_min_price: int = 0
+    secondary_sell_cap: int = 0
     stop_hiring_day: int = 30
     terminal_mode: str = "inherit"
     terminal_day: int = 30
@@ -183,6 +193,27 @@ class CurrentGenome:
         )
         values["wool_sell_cap"] = _nearest(
             values["wool_sell_cap"], (0, 1, 2, 4, 6, 8, 12, 16, 24)
+        )
+        values["secondary_item"] = _choice(
+            values["secondary_item"], SECONDARY_ITEMS
+        )
+        values["secondary_start_day"] = _clip(
+            values["secondary_start_day"], 4, 28
+        )
+        values["secondary_end_day"] = _clip(
+            values["secondary_end_day"], values["secondary_start_day"], 29
+        )
+        values["secondary_sell_hour"] = _clip(
+            values["secondary_sell_hour"], 0, 23
+        )
+        values["secondary_keep"] = _nearest(
+            values["secondary_keep"], (0, 2, 4, 8, 12, 20)
+        )
+        values["secondary_min_price"] = _nearest(
+            values["secondary_min_price"], (0, 1, 5, 20, 40, 60, 100, 150, 200)
+        )
+        values["secondary_sell_cap"] = _nearest(
+            values["secondary_sell_cap"], (0, 1, 2, 4, 6, 8, 12, 16, 24)
         )
         values["stop_hiring_day"] = _clip(values["stop_hiring_day"], 24, 30)
         values["terminal_mode"] = _choice(values["terminal_mode"], TERMINAL_MODES)
@@ -557,6 +588,40 @@ def _apply_wool_liquidation(
     return action
 
 
+def _apply_secondary_liquidation(
+    obs: dict[str, Any], action: dict[str, Any], genome: CurrentGenome
+) -> dict[str, Any]:
+    """Front-run one additional shared market without changing production."""
+    item = genome.secondary_item
+    if item == "inherit":
+        return action
+    step = int(obs.get("step", 0))
+    day, hour = divmod(step, 24)
+    if not genome.secondary_start_day <= day <= genome.secondary_end_day:
+        return action
+    if hour != genome.secondary_sell_hour:
+        return action
+    prices = (obs.get("market", {}) or {}).get("prices", {}) or {}
+    if int(prices.get(item, 0)) < genome.secondary_min_price:
+        return action
+    shed = (obs.get("private", {}) or {}).get("shed", {}) or {}
+    available = max(0, int(shed.get(item, 0)) - genome.secondary_keep)
+    if genome.secondary_sell_cap > 0:
+        available = min(available, genome.secondary_sell_cap)
+    if available <= 0:
+        return action
+    orders = action["market"]
+    existing = next(
+        (order for order in orders if len(order) >= 3 and order[:2] == ["SELL", item]),
+        None,
+    )
+    if existing is not None:
+        existing[2] = max(int(existing[2]), available)
+    elif len(orders) < 10:
+        orders.append(["SELL", item, available])
+    return action
+
+
 def configure_module(module: Any, genome: CurrentGenome):
     """Wrap a freshly loaded current agent without relying on private symbols."""
     genome = genome.normalized()
@@ -589,6 +654,7 @@ def configure_module(module: Any, genome: CurrentGenome):
             result = _rewrite_animal_orders(observation, result, genome)
         result = _apply_wheat_pressure(observation, result, genome)
         result = _apply_wool_liquidation(observation, result, genome)
+        result = _apply_secondary_liquidation(observation, result, genome)
         if genome.herd_policy != "inherit" or genome.placement_policy != "inherit":
             result = _repair_animal_commands(observation, result, genome)
         result = _service_animal_tiles(observation, result, genome)
@@ -703,6 +769,13 @@ def mutate(genome: CurrentGenome, rng: random.Random, changes: int = 1) -> Curre
         "wool_sell_interval": (1, 2, 3, 4, 5, 6, 7),
         "wool_sell_offset": (0, 1, 2, 3, 4, 5, 6),
         "wool_sell_cap": (0, 1, 2, 4, 6, 8, 12, 16, 24),
+        "secondary_item": SECONDARY_ITEMS,
+        "secondary_start_day": (4, 6, 8, 10, 12, 14, 16, 20, 24, 28),
+        "secondary_end_day": (12, 16, 20, 24, 27, 28, 29),
+        "secondary_sell_hour": tuple(range(24)),
+        "secondary_keep": (0, 2, 4, 8, 12, 20),
+        "secondary_min_price": (0, 1, 5, 20, 40, 60, 100, 150, 200),
+        "secondary_sell_cap": (0, 1, 2, 4, 6, 8, 12, 16, 24),
         "stop_hiring_day": (24, 26, 27, 28, 29, 30),
         "terminal_mode": TERMINAL_MODES,
         "terminal_day": (26, 27, 28, 29, 30),
@@ -716,7 +789,9 @@ def mutate(genome: CurrentGenome, rng: random.Random, changes: int = 1) -> Curre
          "pressure_start_day", "pressure_end_day", "pressure_hour",
          "wool_policy", "wool_start_day", "wool_end_day", "wool_sell_hour",
          "wool_keep", "wool_min_price", "wool_sell_interval",
-         "wool_sell_offset", "wool_sell_cap"),
+         "wool_sell_offset", "wool_sell_cap", "secondary_item",
+         "secondary_start_day", "secondary_end_day", "secondary_sell_hour",
+         "secondary_keep", "secondary_min_price", "secondary_sell_cap"),
         ("stop_hiring_day", "terminal_mode", "terminal_day"),
     )
     for _ in range(max(1, changes)):
@@ -739,7 +814,9 @@ def crossover(first: CurrentGenome, second: CurrentGenome, rng: random.Random):
          "pressure_start_day", "pressure_end_day", "pressure_hour",
          "wool_policy", "wool_start_day", "wool_end_day", "wool_sell_hour",
          "wool_keep", "wool_min_price", "wool_sell_interval",
-         "wool_sell_offset", "wool_sell_cap"),
+         "wool_sell_offset", "wool_sell_cap", "secondary_item",
+         "secondary_start_day", "secondary_end_day", "secondary_sell_hour",
+         "secondary_keep", "secondary_min_price", "secondary_sell_cap"),
         ("stop_hiring_day", "terminal_mode", "terminal_day"),
     ):
         source = b if rng.random() < 0.5 else a

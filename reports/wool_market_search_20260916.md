@@ -59,3 +59,7 @@ evaluation seeds, mean margin improved against every opponent.
 
 The selected standalone model and genome are stored in
 `candidates/wool_hour5_20260916/` and promoted to `main.py`.
+
+A subsequent secondary-market search retained this wool policy and added a
+strawberry sale overlay, raising the independent v43 win rate to 99.5%. See
+`reports/secondary_market_search_20260916.md`.
