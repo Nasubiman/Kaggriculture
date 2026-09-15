@@ -4,6 +4,10 @@
 The candidate is kept on the already-validated native path in both variants.
 Only the loaded reference module changes, so the timing ratio isolates the cost
 of accelerating evaluation opponents without modifying their source files.
+
+public_v37 adds Chassis behavior that is newer than the shared native Chassis
+kernel. Keep that one class method on its original Python implementation while
+retaining the other guarded runtime accelerators.
 """
 from __future__ import annotations
 
@@ -19,10 +23,24 @@ from kaggle_environments import make
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def load_reference(opponent: Path, name: str, use_native: bool):
+    module = base.load_module(opponent, name, use_native)
+    if use_native and opponent.parent.name == "public_v37":
+        chassis_cls = module.__dict__.get("Chassis")
+        current = getattr(chassis_cls, "act", None) if chassis_cls is not None else None
+        fallback = getattr(current, "_python_fallback", None)
+        if callable(fallback):
+            chassis_cls.act = fallback
+            module.__dict__["_NATIVE_OPPONENT_CHASSIS_POLICY"] = "python_v37"
+        else:
+            raise RuntimeError("public_v37 native wrapper did not expose Chassis fallback")
+    return module
+
+
 def play_fast(opponent: Path, seed: int, seat: int, opponent_native: bool, verify: bool):
     tag = f"{opponent.parent.name}_{opponent_native}_{seed}_{seat}"
     candidate_module = base.load_module(ROOT / "main.py", f"oppbench_candidate_{tag}", True)
-    rival_module = base.load_module(opponent, f"oppbench_rival_{tag}", opponent_native)
+    rival_module = load_reference(opponent, f"oppbench_rival_{tag}", opponent_native)
     candidate = candidate_module.agent
     rival = rival_module.agent
     trace = []
@@ -37,6 +55,7 @@ def play_fast(opponent: Path, seed: int, seat: int, opponent_native: bool, verif
     state, rewards = base.terminal_fp(final)
     diagnostics = {
         "chassis": getattr(rival_module, "_NATIVE_CHASSIS_DIAGNOSTIC", None),
+        "chassis_policy": getattr(rival_module, "_NATIVE_OPPONENT_CHASSIS_POLICY", "native"),
         "similarity": getattr(rival_module, "_NATIVE_SIMILARITY_DIAGNOSTIC", None),
     }
     return elapsed, (trace, state), rewards, diagnostics
@@ -45,7 +64,7 @@ def play_fast(opponent: Path, seed: int, seat: int, opponent_native: bool, verif
 def play_official(opponent: Path, seed: int, seat: int, opponent_native: bool):
     tag = f"official_{opponent.parent.name}_{opponent_native}_{seed}_{seat}"
     candidate_module = base.load_module(ROOT / "main.py", f"oppbench_candidate_{tag}", True)
-    rival_module = base.load_module(opponent, f"oppbench_rival_{tag}", opponent_native)
+    rival_module = load_reference(opponent, f"oppbench_rival_{tag}", opponent_native)
     trace = []
     candidate = base.wrap(candidate_module.agent, trace, candidate_module)
     rival = base.wrap(rival_module.agent, trace, rival_module)
