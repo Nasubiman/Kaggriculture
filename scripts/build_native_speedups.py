@@ -61,6 +61,38 @@ def _prepare_service(text):
     return text
 
 def _prepare_planner(text):
+    deep_clone=r'''
+static py::object deepcopy_builtin_impl(py::handle h,py::dict memo){
+    if(h.is_none()||PyBool_Check(h.ptr())||PyLong_CheckExact(h.ptr())||PyFloat_CheckExact(h.ptr())||PyUnicode_CheckExact(h.ptr())||PyBytes_CheckExact(h.ptr()))
+        return py::reinterpret_borrow<py::object>(h);
+    py::int_ ident(static_cast<unsigned long long>(reinterpret_cast<std::uintptr_t>(h.ptr())));
+    if(memo.contains(ident))return py::reinterpret_borrow<py::object>(memo[ident]);
+    if(PyList_CheckExact(h.ptr())){
+        py::list out;memo[ident]=out;
+        for(py::handle x:py::reinterpret_borrow<py::list>(h))out.append(deepcopy_builtin_impl(x,memo));
+        return std::move(out);
+    }
+    if(PyTuple_CheckExact(h.ptr())){
+        auto src=py::reinterpret_borrow<py::tuple>(h);py::tuple out(py::len(src));memo[ident]=out;
+        for(size_t i=0;i<(size_t)py::len(src);++i)out[i]=deepcopy_builtin_impl(src[i],memo);
+        return std::move(out);
+    }
+    if(PyDict_CheckExact(h.ptr())){
+        py::dict out;memo[ident]=out;
+        for(auto kv:py::reinterpret_borrow<py::dict>(h))out[deepcopy_builtin_impl(kv.first,memo)]=deepcopy_builtin_impl(kv.second,memo);
+        return std::move(out);
+    }
+    if(PySet_CheckExact(h.ptr())){
+        py::set out;memo[ident]=out;
+        for(py::handle x:py::reinterpret_borrow<py::set>(h))out.add(deepcopy_builtin_impl(x,memo));
+        return std::move(out);
+    }
+    py::object deepcopy=py::module_::import("copy").attr("deepcopy");
+    return deepcopy(py::reinterpret_borrow<py::object>(h),memo);
+}
+static py::object deepcopy_builtin(py::object value){py::dict memo;return deepcopy_builtin_impl(value,memo);}
+'''
+    text=_replace_once(text,'namespace {\n','namespace {\n'+deep_clone+'\n','native deepcopy helper')
     text=_replace_once(text,'''struct PathItem { int idx=0, x=0, y=0, birth=0; std::string crop; };
 struct Beam {
     double score=0.0;
@@ -108,6 +140,12 @@ static void beam_mark(Beam& b,int idx){ b.used[(unsigned)idx>>6] |= 1ULL << (idx
       ('            if((double)value<1.5*(double)cost+50.0||money<(double)(total_cost+cost+3000))break;c.plans.push_back(path);total_q+=q;total_cost+=cost;total_value+=value;all_w+=path.wheat;all_c+=path.carrot;for(const auto&p:path.path)active[p.idx]=0;','            if((double)value<1.5*(double)cost+50.0||money<(double)(total_cost+cost+3000))break;c.plans.push_back(path);total_q+=q;total_cost+=cost;total_value+=value;all_w+=path.wheat;all_c+=path.carrot;for(size_t pi=0;pi<path.path_len;++pi)active[path.path[pi].idx]=0;','joint plan active mask'),
       ('    py::list plans;for(const Beam&b:best_choice.plans){py::list path;for(const auto&p:b.path)path.append(py::make_tuple(p.x,p.y,p.crop,p.birth));py::dict plan;plan[py::str("path")]=path;plan[py::str("quantity")]=(int)b.path.size();plan[py::str("loaded")]=false;plans.append(plan);}','    py::list plans;for(const Beam&b:best_choice.plans){py::list path;for(size_t i=0;i<b.path_len;++i){const auto&p=b.path[i];path.append(py::make_tuple(p.x,p.y,path_crop(p.crop),p.birth));}py::dict plan;plan[py::str("path")]=path;plan[py::str("quantity")]=(int)b.path_len;plan[py::str("loaded")]=false;plans.append(plan);}','joint plan output')):
         text=_replace_once(text,old,new,label)
+    text=_replace_once(
+        text,
+        '    m.def("projected_shed",&projected_shed);',
+        '    m.def("projected_shed",&projected_shed);\n    m.def("deepcopy_builtin",&deepcopy_builtin);',
+        'native deepcopy export',
+    )
     return text
 
 def _prepare_simulator(text):
