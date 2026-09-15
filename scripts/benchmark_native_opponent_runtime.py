@@ -1,16 +1,11 @@
 #!/usr/bin/env python3
-"""Parity-check and benchmark native acceleration for safe reference opponents.
-
-The candidate stays on the already validated native path in both variants.  We
-native-accelerate reference models whose exact trajectory parity has been
-verified here; public_v37 remains intentionally Python-only because its Chassis
-semantics differ from the shared native implementation.
-"""
+"""Parity-check and benchmark validated native acceleration for reference opponents."""
 from __future__ import annotations
 
 import gc
 import json
 import statistics
+import sys
 import time
 from pathlib import Path
 
@@ -18,21 +13,23 @@ import benchmark_native_agent_runtime as base
 from kaggle_environments import make
 
 ROOT = Path(__file__).resolve().parents[1]
-MODELS = (
-    "public_v31",
-    "public_v35",
-    "public_v36",
-    "public_v38_low_pressure_20260914",
-    "public_v41_competitive_20260914",
-    "public_v41_survival_20260914",
-)
-PYTHON_ONLY_MODELS = ("public_v37",)
+sys.path.insert(0, str(ROOT / "training"))
+import reference_runtime
+
+MODELS = tuple(reference_runtime.REFERENCE_NATIVE_POLICIES)
+
+
+def load_rival(opponent: Path, name: str, accelerated: bool):
+    module = base.load_module(opponent, name, accelerated)
+    if accelerated:
+        reference_runtime.optimize_reference_agent_module(module, opponent.parent.name)
+    return module.agent
 
 
 def play_fast(opponent: Path, seed: int, seat: int, opponent_native: bool, verify: bool):
     tag = f"{opponent.parent.name}_{opponent_native}_{seed}_{seat}"
     candidate = base.load_module(ROOT / "main.py", f"oppbench_candidate_{tag}", True).agent
-    rival = base.load_module(opponent, f"oppbench_rival_{tag}", opponent_native).agent
+    rival = load_rival(opponent, f"oppbench_rival_{tag}", opponent_native)
     trace = []
     agents = [candidate, rival] if seat == 0 else [rival, candidate]
     if verify:
@@ -48,7 +45,7 @@ def play_fast(opponent: Path, seed: int, seat: int, opponent_native: bool, verif
 def play_official(opponent: Path, seed: int, seat: int, opponent_native: bool):
     tag = f"official_{opponent.parent.name}_{opponent_native}_{seed}_{seat}"
     candidate = base.load_module(ROOT / "main.py", f"oppbench_candidate_{tag}", True).agent
-    rival = base.load_module(opponent, f"oppbench_rival_{tag}", opponent_native).agent
+    rival = load_rival(opponent, f"oppbench_rival_{tag}", opponent_native)
     trace = []
     agents = [candidate, rival] if seat == 0 else [rival, candidate]
     agents = [base.wrap(agent, trace) for agent in agents]
@@ -76,14 +73,20 @@ def main() -> None:
         assert actual_rewards == expected_rewards
         print(f"native opponent fast parity OK: {opponent.parent.name} seat={seat}", flush=True)
 
-    # public_v36 is the newest public model in the original parity-safe group;
-    # retain the official-runner check as a second, independent semantics guard.
-    opponent = ROOT / "test" / "public_v36" / "main.py"
-    for seat in (0, 1):
-        expected = play_official(opponent, 13_096_911, seat, False)
-        actual = play_official(opponent, 13_096_911, seat, True)
-        assert actual == expected, f"native opponent official mismatch public_v36 seat={seat}"
-        print(f"native opponent official parity OK: public_v36 seat={seat}", flush=True)
+    # Keep independent official-runner guards for the newest policy shapes.
+    for model in (
+        "public_v36",
+        "public_v37",
+        "public_v38_low_pressure_20260914",
+        "public_v41_competitive_20260914",
+        "public_v41_survival_20260914",
+    ):
+        opponent = ROOT / "test" / model / "main.py"
+        for seat in (0, 1):
+            expected = play_official(opponent, 13_096_911, seat, False)
+            actual = play_official(opponent, 13_096_911, seat, True)
+            assert actual == expected, f"native opponent official mismatch {model} seat={seat}"
+            print(f"native opponent official parity OK: {model} seat={seat}", flush=True)
 
     samples = {"python_opponent": [], "native_opponent": []}
     by_model = {
@@ -105,8 +108,8 @@ def main() -> None:
 
     result = {
         "policy": {
-            "native_models": list(MODELS),
-            "python_only_models": list(PYTHON_ONLY_MODELS),
+            model: list(reference_runtime.REFERENCE_NATIVE_POLICIES[model])
+            for model in MODELS
         },
         "by_model": {},
     }
