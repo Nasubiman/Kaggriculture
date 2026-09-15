@@ -43,3 +43,22 @@ The pre-v43 incumbent is preserved as `test/incumbent_pre_v43_20260915/main.py`.
 ## Submission validation
 
 `make submission-build` passed isolated compilation, Kaggle-agent loading, a validation episode, and rebuilt `submission_fixed.tar.gz`.
+
+## Win-rate follow-up
+
+The original search objective rejected a strategically useful candidate because it
+lost about 98 own reward points per game, despite winning substantially more often.
+Re-ranking the search by direct wins identified a minimal market-timing change:
+
+- sell all available wool at hour 1 instead of retaining two units until hour 12;
+- keep the v43 production and route trajectory unchanged;
+- allow the coherent sheep-extension subsystem through day 29.
+
+This candidate won 243 of 300 held-out games (81.0%) against v43. A second,
+independent 100-seed both-seat gate produced 168 wins, 14 ties, and 18 losses in
+200 games: an 84.0% raw win rate and +306.2 mean margin with zero errors.
+
+In the same final league gate it won 96% against both public-v41 variants, 97%
+against public-v38, 100% against results5, and 95% against the pre-v43 incumbent.
+It was promoted to `main.py`; its standalone source and genome are preserved under
+`candidates/v43_wool_first_20260915/`.
