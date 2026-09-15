@@ -10,6 +10,14 @@ except Exception:
 
 
 def install_native_extra(module: ModuleType) -> ModuleType:
+    # The benchmark deliberately sets agent_runtime._native=None for its Python
+    # baseline. Respect that same switch so extra modules never leak into it.
+    try:
+        import agent_runtime
+        if agent_runtime._native is None:
+            return module
+    except Exception:
+        return module
     if _input_native is None or not hasattr(_input_native, "r51_input_control"):
         return module
     ns = module.__dict__
