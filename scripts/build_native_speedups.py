@@ -41,6 +41,14 @@ def _prepare_input(text):
     text=text.replace('py::cast(py::dict())','py::object(py::dict())')
     return text
 
+def _prepare_sales(text):
+    return _replace_once(
+        text,
+        'py::handle h=idx==0?farm["farmer"]:py::cast<py::sequence>(farm["hands"])[idx-1];',
+        'py::object h=idx==0?py::reinterpret_borrow<py::object>(farm["farmer"]):py::reinterpret_borrow<py::object>(py::cast<py::sequence>(farm["hands"])[idx-1]);',
+        'sales position accessor',
+    )
+
 def _prepare_planner(text):
     text=_replace_once(text,'''struct PathItem { int idx=0, x=0, y=0, birth=0; std::string crop; };
 struct Beam {
@@ -95,6 +103,7 @@ def _prepared_source(src,tmpdir):
     if src.name=="native_chassis.cpp": text=_prepare_chassis(src.read_text())
     elif src.name=="native_speedups_v2.cpp": text=_prepare_planner(src.read_text())
     elif src.name=="native_input_control.cpp": text=_prepare_input(src.read_text())
+    elif src.name=="native_sales.cpp": text=_prepare_sales(src.read_text())
     else: return src
     out=tmpdir/src.name;out.write_text(text);return out
 
