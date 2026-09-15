@@ -99,6 +99,44 @@ def _turbo_prepare_chassis(text: str) -> str:
         ),
     ):
         text = base._replace_once(text, old, new, label)
+
+    # These helpers are called many times from weed repair, budget guards and
+    # projected shed calculations.  Avoid constructing a Python string key and
+    # doing contains()+getitem for each call; one borrowed dict lookup preserves
+    # the same missing/default behavior.
+    for old, new, label in (
+        (
+            'int price(const std::string& item) const {py::str k(item);return prices.contains(k)?as_int(prices[k]):0;}',
+            'int price(const std::string& item) const {if(PyObject*v=PyDict_GetItemString(prices.ptr(),item.c_str()))return as_int(py::handle(v));return 0;}',
+            'chassis price single lookup',
+        ),
+        (
+            'int shed_qty(const std::string& item) const {py::str k(item);return shed.contains(k)?std::max(0,as_int(shed[k])):0;}',
+            'int shed_qty(const std::string& item) const {if(PyObject*v=PyDict_GetItemString(shed.ptr(),item.c_str()))return std::max(0,as_int(py::handle(v)));return 0;}',
+            'chassis shed quantity single lookup',
+        ),
+        (
+            'int in_hands(const std::string& item) const {int s=0;py::str k(item);for(py::handle ih:invs){auto d=py::reinterpret_borrow<py::dict>(ih);if(d.contains(k))s+=std::max(0,as_int(d[k]));}return s;}',
+            'int in_hands(const std::string& item) const {int s=0;for(py::handle ih:invs){auto d=py::reinterpret_borrow<py::dict>(ih);if(PyObject*v=PyDict_GetItemString(d.ptr(),item.c_str()))s+=std::max(0,as_int(py::handle(v)));}return s;}',
+            'chassis hand inventory single lookup',
+        ),
+        (
+            'static int dict_int(py::dict d,const std::string& k,int def=0){py::str key(k);return d.contains(key)?as_int(d[key],def):def;}',
+            'static int dict_int(py::dict d,const std::string& k,int def=0){if(PyObject*v=PyDict_GetItemString(d.ptr(),k.c_str()))return as_int(py::handle(v),def);return def;}',
+            'chassis dict int single lookup',
+        ),
+        (
+            'static bool dict_bool(py::dict d,const std::string& k,bool def=false){py::str key(k);return d.contains(key)?truthy(d[key]):def;}',
+            'static bool dict_bool(py::dict d,const std::string& k,bool def=false){if(PyObject*v=PyDict_GetItemString(d.ptr(),k.c_str()))return truthy(py::handle(v));return def;}',
+            'chassis dict bool single lookup',
+        ),
+        (
+            'static std::string dict_str(py::dict d,const std::string& k,const std::string& def=""){py::str key(k);if(!d.contains(key)||d[key].is_none())return def;return py::cast<std::string>(d[key]);}',
+            'static std::string dict_str(py::dict d,const std::string& k,const std::string& def=""){if(PyObject*v=PyDict_GetItemString(d.ptr(),k.c_str())){py::handle h(v);if(!h.is_none())return py::cast<std::string>(h);}return def;}',
+            'chassis dict string single lookup',
+        ),
+    ):
+        text = base._replace_once(text, old, new, label)
     return text
 
 
