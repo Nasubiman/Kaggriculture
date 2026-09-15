@@ -57,6 +57,11 @@ try:
 
     def optimize_agent_module(module):
         module = _pre_supply_optimize_agent_module(module)
+        # benchmark_native_agent_runtime deliberately clears _native for its
+        # Python baseline.  Keep this independent extension behind the same
+        # master switch so parity and timing comparisons remain uncontaminated.
+        if _native is None:
+            return module
         ns = module.__dict__
         original = ns.get("_r97_supply")
         impl = ns.get("_IMPL")
