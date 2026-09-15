@@ -14,6 +14,7 @@ import build_native_speedups as base
 
 
 _original_host_flags = base._host_flags
+_original_prepare_planner = base._prepare_planner
 _original_prepare_simulator = base._prepare_simulator
 
 
@@ -24,6 +25,38 @@ def _turbo_host_flags():
         # -flto applies to both phases.  These flags do not relax FP semantics.
         flags += ["-flto", "-fno-semantic-interposition", "-fno-plt"]
     return flags
+
+
+def _turbo_prepare_planner(text: str) -> str:
+    text = _original_prepare_planner(text)
+
+    # r37_similarity scans up to two 10x10 tile grids.  The baseline native
+    # kernel constructs four py::none objects and several temporary py::str
+    # keys for every cell.  Borrow the dict values directly through the CPython
+    # API instead; this keeps the same comparison semantics while removing the
+    # per-cell Python object churn.
+    old = (
+        'py::handle ah=arow[x],bh=brow[x];py::object ac=py::none(),aa=py::none(),bc=py::none(),ba=py::none();'
+        'if(py::isinstance<py::dict>(ah)){auto d=py::reinterpret_borrow<py::dict>(ah);'
+        'if(d.contains(py::str("crop")))ac=py::reinterpret_borrow<py::object>(d[py::str("crop")]);'
+        'if(d.contains(py::str("animal")))aa=py::reinterpret_borrow<py::object>(d[py::str("animal")]);}'
+        'if(py::isinstance<py::dict>(bh)){auto d=py::reinterpret_borrow<py::dict>(bh);'
+        'if(d.contains(py::str("crop")))bc=py::reinterpret_borrow<py::object>(d[py::str("crop")]);'
+        'if(d.contains(py::str("animal")))ba=py::reinterpret_borrow<py::object>(d[py::str("animal")]);}'
+        'bool ae=ac.is_none()&&aa.is_none(),be=bc.is_none()&&ba.is_none();'
+        'if(!ae||!be){++total;if(equal_py(ac,bc)&&equal_py(aa,ba))++matches;}'
+    )
+    new = (
+        'py::handle ah=arow[x],bh=brow[x];PyObject*ac=Py_None,*aa=Py_None,*bc=Py_None,*ba=Py_None;'
+        'if(PyDict_Check(ah.ptr())){if(PyObject*v=PyDict_GetItemString(ah.ptr(),"crop"))ac=v;'
+        'if(PyObject*v=PyDict_GetItemString(ah.ptr(),"animal"))aa=v;}'
+        'if(PyDict_Check(bh.ptr())){if(PyObject*v=PyDict_GetItemString(bh.ptr(),"crop"))bc=v;'
+        'if(PyObject*v=PyDict_GetItemString(bh.ptr(),"animal"))ba=v;}'
+        'bool ae=ac==Py_None&&aa==Py_None,be=bc==Py_None&&ba==Py_None;'
+        'if(!ae||!be){++total;if(equal_py(py::handle(ac),py::handle(bc))&&equal_py(py::handle(aa),py::handle(ba)))++matches;}'
+    )
+    text = base._replace_once(text, old, new, 'planner similarity borrowed dict lookup')
+    return text
 
 
 def _turbo_prepare_simulator(text: str) -> str:
@@ -71,6 +104,7 @@ def _turbo_prepare_simulator(text: str) -> str:
 
 
 base._host_flags = _turbo_host_flags
+base._prepare_planner = _turbo_prepare_planner
 base._prepare_simulator = _turbo_prepare_simulator
 
 
