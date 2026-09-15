@@ -4,3 +4,5 @@ kaggle>=2.0,<3
 # the August 2026 Kaggriculture rules (locked-tile movement, hinge pricing,
 # duplicated town shops, and the flat 24-turn town-center demand).
 kaggle-environments==1.32.7
+# Optional C++ hot paths used by the production v4 simulator/runtime.
+pybind11>=3.0,<4

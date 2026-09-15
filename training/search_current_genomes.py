@@ -15,8 +15,9 @@ from statistics import mean, stdev
 from typing import Any
 
 from current_genome import CurrentGenome, anchor_genomes, configure_module, crossover, mutate
-from fast_kaggriculture import run_fast_episode
+from production_fast_kaggriculture import run_fast_episode
 from agent_runtime import optimize_agent_module
+from reference_runtime import optimize_reference_agent_module
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -46,6 +47,15 @@ def load_module(path: Path, name: str):
     return optimize_agent_module(module)
 
 
+def load_reference_module(path: Path, name: str, model_name: str):
+    spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return optimize_reference_agent_module(module, model_name)
+
+
 def read_incumbent(path: Path) -> CurrentGenome:
     module = load_module(path, "current_genome_incumbent_probe")
     values = getattr(module, "_FROZEN_CURRENT_GENOME", None)
@@ -71,8 +81,10 @@ def play(task: tuple[dict[str, Any], str, str, int, int]):
             _AGENTS[key] = candidate
         rival = _OPPONENTS.get(opponent)
         if rival is None:
-            rival = load_module(
-                Path(_OPPONENT_PATHS[opponent]), f"cgo_{os.getpid()}_{opponent}"
+            rival = load_reference_module(
+                Path(_OPPONENT_PATHS[opponent]),
+                f"cgo_{os.getpid()}_{opponent}",
+                opponent,
             ).agent
             _OPPONENTS[opponent] = rival
         agents = [candidate, rival] if seat == 0 else [rival, candidate]

@@ -19,6 +19,8 @@ MODULES=(
 )
 
 def _host_flags():
+    if platform.system() == "Darwin":
+        return ["-undefined", "dynamic_lookup", "-mcpu=native"]
     m=platform.machine().lower()
     if m in {"x86_64","amd64"}: return ["-march=native","-mtune=native"]
     if m in {"arm64","aarch64"}: return ["-mcpu=native"]
@@ -170,11 +172,6 @@ def _prepared_source(src,tmpdir):
     else: return src
     out=tmpdir/src.name;out.write_text(text);return out
 
-def _activate_runtime_extension():
-    runtime=ROOT/"training/agent_runtime.py";marker="# native-extra-runtime-v1";text=runtime.read_text()
-    if marker not in text:
-        text+='''\n\n# native-extra-runtime-v1\ntry:\n    from agent_runtime_native_extra import install_native_extra as _install_native_extra\n    _base_optimize_agent_module = optimize_agent_module\n    def optimize_agent_module(module):\n        return _install_native_extra(_base_optimize_agent_module(module))\nexcept Exception:\n    pass\n''';runtime.write_text(text)
-
 def main():
     includes=subprocess.check_output([sys.executable,"-m","pybind11","--includes"],text=True).strip()
     common=["c++","-O3","-DNDEBUG","-shared","-std=c++17","-fPIC",*_host_flags(),*shlex.split(includes),f"-I{ROOT/'training'}"]
@@ -182,6 +179,5 @@ def main():
         tmp=Path(td)
         for src,out in MODULES:
             bsrc=_prepared_source(src,tmp);cmd=[*common,str(bsrc),"-o",str(out)];print(" ".join(shlex.quote(x) for x in cmd),flush=True);subprocess.run(cmd,check=True);print(out,flush=True)
-    _activate_runtime_extension()
 
 if __name__=="__main__": main()

@@ -382,7 +382,7 @@ def _install_native_reserve(module: ModuleType) -> None:
     ns["_r36_reserve"] = accelerated
 
 
-def optimize_agent_module(module: ModuleType) -> ModuleType:
+def _optimize_agent_module_base(module: ModuleType) -> ModuleType:
     if module.__dict__.get("copy") is _copy:
         module.__dict__["copy"] = _CopyProxy()
     planner = module.__dict__.get("_PLANNER_NS")
@@ -402,6 +402,15 @@ def optimize_agent_module(module: ModuleType) -> ModuleType:
     _install_native_v231(module)
     _install_native_reserve(module)
     return module
+
+
+def optimize_agent_module(module: ModuleType) -> ModuleType:
+    module = _optimize_agent_module_base(module)
+    try:
+        from agent_runtime_native_extra import install_native_extra
+        return install_native_extra(module)
+    except Exception:
+        return module
 
 
 def native_acceleration_available() -> bool:

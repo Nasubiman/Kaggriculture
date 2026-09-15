@@ -29,7 +29,7 @@ from hybrid_policy import (
     masked_logits,
     save_checkpoint,
 )
-from fast_kaggriculture import run_fast_episode
+from production_fast_kaggriculture import run_fast_episode
 
 
 ROOT = Path(__file__).resolve().parents[1]

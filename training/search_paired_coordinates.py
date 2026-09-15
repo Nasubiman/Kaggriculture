@@ -15,7 +15,7 @@ from statistics import mean, stdev
 from typing import Any
 
 from ev2_genome import Ev2Genome, FIELD_STEPS, GENE_BLOCKS, configure_module
-from fast_kaggriculture import run_fast_episode
+from production_fast_kaggriculture import run_fast_episode
 
 
 ROOT = Path(__file__).resolve().parents[1]

@@ -21,6 +21,17 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
 def main() -> None:
     text = SRC.read_text()
 
+    # The normalized source is committed after v4 promotion.  Keep this helper
+    # idempotent for existing CI/server commands that still call it before a
+    # build, while retaining the guarded migration for older checkouts.
+    if (
+        '"hinge",  "sqrt"' in text
+        and '"hinge",  "log"' in text
+        and "static double shape(const char *func, double x, double scale)" in text
+    ):
+        print(f"already normalized {SRC.relative_to(ROOT)}")
+        return
+
     text = replace_once(
         text,
         '''    {"CARROT",     {35, 10000, 450, .2, .7, "log",    "sqrt"}},\n    {"TOMATO",     {60, 10000, 200, .4, .6, "linear", "sqrt"}},''',

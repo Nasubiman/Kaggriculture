@@ -14,8 +14,9 @@ from typing import Any
 
 # v3 specializes the exact default two-player evaluation path and falls back to
 # the stable runner automatically for unsupported configurations.
-from experimental_fast_kaggriculture_v3 import run_fast_episode
+from production_fast_kaggriculture import run_fast_episode
 from agent_runtime import optimize_agent_module
+from reference_runtime import optimize_reference_agent_module
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,14 +29,17 @@ _CANDIDATE_AGENT: Any = None
 _OPPONENT_AGENTS: dict[str, Any] = {}
 
 
-def load_agent(path: Path, name: str) -> Any:
+def load_agent(path: Path, name: str, reference_model: str | None = None) -> Any:
     spec = importlib.util.spec_from_file_location(name, path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"cannot load {path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     if _OPTIMIZE_AGENT_RUNTIME:
-        optimize_agent_module(module)
+        if reference_model is None:
+            optimize_agent_module(module)
+        else:
+            optimize_reference_agent_module(module, reference_model)
     agent = getattr(module, "agent", None)
     if not callable(agent):
         raise RuntimeError(f"{path} does not define a callable agent")
@@ -76,7 +80,11 @@ def game_agents(name: str, suffix: str) -> tuple[Any, Any]:
     if not _REUSE_AGENTS:
         return (
             load_agent(Path(_CANDIDATE_PATH), f"test_candidate_{suffix}"),
-            load_agent(Path(_OPPONENT_PATHS[name]), f"test_opponent_{suffix}"),
+            load_agent(
+                Path(_OPPONENT_PATHS[name]),
+                f"test_opponent_{suffix}",
+                reference_model=name,
+            ),
         )
     # Competition agents reset their per-player state when observation.step
     # returns to zero. Search already relies on this contract; retaining one
@@ -88,7 +96,9 @@ def game_agents(name: str, suffix: str) -> tuple[Any, Any]:
     opponent = _OPPONENT_AGENTS.get(name)
     if opponent is None:
         opponent = load_agent(
-            Path(_OPPONENT_PATHS[name]), f"test_opponent_{os.getpid()}_{name}"
+            Path(_OPPONENT_PATHS[name]),
+            f"test_opponent_{os.getpid()}_{name}",
+            reference_model=name,
         )
         _OPPONENT_AGENTS[name] = opponent
     return _CANDIDATE_AGENT, opponent

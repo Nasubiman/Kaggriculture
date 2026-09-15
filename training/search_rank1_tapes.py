@@ -12,7 +12,7 @@ import os
 from pathlib import Path
 from statistics import mean
 
-from fast_kaggriculture import run_fast_episode
+from production_fast_kaggriculture import run_fast_episode
 
 
 _CANDIDATES = {}; _OPPONENTS = {}; _CANDIDATE_PATHS = {}; _OPPONENT_PATHS = {}

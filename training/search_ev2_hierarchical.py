@@ -29,7 +29,7 @@ from ev2_genome import (
     family_seed_genomes,
     mutate,
 )
-from fast_kaggriculture import run_fast_episode
+from production_fast_kaggriculture import run_fast_episode
 
 
 ROOT = Path(__file__).resolve().parents[1]

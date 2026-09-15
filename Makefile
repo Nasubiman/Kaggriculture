@@ -123,7 +123,7 @@ MECHANISM_ABLATION_SEEDS ?= 20
 MECHANISM_ABLATION_WORKERS ?= 20
 MECHANISM_ABLATION_OUTPUT ?= reports/mechanism_ablations.json
 
-.PHONY: setup simulator-update simulator-check server-simulator-update server-simulator-check kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-mechanism-ablation server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search schedule-search schedule-status schedule-candidate schedule-use trajectory-search trajectory-status trajectory-candidate trajectory-use current-genome-search current-genome-status current-genome-candidate current-genome-use genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
+.PHONY: setup simulator-update simulator-check native-speedups-build server-native-speedups-build server-simulator-update server-simulator-check kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-mechanism-ablation server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search schedule-search schedule-status schedule-candidate schedule-use trajectory-search trajectory-status trajectory-candidate trajectory-use current-genome-search current-genome-status current-genome-candidate current-genome-use genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -136,6 +136,11 @@ simulator-update:
 # Verify rule constants, locked-tile behavior, and fast/standard parity.
 simulator-check:
 	PYTHONPATH=training $(VENV)/bin/python scripts/check_simulator.py
+
+# Compile the parity-gated v4 simulator and agent hot paths. Repeated calls are
+# cheap: the helper rebuilds only when sources, platform, or Python ABI change.
+native-speedups-build:
+	$(VENV)/bin/python scripts/ensure_native_speedups.py
 
 server-simulator-update:
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; .venv/bin/python -m pip install "kaggle-environments==1.32.7"'
@@ -211,7 +216,12 @@ server-head-to-head:
 
 server-sync-fast-runner:
 	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training"'
-	rsync -az training/fast_kaggriculture.py training/agent_runtime.py $(SERVER_HOST):$(SERVER_REPO)/training/
+	rsync -az training/fast_kaggriculture.py training/experimental_fast_kaggriculture.py training/experimental_fast_kaggriculture_v2.py training/experimental_fast_kaggriculture_v3.py training/production_fast_kaggriculture.py training/agent_runtime.py training/agent_runtime_native_extra.py training/reference_runtime.py training/native_*.cpp training/native_*.hpp $(SERVER_HOST):$(SERVER_REPO)/training/
+	rsync -az scripts/prepare_native_simulator_source.py scripts/build_native_speedups.py scripts/build_native_speedups_turbo.py scripts/build_native_speedups_policy.py scripts/ensure_native_speedups.py $(SERVER_HOST):$(SERVER_REPO)/scripts/
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; .venv/bin/python -c "import pybind11" 2>/dev/null || .venv/bin/python -m pip install "pybind11>=3.0,<4"; .venv/bin/python scripts/ensure_native_speedups.py'
+
+server-native-speedups-build: server-sync-fast-runner
+	@printf 'Server v4 native extensions are current.\n'
 
 server-test-models: server-sync-fast-runner
 	test -d "$(TEST_DIR)"
@@ -348,8 +358,8 @@ trajectory-use: trajectory-candidate
 	cp main.py "$(TRAJECTORY_RESULT)/promoted_main.py"
 	@printf '\nPromoted accepted trajectory to main.py\n'
 
-# Search only through the stable agent boundary. Includes coherent public-top3
-# opening trajectories, adaptive cow/sheep profiles, and terminal gates.
+# Search through the parity-gated production v4 runner. Includes coherent
+# public-top3 opening trajectories, adaptive cow/sheep profiles, and terminal gates.
 current-genome-search: server-sync-fast-runner
 	ssh $(SERVER_HOST) 'mkdir -p "$(SERVER_REPO)/training" "$(CURRENT_GENOME_RUN)/source"'
 	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py

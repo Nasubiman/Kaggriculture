@@ -1,0 +1,71 @@
+{
+  "policy": {
+    "public_v31": [],
+    "public_v35": [],
+    "public_v36": [],
+    "public_v37": [
+      "Chassis.act",
+      "_r51_input_control"
+    ],
+    "public_v38_low_pressure_20260914": [],
+    "public_v41_competitive_20260914": [],
+    "public_v41_survival_20260914": []
+  },
+  "by_model": {
+    "public_v31": {
+      "games_per_variant": 4,
+      "python_seconds": 1.8589748349040747,
+      "native_seconds": 1.7631331533193588,
+      "speedup": 1.0543587314459375
+    },
+    "public_v35": {
+      "games_per_variant": 4,
+      "python_seconds": 1.859099768102169,
+      "native_seconds": 1.7520845718681812,
+      "speedup": 1.0610787846387355
+    },
+    "public_v36": {
+      "games_per_variant": 4,
+      "python_seconds": 1.8612140361219645,
+      "native_seconds": 1.7543649207800627,
+      "speedup": 1.0609047263065385
+    },
+    "public_v37": {
+      "games_per_variant": 4,
+      "python_seconds": 1.9909446742385626,
+      "native_seconds": 1.850070534273982,
+      "speedup": 1.0761452806013492
+    },
+    "public_v38_low_pressure_20260914": {
+      "games_per_variant": 4,
+      "python_seconds": 2.326972048729658,
+      "native_seconds": 2.002042168751359,
+      "speedup": 1.1622992187926553
+    },
+    "public_v41_competitive_20260914": {
+      "games_per_variant": 4,
+      "python_seconds": 2.5787373445928097,
+      "native_seconds": 2.25965285487473,
+      "speedup": 1.1412095176609633
+    },
+    "public_v41_survival_20260914": {
+      "games_per_variant": 4,
+      "python_seconds": 2.594062903895974,
+      "native_seconds": 2.2782881315797567,
+      "speedup": 1.1386017720670214
+    }
+  },
+  "python_opponent": {
+    "games": 28,
+    "seconds": 15.070005610585213,
+    "games_per_second": 1.8579953268453149,
+    "median_seconds": 0.49672457482665777
+  },
+  "native_opponent": {
+    "games": 28,
+    "seconds": 13.65963633544743,
+    "games_per_second": 2.0498349525849835,
+    "median_seconds": 0.4610921936109662
+  },
+  "speedup_native_opponent": 1.1032508655796205
+}

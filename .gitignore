@@ -3,6 +3,9 @@
 .venv/
 __pycache__/
 *.py[cod]
+*.so
+*.dylib
+.native_speedups_v4.json
 
 # Local credentials and environment variables
 .env

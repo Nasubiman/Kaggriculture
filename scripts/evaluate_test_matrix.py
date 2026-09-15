@@ -14,8 +14,8 @@ from pathlib import Path
 from statistics import mean
 from typing import Any
 
-from fast_kaggriculture import run_fast_episode
-from agent_runtime import optimize_agent_module
+from production_fast_kaggriculture import run_fast_episode
+from reference_runtime import optimize_reference_agent_module
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,14 +26,14 @@ _OPTIMIZE_AGENT_RUNTIME = True
 _MODEL_AGENTS: dict[str, Any] = {}
 
 
-def load_agent(path: Path, name: str) -> Any:
+def load_agent(path: Path, name: str, model_name: str) -> Any:
     spec = importlib.util.spec_from_file_location(name, path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"cannot load {path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     if _OPTIMIZE_AGENT_RUNTIME:
-        optimize_agent_module(module)
+        optimize_reference_agent_module(module, model_name)
     agent = getattr(module, "agent", None)
     if not callable(agent):
         raise RuntimeError(f"{path} does not define a callable agent")
@@ -69,11 +69,13 @@ def worker_init(model_paths: dict[str, str], fast_runner: bool,
 
 def model_agent(name: str, suffix: str) -> Any:
     if not _REUSE_AGENTS:
-        return load_agent(Path(_MODEL_PATHS[name]), f"matrix_{name}_{suffix}")
+        return load_agent(
+            Path(_MODEL_PATHS[name]), f"matrix_{name}_{suffix}", name
+        )
     agent = _MODEL_AGENTS.get(name)
     if agent is None:
         agent = load_agent(
-            Path(_MODEL_PATHS[name]), f"matrix_{os.getpid()}_{name}"
+            Path(_MODEL_PATHS[name]), f"matrix_{os.getpid()}_{name}", name
         )
         _MODEL_AGENTS[name] = agent
     return agent

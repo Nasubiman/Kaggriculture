@@ -1,0 +1,70 @@
+{
+  "models": [
+    "public_v38_low_pressure_20260914",
+    "public_v41_competitive_20260914",
+    "public_v41_survival_20260914",
+    "results5_20260913"
+  ],
+  "seeds": 2,
+  "seed_start": 13091000,
+  "repeats": 1,
+  "trajectory_games": 16,
+  "results": {
+    "stable": {
+      "games": 16,
+      "seconds": 10.078803207259625,
+      "games_per_second": 1.587490069106163,
+      "median_seconds": 0.6339517291635275,
+      "samples_seconds": [
+        0.5952308750711381,
+        0.5936198327690363,
+        0.5949853747151792,
+        0.5917487917467952,
+        0.6555105838924646,
+        0.6553117078728974,
+        0.6548797502182424,
+        0.6556652905419469,
+        0.663843291811645,
+        0.6590347499586642,
+        0.6612628749571741,
+        0.6604390842840075,
+        0.6130237081088126,
+        0.6079622083343565,
+        0.6102276248857379,
+        0.6060574580915272
+      ]
+    },
+    "experimental": {
+      "games": 16,
+      "seconds": 9.759402377996594,
+      "games_per_second": 1.6394446483806597,
+      "median_seconds": 0.6113325208425522,
+      "samples_seconds": [
+        0.5791233750060201,
+        0.5736292921938002,
+        0.5740672922693193,
+        0.5739188748411834,
+        0.6357627501711249,
+        0.6387441246770322,
+        0.6339987497776747,
+        0.6420869589783251,
+        0.6398663339205086,
+        0.6413308749906719,
+        0.6418809578754008,
+        0.6360008753836155,
+        0.5886662919074297,
+        0.5851795831695199,
+        0.5875713340938091,
+        0.5875747087411582
+      ]
+    }
+  },
+  "speedup_experimental_vs_stable": 1.0327274987639763,
+  "source_sha256": {
+    "/Users/nakamuray/code_test/Kaggriculture/main.py": "3f0772ab011e6799d362ba082035151e843cde24ebe5a310075e9caaf868b68d",
+    "/Users/nakamuray/code_test/Kaggriculture/training/fast_kaggriculture.py": "21a931872bc8f1bf8dd9484936641708e749e30a1c4484817d44190425e87b67",
+    "/Users/nakamuray/code_test/Kaggriculture/training/experimental_fast_kaggriculture.py": "2bafd52220f879818c1693854999a5ae060389ba99aef631a191f656c5695cb5",
+    "/Users/nakamuray/code_test/Kaggriculture/training/experimental_fast_kaggriculture_v2.py": "1b0bc4ad1c628976bdf2675d29f2789eeeeaf8e4210f38542b0f8e56a63cf997",
+    "/Users/nakamuray/code_test/Kaggriculture/training/experimental_fast_kaggriculture_v3.py": "747d68b45e7d41f621ba4a9e074ca9ea932e74029f58709cd236a66aeeac01dc"
+  }
+}

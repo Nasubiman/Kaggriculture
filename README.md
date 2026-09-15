@@ -172,11 +172,25 @@ make test-models                      # local evaluation against all opponents
 make server-test-models               # the same evaluation on kag-server
 ```
 
+These commands use the parity-gated v4 runner by default. Native extensions are
+built only when their sources or Python ABI change:
+
+```bash
+make native-speedups-build
+make server-native-speedups-build
+```
+
+The production runner falls back to the stable implementation for unsupported
+configurations, and unknown public opponents retain their Python runtime until
+their native policy has passed trajectory parity. See
+[`reports/faster_simulator_v4_promotion_20260915.md`](reports/faster_simulator_v4_promotion_20260915.md)
+for the acceptance matrix and server benchmark.
+
 Use `TEST_MODELS="model_a model_b"` to evaluate only selected folders. Import
 also writes `metadata.json` with archive and source SHA-256 hashes, and refuses
-to overwrite an existing model name. Each agent module is reloaded for every
-game, matching Kaggle's game isolation even when an opponent keeps module-level
-state.
+to overwrite an existing model name. Evaluation workers reuse loaded modules;
+the registered agents reset their per-player state when the step returns to
+zero, and this reuse path is included in the v4 parity gate.
 
 The usual genome workflow is intentionally short:
 

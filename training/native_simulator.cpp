@@ -20,11 +20,11 @@ struct MarketParams {
 
 static const std::unordered_map<std::string, MarketParams> MARKET = {
     {"WHEAT",      {25, 10000, 400, .8, .2, "sqrt",   "log"}},
-    {"CARROT",     {35, 10000, 450, .2, .7, "log",    "sqrt"}},
-    {"TOMATO",     {60, 10000, 200, .4, .6, "linear", "sqrt"}},
+    {"CARROT",     {35, 10000, 450, 1., .7, "hinge",  "sqrt"}},
+    {"TOMATO",     {60, 10000, 200, .4, .6, "hinge",  "sqrt"}},
     {"STRAWBERRY",{120, 10000, 100, .7, 1.6,"sqrt",   "linear"}},
     {"MELON",     {250, 10000, 300, .2, 3.6,"log",    "sq"}},
-    {"EGG",        {50, 10000, 332, .4, .2, "linear", "log"}},
+    {"EGG",        {50, 10000, 332, .4, .2, "hinge",  "log"}},
     {"MILK",      {160, 10000, 122, .6, 1.6,"sqrt",   "linear"}},
     {"WOOL",      {200, 10000, 105, .2, 3.2,"log",    "sq"}},
     {"FERTILIZER",{100, 10000, 200, .4, .4, "linear", "linear"}},
@@ -97,7 +97,7 @@ static void apply_two_player_actions(py::sequence farms, py::dict private0, py::
     apply_player_actions(py::cast<py::dict>(farms[1]), private1, action1, day);
 }
 
-static double shape(const char *func, double x) {
+static double shape(const char *func, double x, double scale) {
     x = std::max(0.0, x);
     std::string f(func);
     if (f == "linear") return x;
@@ -105,6 +105,12 @@ static double shape(const char *func, double x) {
     if (f == "sqrt") return std::sqrt(x);
     if (f == "log") return std::log1p(x);
     if (f == "log10") return std::log10(1.0 + x);
+    if (f == "hinge") {
+        if (scale <= 0) return x;
+        double u = x / scale;
+        double z = std::max(0.0, u - 1.0);
+        return u + 8.0 * z * z;
+    }
     return x;
 }
 
@@ -112,11 +118,11 @@ static int market_price(const std::string &item, int inventory) {
     const auto &p = MARKET.at(item);
     double value;
     if (inventory < p.i0) {
-        double denom = shape(p.below_func, p.scale);
-        value = p.base + (p.below_target * p.base / denom) * shape(p.below_func, p.i0 - inventory);
+        double denom = shape(p.below_func, p.scale, p.scale);
+        value = p.base + (p.below_target * p.base / denom) * shape(p.below_func, p.i0 - inventory, p.scale);
     } else {
-        double denom = shape(p.above_func, p.scale);
-        value = p.base - (p.above_target * p.base / denom) * shape(p.above_func, inventory - p.i0);
+        double denom = shape(p.above_func, p.scale, p.scale);
+        value = p.base - (p.above_target * p.base / denom) * shape(p.above_func, inventory - p.i0, p.scale);
     }
     return std::max(1, static_cast<int>(std::nearbyint(value)));
 }

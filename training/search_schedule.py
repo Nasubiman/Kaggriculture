@@ -14,7 +14,7 @@ import random
 from statistics import mean, stdev
 from typing import Any
 
-from fast_kaggriculture import run_fast_episode
+from production_fast_kaggriculture import run_fast_episode
 from schedule_genome import (
     ScheduleGenome,
     anchor_schedules,

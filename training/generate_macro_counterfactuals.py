@@ -183,7 +183,7 @@ def play(
         else [incumbent_module.agent, candidate_function]
     )
     if fast_runner:
-        from fast_kaggriculture import run_fast_episode
+        from production_fast_kaggriculture import run_fast_episode
 
         final = run_fast_episode(agents, seed=seed)
     else:

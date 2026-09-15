@@ -17,7 +17,7 @@ import numpy as np
 import torch
 
 from counterfactual_value import load_value_checkpoint
-from fast_kaggriculture import run_fast_episode
+from production_fast_kaggriculture import run_fast_episode
 from generate_macro_counterfactuals import PROFILES, state_features
 from hybrid_policy import load_pasted_agent
 

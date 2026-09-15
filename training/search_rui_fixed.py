@@ -12,7 +12,7 @@ from pathlib import Path
 from statistics import mean
 from typing import Any
 
-from fast_kaggriculture import run_fast_episode
+from production_fast_kaggriculture import run_fast_episode
 
 
 ROOT = Path(__file__).resolve().parents[1]

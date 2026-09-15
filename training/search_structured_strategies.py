@@ -16,7 +16,7 @@ import time
 from types import SimpleNamespace
 from typing import Any
 
-from fast_kaggriculture import run_fast_episode
+from production_fast_kaggriculture import run_fast_episode
 from strategy_genome import (
     StrategyGenome,
     configure_module,
