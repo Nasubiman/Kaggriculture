@@ -170,6 +170,41 @@ def _install_struct_chassis(module: ModuleType,agent_runtime) -> None:
     chassis_cls.act=accelerated
 
 
+def _install_r36_due_suppression(module: ModuleType) -> None:
+    """Restore the R36 monkey-patched suppression skipped by C++ Chassis.
+
+    main.py replaces Chassis._apply_suppression with _r36_suppress, which consumes
+    reservations due on the current step while retaining zero-quantity SELL slots.
+    The C++ chassis calls its internal suppression helper directly, so perform that
+    extra debt step immediately before the native reserve layer runs.
+    """
+    ns=module.__dict__;current=ns.get("_r36_reserve");impl=ns.get("_IMPL")
+    if not callable(current) or impl is None or getattr(current,"_r36_due_suppression",False):return
+    def accelerated(obs,action):
+        try:
+            step=int(obs["step"]);player=int(obs["player"])
+            state=impl.chassis.players.get(player)
+            if state:
+                debts=state.get("sell_state",{}).get("r36_debts",{})
+                due=debts.pop(step,{})
+                if due:
+                    for order in action.get("market",[]):
+                        if len(order)>=3 and order[0]=="SELL":
+                            remaining=due.get(order[1],0)
+                            if remaining>0:
+                                removed=min(max(0,int(order[2])),remaining)
+                                order[2]=int(order[2])-removed
+                                due[order[1]]=remaining-removed
+        except Exception:
+            # Preserve the pre-existing guarded reserve behavior on unusual input.
+            pass
+        return current(obs,action)
+    accelerated._native_accelerated=True
+    accelerated._r36_due_suppression=True
+    accelerated._python_fallback=getattr(current,"_python_fallback",current)
+    ns["_r36_reserve"]=accelerated
+
+
 def _install_input(module: ModuleType) -> None:
     if _input_native is None or not hasattr(_input_native,"r51_input_control"):return
     ns=module.__dict__;original=ns.get("_r51_input_control");impl=ns.get("_IMPL");v219=ns.get("_V219_STATES");v233=ns.get("_V233_STATES");report=ns.get("_R51_INPUT_REPORT")
@@ -227,4 +262,5 @@ def install_native_extra(module: ModuleType) -> ModuleType:
     _install_native_deepcopy(module,agent_runtime)
     _install_similarity_adapter(module,agent_runtime)
     _install_struct_chassis(module,agent_runtime)
+    _install_r36_due_suppression(module)
     _install_input(module);_install_sales(module);_install_service(module);return module
