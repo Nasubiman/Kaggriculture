@@ -90,9 +90,9 @@ static py::dict future_action(py::dict obs, int offset, py::object impl) {
     int step = as_int(obs[py::str("step")]) + offset;
     int player = as_int(obs[py::str("player")]);
     py::object chassis = impl.attr("chassis");
-    auto players = py::reinterpret_borrow<py::sequence>(chassis.attr("players"));
-    auto native = py::reinterpret_borrow<py::dict>(players[player]);
-    py::object route = step >= 648 ? py::int_(2) : py::reinterpret_borrow<py::object>(native[py::str("route")]);
+    auto players = py::reinterpret_borrow<py::dict>(chassis.attr("players"));
+    auto native = py::reinterpret_borrow<py::dict>(players[py::int_(player)]);
+    py::object route = step >= 648 ? py::object(py::int_(2)) : py::reinterpret_borrow<py::object>(native[py::str("route")]);
     auto routes = py::reinterpret_borrow<py::dict>(chassis.attr("routes"));
     auto tape = py::reinterpret_borrow<py::sequence>(routes[route]);
     return py::cast<py::dict>(tape[step]);
