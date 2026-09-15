@@ -15,6 +15,7 @@ MODULES=(
  (ROOT/"training/native_input_control.cpp",ROOT/"training"/f"_kaggriculture_input{EXT}"),
  (ROOT/"training/native_sales.cpp",ROOT/"training"/f"_kaggriculture_sales{EXT}"),
  (ROOT/"training/native_service.cpp",ROOT/"training"/f"_kaggriculture_service{EXT}"),
+ (ROOT/"training/native_simulator.cpp",ROOT/"training"/f"_kaggriculture_simulator{EXT}"),
 )
 
 def _host_flags():
