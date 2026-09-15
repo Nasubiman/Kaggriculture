@@ -31,6 +31,8 @@ jobs:
         run: python scripts/prepare_native_simulator_source.py
       - name: Build optional native accelerator
         run: python scripts/build_native_speedups.py
+      - name: Build experimental native R97 supply accelerator
+        run: python scripts/build_native_supply.py
       - name: Apply guarded main.py speed patch
         run: python scripts/apply_main_speed_patch.py
       # Native parity is the fastest high-value guard while the runtime hot path
