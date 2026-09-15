@@ -71,6 +71,8 @@ def _install_similarity_adapter(module: ModuleType, agent_runtime) -> None:
     current=module.__dict__.get("_r37_similarity")
     if native_similarity is None or not callable(current):return
     original=getattr(current,"_python_fallback",current)
+    diagnostic={"count":0,"first":None}
+    module.__dict__["_NATIVE_SIMILARITY_DIAGNOSTIC"]=diagnostic
     def accelerated(observation):
         try:
             farms=observation["farms"]
@@ -84,7 +86,10 @@ def _install_similarity_adapter(module: ModuleType, agent_runtime) -> None:
                 ],
             }
             return native_similarity(thin)
-        except Exception:
+        except Exception as exc:
+            diagnostic["count"]+=1
+            if diagnostic["first"] is None:
+                diagnostic["first"]=f"{type(exc).__name__}: {exc}"
             return original(observation)
     accelerated._native_accelerated=True
     accelerated._python_fallback=original
