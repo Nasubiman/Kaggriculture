@@ -65,6 +65,12 @@ def _install_service(module: ModuleType) -> None:
             try:return _service_native.r128_food_need(obs,farm,private,actor,impl)
             except Exception:return food(obs,farm,private,actor)
         accelerated_food._native_accelerated=True;accelerated_food._python_fallback=food;ns["_r128_food_need"]=accelerated_food
+    service=ns.get("_r128_service");r127_states=ns.get("_R127_STATES");report=ns.get("_R128_REPORT")
+    if callable(service) and isinstance(r127_states,dict) and isinstance(report,dict) and hasattr(_service_native,"r128_service") and not getattr(service,"_native_accelerated",False):
+        def accelerated_service(obs,action,state):
+            try:return _service_native.r128_service(obs,action,state,impl,r127_states,report)
+            except Exception:return service(obs,action,state)
+        accelerated_service._native_accelerated=True;accelerated_service._python_fallback=service;ns["_r128_service"]=accelerated_service
 
 
 def install_native_extra(module: ModuleType) -> ModuleType:
