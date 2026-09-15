@@ -37,7 +37,8 @@ def load(path: Path, name: str, native: bool):
 
 
 def profile_once(native: bool) -> tuple[float, str]:
-    candidate = load(ROOT / "main.py", f"profile_candidate_{native}", native).agent
+    candidate_module = load(ROOT / "main.py", f"profile_candidate_{native}", native)
+    candidate = candidate_module.agent
     rival = load(ROOT / "test" / "public_v37" / "main.py", f"profile_rival_{native}", False).agent
     prof = cProfile.Profile()
     start = time.perf_counter()
@@ -50,6 +51,10 @@ def profile_once(native: bool) -> tuple[float, str]:
     stats.print_stats(100)
     out.write("\n===== self time =====\n")
     stats.sort_stats("tottime").print_stats(100)
+    diagnostic = getattr(candidate_module, "_NATIVE_SIMILARITY_DIAGNOSTIC", None)
+    if diagnostic is not None:
+        out.write("\n===== native similarity diagnostic =====\n")
+        out.write(repr(diagnostic) + "\n")
     return elapsed, out.getvalue()
 
 
