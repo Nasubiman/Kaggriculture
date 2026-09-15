@@ -1,0 +1,42 @@
+name: Newer native opponent policy
+
+on:
+  push:
+    branches:
+      - agent/simulator-v4-newer-policy-20260915
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install pybind11
+      - name: Normalize native simulator source
+        run: python scripts/prepare_native_simulator_source.py
+      - name: Build native accelerators
+        run: python scripts/build_native_speedups_turbo.py
+      - name: Apply guarded main.py speed patch
+        run: python scripts/apply_main_speed_patch.py
+      - name: Diagnose newer native policies
+        run: python scripts/diagnose_newer_native_policy.py
+      - name: Print result
+        if: always()
+        run: cat reports/newer_native_policy.json || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: newer-native-policy
+          path: reports/newer_native_policy.json
+          if-no-files-found: ignore
