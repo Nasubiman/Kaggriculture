@@ -1,0 +1,42 @@
+name: Native service callable cache
+
+on:
+  push:
+    branches:
+      - agent/simulator-v4-service-cache-20260915
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install pybind11
+      - name: Normalize native simulator source
+        run: python scripts/prepare_native_simulator_source.py
+      - name: Build cached-service native accelerators
+        run: python scripts/build_native_speedups_service_cache.py
+      - name: Apply guarded main.py speed patch
+        run: python scripts/apply_main_speed_patch.py
+      - name: Verify native agent parity and benchmark
+        run: python scripts/benchmark_native_agent_runtime.py
+      - name: Profile native-enabled agent runtime
+        run: python scripts/profile_native_agent_runtime.py
+      - name: Run simulator parity and benchmark
+        run: python scripts/benchmark_experimental_simulation.py --seeds 1 --repeats 1
+      - name: Print results
+        if: always()
+        run: |
+          cat reports/native_agent_runtime_benchmark.json || true
+          cat reports/experimental_simulation_benchmark.json || true
