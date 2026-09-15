@@ -23,6 +23,11 @@ try:
 except Exception:
     _controller_native = None
 
+try:
+    import _kaggriculture_chassis as _chassis_native
+except Exception:
+    _chassis_native = None
+
 
 def fast_deepcopy(value: Any, memo: dict[int, Any] | None = None) -> Any:
     if type(value) in _ATOMIC:
@@ -264,6 +269,50 @@ def _install_native_projected_shed(module: ModuleType) -> None:
     chassis_cls._projected_shed = accelerated
 
 
+def _install_native_chassis(module: ModuleType) -> None:
+    if _chassis_native is None or not hasattr(_chassis_native, "chassis_act"):
+        return
+    ns = module.__dict__
+    chassis_cls = ns.get("Chassis")
+    view_cls = ns.get("_View")
+    if chassis_cls is None or view_cls is None:
+        return
+    original = getattr(chassis_cls, "act", None)
+    if not callable(original) or getattr(original, "_native_accelerated", False):
+        return
+    def accelerated(self, observation, configuration=None):
+        # Native core deliberately targets the exact two-player dict observations
+        # used by official Kaggriculture and the fast runners. Everything else
+        # retains the Python implementation.
+        if type(observation) is not dict:
+            return original(self, observation, configuration)
+        farms = observation.get("farms") or []
+        if type(farms) not in (list, tuple) or len(farms) < 2:
+            return original(self, observation, configuration)
+        try:
+            step = int(observation.get("step", 0))
+            player = int(observation.get("player", 0))
+            st = self._state(player, step)
+            route = self.router(observation, step, st["router_state"])
+            if route not in self.routes:
+                route = st["route"] if st["route"] in self.routes else next(iter(self.routes))
+            st["route"] = route
+            return _chassis_native.chassis_act(self, observation, st, route, view_cls)
+        except Exception:
+            self.diagnostics["layer_fallbacks"] = self.diagnostics.get("layer_fallbacks", 0) + 1
+            try:
+                route = st.get("route")
+                tape = self.routes.get(route, next(iter(self.routes.values())))
+                if 0 <= step < len(tape):
+                    return fast_deepcopy(tape[step])
+            except Exception:
+                pass
+            return {"farmer": ["PASS"], "hands": [], "market": []}
+    accelerated._native_accelerated = True
+    accelerated._python_fallback = original
+    chassis_cls.act = accelerated
+
+
 def _install_native_v231(module: ModuleType) -> None:
     if _controller_native is None or not hasattr(_controller_native, "v231_controller"):
         return
@@ -326,6 +375,7 @@ def optimize_agent_module(module: ModuleType) -> ModuleType:
     _install_native_joint_plans(module)
     _install_native_similarity(module)
     _install_native_projected_shed(module)
+    _install_native_chassis(module)
     _install_native_v231(module)
     _install_native_reserve(module)
     return module
