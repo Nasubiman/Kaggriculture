@@ -123,7 +123,7 @@ def _activate_runtime_extension():
 
 def main():
     includes=subprocess.check_output([sys.executable,"-m","pybind11","--includes"],text=True).strip()
-    common=["c++","-O3","-DNDEBUG","-shared","-std=c++17","-fPIC",*_host_flags(),*shlex.split(includes)]
+    common=["c++","-O3","-DNDEBUG","-shared","-std=c++17","-fPIC",*_host_flags(),*shlex.split(includes),f"-I{ROOT/'training'}"]
     with tempfile.TemporaryDirectory(prefix="kag-native-build-") as td:
         tmp=Path(td)
         for src,out in MODULES:
