@@ -49,6 +49,13 @@ def _install_native_deepcopy(module: ModuleType, agent_runtime) -> None:
         existing=planner.get("deepcopy")
         if existing is current or getattr(existing,"_native_accelerated",False):
             planner["deepcopy"]=accelerated
+    # apply_main_speed_patch installs its own copy-compatible proxy before this
+    # runtime optimizer runs.  Replace only that known proxy shape so calls made
+    # through main.py's ``copy.deepcopy`` use the same native copier too.  The
+    # replacement still proxies every other copy-module attribute to stdlib.
+    module_copy=module.__dict__.get("copy")
+    if module_copy is not None and type(module_copy).__name__ in {"_AgentCopyProxy","_CopyProxy"}:
+        module.__dict__["copy"]=agent_runtime._CopyProxy()
 
 
 def _install_similarity_adapter(module: ModuleType, agent_runtime) -> None:
