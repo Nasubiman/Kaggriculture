@@ -14,6 +14,10 @@ try:
     import _kaggriculture_service as _service_native
 except Exception:
     _service_native = None
+try:
+    import _kaggriculture_chassis as _chassis_native
+except Exception:
+    _chassis_native = None
 
 
 def _wrap(ns,name,native):
@@ -23,6 +27,19 @@ def _wrap(ns,name,native):
         try:return native(*args)
         except Exception:return original(*args)
     accelerated._native_accelerated=True;accelerated._python_fallback=original;ns[name]=accelerated
+
+
+def _field(value,key,default=None):
+    if type(value) is dict:return value.get(key,default)
+    try:return value[key]
+    except Exception:return getattr(value,key,default)
+
+
+def _plain_mapping(value,keys=()):
+    if type(value) is dict:return value
+    if value is None:return {}
+    try:return dict(value)
+    except Exception:return {key:_field(value,key) for key in keys if _field(value,key,None) is not None}
 
 
 def _install_native_deepcopy(module: ModuleType, agent_runtime) -> None:
@@ -49,24 +66,13 @@ def _install_native_deepcopy(module: ModuleType, agent_runtime) -> None:
         existing=planner.get("deepcopy")
         if existing is current or getattr(existing,"_native_accelerated",False):
             planner["deepcopy"]=accelerated
-    # apply_main_speed_patch installs its own copy-compatible proxy before this
-    # runtime optimizer runs.  Replace only that known proxy shape so calls made
-    # through main.py's ``copy.deepcopy`` use the same native copier too.  The
-    # replacement still proxies every other copy-module attribute to stdlib.
     module_copy=module.__dict__.get("copy")
     if module_copy is not None and type(module_copy).__name__ in {"_AgentCopyProxy","_CopyProxy"}:
         module.__dict__["copy"]=agent_runtime._CopyProxy()
 
 
 def _install_similarity_adapter(module: ModuleType, agent_runtime) -> None:
-    """Give the dict-typed native kernel a tiny outer shell and share tile data.
-
-    Kaggle observations/farms can be Struct-like objects, while the native kernel
-    currently requires plain dicts for the outer observation/farm records.  Only
-    those records need adapting: tiles and quadrants are read-only inside the
-    kernel, so keep their original references instead of allocating row copies on
-    every similarity check.
-    """
+    """Give the dict-typed native kernel a tiny outer shell and share tile data."""
     native=getattr(agent_runtime,"_native",None)
     native_similarity=getattr(native,"r37_similarity",None) if native is not None else None
     current=module.__dict__.get("_r37_similarity")
@@ -87,12 +93,81 @@ def _install_similarity_adapter(module: ModuleType, agent_runtime) -> None:
             return native_similarity(thin)
         except Exception as exc:
             diagnostic["count"]+=1
-            if diagnostic["first"] is None:
-                diagnostic["first"]=f"{type(exc).__name__}: {exc}"
+            if diagnostic["first"] is None:diagnostic["first"]=f"{type(exc).__name__}: {exc}"
             return original(observation)
     accelerated._native_accelerated=True
     accelerated._python_fallback=original
     module.__dict__["_r37_similarity"]=accelerated
+
+
+def _install_struct_chassis(module: ModuleType,agent_runtime) -> None:
+    """Keep Struct observations on the native Chassis path using shallow shells.
+
+    The base runtime deliberately accepts only exact dict observations.  Kaggle's
+    fast runner supplies Struct-like mappings, so that guard sent every turn back
+    through Python Chassis.act and rebuilt _View.  The C++ kernel only needs a
+    handful of mapping records; adapt those records shallowly and keep tiles,
+    positions, and other large sequences shared by reference.
+    """
+    if _chassis_native is None or not hasattr(_chassis_native,"chassis_act"):return
+    chassis_cls=module.__dict__.get("Chassis");view_cls=module.__dict__.get("_View")
+    if chassis_cls is None or view_cls is None:return
+    current=getattr(chassis_cls,"act",None)
+    if not callable(current):return
+    original=getattr(current,"_python_fallback",current)
+    if getattr(current,"_struct_native_accelerated",False):return
+    diagnostic={"native_calls":0,"fallbacks":0,"first":None}
+    module.__dict__["_NATIVE_CHASSIS_DIAGNOSTIC"]=diagnostic
+    farm_keys=("money","tiles","farmer","hands","hires_today","unlocked_quadrants")
+    private_keys=("shed","seeds","inventories")
+    market_keys=("prices",)
+    def accelerated(self,observation,configuration=None):
+        # Exact dict observations are already handled efficiently by the base
+        # wrapper.  Only adapt the Struct-like path here.
+        if type(observation) is dict:return current(self,observation,configuration)
+        st=None;step=0
+        try:
+            farms=_field(observation,"farms",()) or ()
+            if len(farms)<2:return original(self,observation,configuration)
+            farm0=_plain_mapping(farms[0],farm_keys);farm1=_plain_mapping(farms[1],farm_keys)
+            private_src=_field(observation,"private",{}) or {}
+            private=_plain_mapping(private_src,private_keys)
+            invs=private.get("inventories") or []
+            if any(type(inv) is not dict for inv in invs):
+                private=dict(private);private["inventories"]=[_plain_mapping(inv) for inv in invs]
+            if type(private.get("shed")) is not dict:
+                private=dict(private);private["shed"]=_plain_mapping(private.get("shed"))
+            if type(private.get("seeds")) is not dict:
+                private=dict(private);private["seeds"]=_plain_mapping(private.get("seeds"))
+            market=_plain_mapping(_field(observation,"market",{}) or {},market_keys)
+            if type(market.get("prices")) is not dict:
+                market=dict(market);market["prices"]=_plain_mapping(market.get("prices"))
+            step=int(_field(observation,"step",0) or 0);player=int(_field(observation,"player",0) or 0)
+            thin={"step":step,"player":player,"farms":[farm0,farm1],"private":private,"market":market}
+            st=self._state(player,step)
+            route=self.router(observation,step,st["router_state"])
+            if route not in self.routes:
+                route=st["route"] if st["route"] in self.routes else next(iter(self.routes))
+            st["route"]=route
+            result=_chassis_native.chassis_act(self,thin,st,route,view_cls)
+            diagnostic["native_calls"]+=1
+            return result
+        except Exception as exc:
+            diagnostic["fallbacks"]+=1
+            if diagnostic["first"] is None:diagnostic["first"]=f"{type(exc).__name__}: {exc}"
+            # Match the guarded base native wrapper's exceptional behavior after
+            # state/router work has begun; otherwise use the exact Python path.
+            if st is None:return original(self,observation,configuration)
+            self.diagnostics["layer_fallbacks"]=self.diagnostics.get("layer_fallbacks",0)+1
+            try:
+                route=st.get("route");tape=self.routes.get(route,next(iter(self.routes.values())))
+                if 0<=step<len(tape):return agent_runtime.fast_deepcopy(tape[step])
+            except Exception:pass
+            return {"farmer":["PASS"],"hands":[],"market":[]}
+    accelerated._native_accelerated=True
+    accelerated._struct_native_accelerated=True
+    accelerated._python_fallback=original
+    chassis_cls.act=accelerated
 
 
 def _install_input(module: ModuleType) -> None:
@@ -151,4 +226,5 @@ def install_native_extra(module: ModuleType) -> ModuleType:
     except Exception:return module
     _install_native_deepcopy(module,agent_runtime)
     _install_similarity_adapter(module,agent_runtime)
+    _install_struct_chassis(module,agent_runtime)
     _install_input(module);_install_sales(module);_install_service(module);return module
