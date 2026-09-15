@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Build and activate the experimental native R97 supply guard.
+"""Build and activate experimental native runtime accelerators.
 
-Kept separate from build_native_speedups.py until parity and benchmark results
-justify folding it into the permanent native module set.
+The R97 supply kernel and Struct-aware View fast path stay separate from the
+permanent native module set until parity and benchmark results justify folding
+them in.
 """
 from __future__ import annotations
 
@@ -55,13 +56,68 @@ try:
     import _kaggriculture_supply as _r97_supply_native
     _pre_supply_optimize_agent_module = optimize_agent_module
 
+    def _struct_get(value, key, default=None):
+        if type(value) is dict:
+            return value.get(key, default)
+        try:
+            return value[key]
+        except Exception:
+            return getattr(value, key, default)
+
+    def _struct_dict(value):
+        if type(value) is dict:
+            return value
+        if value is None:
+            return {}
+        return dict(value)
+
+    def _install_struct_fast_view(module):
+        view_cls = module.__dict__.get("_View")
+        if view_cls is None:
+            return
+        current = getattr(view_cls, "__init__", None)
+        if not callable(current) or getattr(current, "_struct_runtime_accelerated", False):
+            return
+
+        def accelerated(self, observation, player, cfg):
+            if type(observation) is dict:
+                return current(self, observation, player, cfg)
+            try:
+                farms = _struct_get(observation, "farms", ()) or ()
+                self.farm = farms[player] if player < len(farms) else {}
+                self.rival = farms[1-player] if len(farms) >= 2 and 1-player < len(farms) else {}
+                private = _struct_get(observation, "private", {}) or {}
+                market = _struct_get(observation, "market", {}) or {}
+                self.shed = _struct_dict(_struct_get(private, "shed", {}) or {})
+                self.seeds = _struct_dict(_struct_get(private, "seeds", {}) or {})
+                raw_invs = _struct_get(private, "inventories", ()) or ()
+                self.invs = [inv if type(inv) is dict else _struct_dict(inv) for inv in raw_invs]
+                self.prices = _struct_dict(_struct_get(market, "prices", {}) or {})
+                self.money = float(_struct_get(self.farm, "money", 0.0) or 0.0)
+                self.tiles = _struct_get(self.farm, "tiles", ()) or ()
+                self.board = len(self.tiles) or cfg["board_size"]
+                farmer = _struct_get(self.farm, "farmer", None)
+                hands = _struct_get(self.farm, "hands", ()) or ()
+                self.positions = [farmer, *hands]
+                self.hires_today = int(_struct_get(self.farm, "hires_today", 0) or 0)
+                self.quadrants = len(_struct_get(self.farm, "unlocked_quadrants", ()) or ())
+            except Exception:
+                return current(self, observation, player, cfg)
+
+        accelerated._runtime_accelerated = True
+        accelerated._struct_runtime_accelerated = True
+        accelerated._python_fallback = getattr(current, "_python_fallback", current)
+        view_cls.__init__ = accelerated
+
     def optimize_agent_module(module):
         module = _pre_supply_optimize_agent_module(module)
         # benchmark_native_agent_runtime deliberately clears _native for its
-        # Python baseline.  Keep this independent extension behind the same
-        # master switch so parity and timing comparisons remain uncontaminated.
+        # Python baseline. Keep all experimental additions behind the same
+        # master switch so parity/timing comparisons remain uncontaminated.
         if _native is None:
             return module
+
+        _install_struct_fast_view(module)
         ns = module.__dict__
         original = ns.get("_r97_supply")
         impl = ns.get("_IMPL")
