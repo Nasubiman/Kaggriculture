@@ -11,7 +11,9 @@ Transformations:
 2. remove the second eager copy of each route action that exists only to serve
    an exceptional fallback path, and reconstruct it only if that path is taken;
 3. remove diagnostic telemetry/report propagation between wrapper layers while
-   preserving each layer's own state and counters.
+   preserving each layer's own state and counters;
+4. replace the final forwarding kaggle_agent function with direct aliases to the
+   configured callable, removing one Python function call per turn.
 """
 from __future__ import annotations
 
@@ -133,11 +135,19 @@ def main() -> None:
             f"aggregate={aggregate_removed}"
         )
 
+    final_wrapper = '''\n\ndef kaggle_agent(obs, config=None):\n    return _configured_current_genome_agent(obs, config)\n\n\nagent = kaggle_agent\n'''
+    flattened = '''\n\n# Direct aliases: avoid one Python forwarding call per turn.\nkaggle_agent = _configured_current_genome_agent\nagent = _configured_current_genome_agent\n'''
+    if text.count(final_wrapper) != 1:
+        raise RuntimeError(
+            f"expected one final kaggle_agent forwarding wrapper, found {text.count(final_wrapper)}"
+        )
+    text = text.replace(final_wrapper, flattened, 1)
+
     MAIN.write_text(text)
     print(
         "patched main.py: fast deepcopy + lazy fallback + removed diagnostic "
         f"propagation inherited={inherited_removed}, direct={direct_removed}, "
-        f"aggregate={aggregate_removed}"
+        f"aggregate={aggregate_removed} + flattened final agent wrapper"
     )
 
 
