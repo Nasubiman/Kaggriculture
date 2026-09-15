@@ -51,6 +51,38 @@ def _install_native_deepcopy(module: ModuleType, agent_runtime) -> None:
             planner["deepcopy"]=accelerated
 
 
+def _install_similarity_adapter(module: ModuleType, agent_runtime) -> None:
+    """Feed the native similarity kernel plain dict wrappers, without copying tiles.
+
+    Kaggle observations/farms can be Struct objects.  The original native kernel
+    accepts dict at those outer levels, so the generic wrapper installed by
+    agent_runtime otherwise raises and immediately executes the Python fallback.
+    Only the tiny outer shell is rebuilt here; the large tile matrices remain
+    shared references and therefore cost no deep copy.
+    """
+    native=getattr(agent_runtime,"_native",None)
+    native_similarity=getattr(native,"r37_similarity",None) if native is not None else None
+    current=module.__dict__.get("_r37_similarity")
+    if native_similarity is None or not callable(current):return
+    original=getattr(current,"_python_fallback",current)
+    def accelerated(observation):
+        try:
+            farms=observation["farms"]
+            thin={
+                "player": observation["player"],
+                "farms": [
+                    {"unlocked_quadrants": farms[0]["unlocked_quadrants"], "tiles": farms[0]["tiles"]},
+                    {"unlocked_quadrants": farms[1]["unlocked_quadrants"], "tiles": farms[1]["tiles"]},
+                ],
+            }
+            return native_similarity(thin)
+        except Exception:
+            return original(observation)
+    accelerated._native_accelerated=True
+    accelerated._python_fallback=original
+    module.__dict__["_r37_similarity"]=accelerated
+
+
 def _install_input(module: ModuleType) -> None:
     if _input_native is None or not hasattr(_input_native,"r51_input_control"):return
     ns=module.__dict__;original=ns.get("_r51_input_control");impl=ns.get("_IMPL");v219=ns.get("_V219_STATES");v233=ns.get("_V233_STATES");report=ns.get("_R51_INPUT_REPORT")
@@ -106,4 +138,5 @@ def install_native_extra(module: ModuleType) -> ModuleType:
         if agent_runtime._native is None:return module
     except Exception:return module
     _install_native_deepcopy(module,agent_runtime)
+    _install_similarity_adapter(module,agent_runtime)
     _install_input(module);_install_sales(module);_install_service(module);return module
