@@ -25,6 +25,32 @@ def _wrap(ns,name,native):
     accelerated._native_accelerated=True;accelerated._python_fallback=original;ns[name]=accelerated
 
 
+def _install_native_deepcopy(module: ModuleType, agent_runtime) -> None:
+    native=getattr(agent_runtime,"_native",None)
+    native_copy=getattr(native,"deepcopy_builtin",None) if native is not None else None
+    if native_copy is None:return
+    current=agent_runtime.fast_deepcopy
+    if getattr(current,"_native_accelerated",False):
+        accelerated=current
+    else:
+        def accelerated(value,memo=None):
+            # Existing memo belongs to an outer Python deepcopy operation. Keep
+            # that path in Python so aliases shared with the outer object graph
+            # continue to use the same memo table.
+            if memo is not None:return current(value,memo)
+            try:return native_copy(value)
+            except Exception:return current(value)
+        accelerated._native_accelerated=True
+        accelerated._python_fallback=current
+        agent_runtime.fast_deepcopy=accelerated
+        agent_runtime._CopyProxy.deepcopy=staticmethod(accelerated)
+    planner=module.__dict__.get("_PLANNER_NS")
+    if isinstance(planner,dict):
+        existing=planner.get("deepcopy")
+        if existing is current or getattr(existing,"_native_accelerated",False):
+            planner["deepcopy"]=accelerated
+
+
 def _install_input(module: ModuleType) -> None:
     if _input_native is None or not hasattr(_input_native,"r51_input_control"):return
     ns=module.__dict__;original=ns.get("_r51_input_control");impl=ns.get("_IMPL");v219=ns.get("_V219_STATES");v233=ns.get("_V233_STATES");report=ns.get("_R51_INPUT_REPORT")
@@ -79,4 +105,5 @@ def install_native_extra(module: ModuleType) -> ModuleType:
         import agent_runtime
         if agent_runtime._native is None:return module
     except Exception:return module
+    _install_native_deepcopy(module,agent_runtime)
     _install_input(module);_install_sales(module);_install_service(module);return module
