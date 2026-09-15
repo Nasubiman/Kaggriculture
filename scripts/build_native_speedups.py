@@ -49,6 +49,14 @@ def _prepare_sales(text):
         'sales position accessor',
     )
 
+def _prepare_service(text):
+    return _replace_once(
+        text,
+        'auto after=py::cast<py::dict>(safe[1]),ainv=py::cast<py::sequence>(after["inventories"]);',
+        'auto after=py::cast<py::dict>(safe[1]);auto ainv=py::cast<py::sequence>(after["inventories"]);',
+        'service result sequence type',
+    )
+
 def _prepare_planner(text):
     text=_replace_once(text,'''struct PathItem { int idx=0, x=0, y=0, birth=0; std::string crop; };
 struct Beam {
@@ -104,6 +112,7 @@ def _prepared_source(src,tmpdir):
     elif src.name=="native_speedups_v2.cpp": text=_prepare_planner(src.read_text())
     elif src.name=="native_input_control.cpp": text=_prepare_input(src.read_text())
     elif src.name=="native_sales.cpp": text=_prepare_sales(src.read_text())
+    elif src.name=="native_service.cpp": text=_prepare_service(src.read_text())
     else: return src
     out=tmpdir/src.name;out.write_text(text);return out
 
