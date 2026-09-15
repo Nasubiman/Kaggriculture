@@ -1,0 +1,34 @@
+name: Native reserve start parity
+
+on:
+  push:
+    branches:
+      - agent/native-reserve-start-parity-20260915
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pip install pybind11
+      - name: Normalize native simulator source
+        run: python scripts/prepare_native_simulator_source.py
+      - name: Correct native reserve activation window
+        run: python scripts/prepare_native_reserve_start.py
+      - name: Build native accelerators
+        run: python scripts/build_native_speedups_turbo.py
+      - name: Apply guarded main.py speed patch
+        run: python scripts/apply_main_speed_patch.py
+      - name: Verify corrected reserve parity
+        run: python scripts/verify_native_reserve_start_parity.py
