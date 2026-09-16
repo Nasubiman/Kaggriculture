@@ -106,15 +106,17 @@ TRAJECTORY_RESULT ?= $(shell test -f "$(LAST_TRAJECTORY_SEARCH_RUN)" && cat "$(L
 CURRENT_GENOME_NAME ?= current_genome_$(shell date +%Y%m%d_%H%M%S)
 CURRENT_GENOME_RUN ?= $(SERVER_DATA)/runs/$(CURRENT_GENOME_NAME)
 CURRENT_GENOME_LOCAL_RUN ?= $(SERVER_RESULTS)/$(CURRENT_GENOME_NAME)
-CURRENT_GENOME_OPPONENTS ?= public_v43_competitive_20260915 public_v38_low_pressure_20260914 public_v41_competitive_20260914 public_v41_survival_20260914 results5_20260913 incumbent_pre_v43_20260915 incumbent_v37_opening attack_roundtrip_first25 robust_seat_mix_v1
+CURRENT_GENOME_OPPONENTS ?= public_v45_competitive_20260916 public_v43_competitive_20260915 public_v41_competitive_20260914 public_v38_low_pressure_20260914 results5_20260913
 CURRENT_GENOME_WORKERS ?= 20
 CURRENT_GENOME_POPULATION ?= 48
-CURRENT_GENOME_SCREEN_SEEDS ?= 4
-CURRENT_GENOME_RACE_SEEDS ?= 20
-CURRENT_GENOME_FINAL_SEEDS ?= 100
+CURRENT_GENOME_SCREEN_SEEDS ?= 8
+CURRENT_GENOME_RACE_SEEDS ?= 24
+CURRENT_GENOME_FINAL_SEEDS ?= 200
 CURRENT_GENOME_RACE_COUNT ?= 16
 CURRENT_GENOME_ELITE_COUNT ?= 6
 CURRENT_GENOME_FINALISTS ?= 4
+CURRENT_GENOME_SEED ?= 20260917
+CURRENT_GENOME_SEED_START ?= 21000000
 LAST_CURRENT_GENOME_RUN := $(SERVER_RESULTS)/LATEST_CURRENT_GENOME_RUN
 CURRENT_GENOME_RESULT ?= $(shell test -f "$(LAST_CURRENT_GENOME_RUN)" && cat "$(LAST_CURRENT_GENOME_RUN)")
 MECHANISM_ABLATION_BASE ?= main.py
@@ -365,7 +367,7 @@ current-genome-search: server-sync-fast-runner
 	rsync -az main.py $(SERVER_HOST):$(SERVER_REPO)/main.py
 	rsync -az training/current_genome.py training/search_current_genomes.py training/promote_current_genome.py $(SERVER_HOST):$(SERVER_REPO)/training/
 	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
-	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; cp main.py training/agent_runtime.py training/current_genome.py training/search_current_genomes.py training/promote_current_genome.py "$(CURRENT_GENOME_RUN)/source/"; cp -R test "$(CURRENT_GENOME_RUN)/source/"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/search_current_genomes.py --base main.py --models-dir test --opponents $(CURRENT_GENOME_OPPONENTS) --workers "$(CURRENT_GENOME_WORKERS)" --population "$(CURRENT_GENOME_POPULATION)" --screen-seeds "$(CURRENT_GENOME_SCREEN_SEEDS)" --race-seeds "$(CURRENT_GENOME_RACE_SEEDS)" --final-seeds "$(CURRENT_GENOME_FINAL_SEEDS)" --race-count "$(CURRENT_GENOME_RACE_COUNT)" --elite-count "$(CURRENT_GENOME_ELITE_COUNT)" --finalists "$(CURRENT_GENOME_FINALISTS)" --output-dir "$(CURRENT_GENOME_RUN)"'
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; cp main.py training/agent_runtime.py training/current_genome.py training/search_current_genomes.py training/promote_current_genome.py "$(CURRENT_GENOME_RUN)/source/"; cp -R test "$(CURRENT_GENOME_RUN)/source/"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python training/search_current_genomes.py --base main.py --models-dir test --opponents $(CURRENT_GENOME_OPPONENTS) --workers "$(CURRENT_GENOME_WORKERS)" --population "$(CURRENT_GENOME_POPULATION)" --screen-seeds "$(CURRENT_GENOME_SCREEN_SEEDS)" --race-seeds "$(CURRENT_GENOME_RACE_SEEDS)" --final-seeds "$(CURRENT_GENOME_FINAL_SEEDS)" --race-count "$(CURRENT_GENOME_RACE_COUNT)" --elite-count "$(CURRENT_GENOME_ELITE_COUNT)" --finalists "$(CURRENT_GENOME_FINALISTS)" --seed "$(CURRENT_GENOME_SEED)" --seed-start "$(CURRENT_GENOME_SEED_START)" --output-dir "$(CURRENT_GENOME_RUN)"'
 	mkdir -p "$(CURRENT_GENOME_LOCAL_RUN)"
 	rsync -az $(SERVER_HOST):$(CURRENT_GENOME_RUN)/ "$(CURRENT_GENOME_LOCAL_RUN)/"
 	printf '%s\n' "$(CURRENT_GENOME_LOCAL_RUN)" > "$(LAST_CURRENT_GENOME_RUN)"

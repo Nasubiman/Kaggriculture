@@ -22,13 +22,11 @@ from reference_runtime import optimize_reference_agent_module
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OPPONENTS = (
+    "public_v45_competitive_20260916",
     "public_v43_competitive_20260915",
-    "public_v38_low_pressure_20260914",
     "public_v41_competitive_20260914",
-    "public_v41_survival_20260914",
-    "results5_20260913", "incumbent_pre_v43_20260915",
-    "incumbent_v37_opening",
-    "attack_roundtrip_first25", "robust_seat_mix_v1",
+    "public_v38_low_pressure_20260914",
+    "results5_20260913",
 )
 _BASE = ""
 _OPPONENT_PATHS: dict[str, str] = {}
@@ -116,7 +114,10 @@ def row(genome: CurrentGenome, label: str, parent: str | None = None):
 
 
 def unique(rows):
-    return list({value["genome"].key(): value for value in rows}.values())
+    by_key = {}
+    for value in rows:
+        by_key.setdefault(value["genome"].key(), value)
+    return list(by_key.values())
 
 
 def diverse_results(results, count: int, base_key: str):
@@ -155,23 +156,33 @@ def diverse_results(results, count: int, base_key: str):
 
 
 def initial_pool(base: CurrentGenome, rng: random.Random, population: int):
-    anchors = unique([row(base, "incumbent")] + [
-        row(value, f"top3_anchor_{index}") for index, value in enumerate(anchor_genomes())
+    neighborhood = unique([
+        row(value, f"incumbent_anchor_{index}")
+        for index, value in enumerate(anchor_genomes(base))
     ])
-    rows = list(anchors)
+    anchor_budget = min(len(neighborhood), max(1, population // 2))
+    anchor_indices = (
+        [0] if anchor_budget == 1 else [
+            round(index * (len(neighborhood) - 1) / (anchor_budget - 1))
+            for index in range(anchor_budget)
+        ]
+    )
+    rows = [row(base, "incumbent"), *(
+        neighborhood[index] for index in anchor_indices[1:]
+    )]
     attempts = 0
     while len(unique(rows)) < population and attempts < population * 100:
         attempts += 1
-        parent = rng.choice(anchors)["genome"]
+        parent = base if rng.random() < 0.7 else rng.choice(neighborhood)["genome"]
         if rng.random() < 0.25:
-            parent = crossover(parent, rng.choice(anchors)["genome"], rng)
+            parent = crossover(parent, rng.choice(neighborhood)["genome"], rng)
         child = mutate(parent, rng, rng.choices((1, 2, 3), (5, 3, 1))[0])
-        rows.append(row(child, f"top3_mutation_{attempts}", parent.key()))
+        rows.append(row(child, f"incumbent_mutation_{attempts}", parent.key()))
     return unique(rows)[:population]
 
 
 def offspring(base: CurrentGenome, ranked, rng: random.Random, population: int):
-    parents = [CurrentGenome(**value["genome"]) for value in ranked]
+    parents = [CurrentGenome(**value["genome"]) for value in ranked] or [base]
     rows = [row(base, "incumbent")]
     rows += [row(value, f"elite_{index}") for index, value in enumerate(parents)]
     attempts = 0
@@ -287,9 +298,9 @@ def main():
     parser.add_argument("--opponents", nargs="*", default=list(DEFAULT_OPPONENTS))
     parser.add_argument("--workers", type=int, default=24)
     parser.add_argument("--population", type=int, default=48)
-    parser.add_argument("--screen-seeds", type=int, default=4)
-    parser.add_argument("--race-seeds", type=int, default=20)
-    parser.add_argument("--final-seeds", type=int, default=100)
+    parser.add_argument("--screen-seeds", type=int, default=8)
+    parser.add_argument("--race-seeds", type=int, default=24)
+    parser.add_argument("--final-seeds", type=int, default=200)
     parser.add_argument("--race-count", type=int, default=16)
     parser.add_argument("--elite-count", type=int, default=6)
     parser.add_argument("--finalists", type=int, default=4)
@@ -304,9 +315,9 @@ def main():
     if missing: raise SystemExit("missing file(s): " + ", ".join(missing))
     base = read_incumbent(args.base.resolve())
     rng = random.Random(args.seed)
-    metadata = {"method": "current public-top3 genome paired league v2",
+    metadata = {"method": "incumbent-centered paired multi-opponent genome v3",
                 "base": str(args.base.resolve()), "opponents": args.opponents,
-                "incumbent": base.to_dict(), "anchors": [g.to_dict() for g in anchor_genomes()]}
+                "incumbent": base.to_dict(), "anchors": [g.to_dict() for g in anchor_genomes(base)]}
     (output / "metadata.json").write_text(json.dumps(metadata, indent=2)+"\n")
     context = mp.get_context("spawn")
     workers = max(1, min(args.workers, os.cpu_count() or args.workers))

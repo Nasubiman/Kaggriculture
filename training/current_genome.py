@@ -24,6 +24,9 @@ OPENING_FAMILIES = (
     "public_q30",
     "combined_q5",
 )
+OPENING_ROUNDTRIP_MODES = (
+    "inherit", "roundtrip_first", "sell_buy_tail", "combined"
+)
 HERD_POLICIES = ("inherit", "price", "price_opponent", "yarn_gate")
 HERD_PROFILES = ("leader", "rank1_255", "balanced", "sheep", "wide")
 PLACEMENT_POLICIES = ("inherit", "center_cows", "center_value", "band_cows", "alternate")
@@ -110,6 +113,8 @@ class CurrentGenome:
     opening_seat0: str = "inherit"
     opening_seat1: str = "inherit"
     opening_prefix: int = 0
+    opening_roundtrip_mode: str = "inherit"
+    opening_roundtrip_quantity: int = 45
     herd_policy: str = "inherit"
     herd_profile: str = "leader"
     adaptive_day: int = 6
@@ -161,6 +166,12 @@ class CurrentGenome:
         for name in ("opening_seat0", "opening_seat1"):
             values[name] = _choice(values[name], OPENING_FAMILIES)
         values["opening_prefix"] = _nearest(values["opening_prefix"], (0, 1, 2, 4, 8, 12))
+        values["opening_roundtrip_mode"] = _choice(
+            values["opening_roundtrip_mode"], OPENING_ROUNDTRIP_MODES
+        )
+        values["opening_roundtrip_quantity"] = _nearest(
+            values["opening_roundtrip_quantity"], tuple(range(15, 91, 5))
+        )
         values["herd_policy"] = _choice(values["herd_policy"], HERD_POLICIES)
         values["herd_profile"] = _choice(values["herd_profile"], HERD_PROFILES)
         values["adaptive_day"] = _clip(values["adaptive_day"], 0, 20)
@@ -700,6 +711,25 @@ def configure_module(module: Any, genome: CurrentGenome):
         trajectory = OPENING_MARKETS.get(family, ())
         if 0 <= step < genome.opening_prefix and step < len(trajectory):
             result["market"] = [list(order) for order in trajectory[step]]
+        if step == 0 and genome.opening_roundtrip_mode != "inherit":
+            quantity = genome.opening_roundtrip_quantity
+            if genome.opening_roundtrip_mode == "roundtrip_first":
+                result["market"] = [
+                    ["BUY_PRODUCT", "WHEAT", quantity],
+                    ["SELL", "WHEAT", quantity],
+                    ["BUY_PRODUCT", "WHEAT", 13],
+                ]
+            elif genome.opening_roundtrip_mode == "sell_buy_tail":
+                result["market"] = [
+                    ["BUY_PRODUCT", "WHEAT", quantity + 13],
+                    ["SELL", "WHEAT", quantity + 15],
+                    ["BUY_PRODUCT", "WHEAT", 15],
+                ]
+            else:
+                result["market"] = [
+                    ["BUY_PRODUCT", "WHEAT", quantity + 13],
+                    ["SELL", "WHEAT", quantity],
+                ]
         # The complete extension block confirms six SHEEP on the next turn;
         # preserving that order keeps its purchase/worker state machine atomic.
         extension_order = any(order and order[0] == "BUY_LAND" for order in result["market"]) and any(
@@ -738,55 +768,36 @@ def current_genome() -> CurrentGenome:
     return CurrentGenome()
 
 
-def anchor_genomes() -> list[CurrentGenome]:
-    base = current_genome()
-    anchors = [
-        base,
-        replace(base, opening_seat0="rank1_staged", opening_seat1="rank1_staged", opening_prefix=2),
-        replace(base, opening_seat0="rank2_wheat", opening_seat1="rank2_wheat", opening_prefix=2),
-        replace(base, opening_seat0="rank3_balanced", opening_seat1="rank3_balanced", opening_prefix=2),
-        replace(base, opening_seat0="rank1_staged", opening_seat1="rank2_wheat", opening_prefix=2),
-        replace(base, opening_seat0="rank3_balanced", opening_seat1="rank1_staged", opening_prefix=2),
-        replace(base, herd_policy="price", herd_profile="leader", adaptive_day=6, herd_deadband=20),
-        replace(base, herd_policy="yarn_gate", herd_profile="rank1_255", adaptive_day=6, herd_deadband=0),
-        replace(base, herd_policy="yarn_gate", herd_profile="leader", adaptive_day=6, herd_deadband=0),
-        replace(base, herd_policy="price_opponent", herd_profile="balanced", adaptive_day=6, opponent_weight=10),
-        replace(base, herd_policy="price_opponent", herd_profile="sheep", adaptive_day=8, opponent_weight=-10),
-        replace(base, herd_policy="price", placement_policy="center_cows", placement_radius=2),
-        replace(base, herd_policy="price", placement_policy="center_value", placement_radius=3),
-        replace(base, herd_policy="price", placement_policy="band_cows", placement_radius=2,
-                service_policy="harvest_first", service_day=8),
-        replace(base, service_policy="care_first", service_day=6),
+def anchor_genomes(base: CurrentGenome | None = None) -> list[CurrentGenome]:
+    """Mechanism-level neighbors of the incumbent, not stale default genomes."""
+    base = (base or current_genome()).normalized()
+    anchors = [base]
+    anchors += [
+        replace(base, opening_roundtrip_mode="roundtrip_first",
+                opening_roundtrip_quantity=q)
+        for q in (25, 30, 35, 40, 45, 50, 55, 60, 70, 80)
+    ]
+    anchors += [
+        replace(base, opening_roundtrip_mode="sell_buy_tail",
+                opening_roundtrip_quantity=q)
+        for q in (15, 25, 35, 45)
+    ]
+    anchors += [
+        replace(base, opening_roundtrip_mode="combined",
+                opening_roundtrip_quantity=q)
+        for q in (25, 45, 65)
+    ]
+    anchors += [replace(base, wool_sell_hour=hour) for hour in (1, 3, 7, 12, 22)]
+    anchors += [replace(base, secondary_sell_hour=hour) for hour in (18, 20, 21, 23)]
+    anchors += [replace(base, tertiary_sell_hour=hour) for hour in (8, 12, 14, 18, 20)]
+    anchors += [replace(base, tertiary_sell_cap=cap) for cap in (0, 2, 4, 8, 12)]
+    anchors += [replace(base, tertiary_min_price=price) for price in (0, 1, 20)]
+    anchors += [replace(base, extension_stop_day=day) for day in (24, 26, 27, 29)]
+    anchors += [
+        replace(base, herd_policy="price", herd_profile="leader"),
+        replace(base, herd_policy="yarn_gate", herd_profile="rank1_255"),
         replace(base, service_policy="harvest_first", service_day=8),
-        replace(base, extension_policy="price", extension_wool_min=200,
-                extension_wheat_max=55, extension_min_shops=3, extension_min_yarn=1),
-        replace(base, extension_policy="broad", extension_wool_min=180,
-                extension_wheat_max=70, extension_min_shops=2, extension_min_yarn=0),
-        replace(base, extension_stop_day=12),
-        replace(base, extension_stop_day=14),
-        replace(base, extension_stop_day=16),
-        replace(base, extension_stop_day=20),
-        replace(base, extension_stop_day=24),
         replace(base, extension_policy="off"),
-        replace(base, extension_policy="off", wheat_pressure=2),
-        replace(base, extension_policy="off", wheat_pressure=4),
-        replace(base, extension_policy="off", wheat_pressure=6),
-        replace(base, extension_policy="off", wheat_pressure=8),
-        replace(base, wheat_pressure=4, pressure_start_day=10, pressure_end_day=27),
-        replace(base, wool_policy="liquidate", wool_sell_hour=1),
-        replace(base, wool_policy="liquidate", wool_sell_hour=12),
-        replace(base, wool_policy="liquidate", wool_sell_hour=20),
-        replace(base, wool_policy="liquidate", wool_sell_hour=23),
-        replace(base, wool_policy="liquidate", wool_sell_hour=1,
-                wool_sell_interval=2, wool_sell_offset=0),
-        replace(base, wool_policy="liquidate", wool_sell_hour=1,
-                wool_sell_interval=2, wool_sell_offset=1),
-        replace(base, wool_policy="liquidate", wool_sell_hour=1, wool_sell_cap=4),
-        replace(base, wool_policy="liquidate", wool_sell_hour=1, wool_sell_cap=8),
-        replace(base, extension_policy="off", wool_policy="liquidate",
-                wool_sell_hour=23, wool_min_price=180),
-        replace(base, extension_policy="off", wheat_pressure=2,
-                wool_policy="liquidate", wool_sell_hour=23, wool_min_price=180),
         replace(base, stop_hiring_day=28, terminal_mode="no_care", terminal_day=28),
     ]
     return list({value.key(): value.normalized() for value in anchors}.values())
@@ -798,6 +809,8 @@ def mutate(genome: CurrentGenome, rng: random.Random, changes: int = 1) -> Curre
         "opening_seat0": OPENING_FAMILIES,
         "opening_seat1": OPENING_FAMILIES,
         "opening_prefix": (0, 1, 2, 4, 8, 12),
+        "opening_roundtrip_mode": OPENING_ROUNDTRIP_MODES,
+        "opening_roundtrip_quantity": tuple(range(15, 91, 5)),
         "herd_policy": HERD_POLICIES,
         "herd_profile": HERD_PROFILES,
         "adaptive_day": (0, 4, 6, 8, 10, 12, 16),
@@ -845,25 +858,59 @@ def mutate(genome: CurrentGenome, rng: random.Random, changes: int = 1) -> Curre
         "terminal_day": (26, 27, 28, 29, 30),
     }
     groups = (
-        ("opening_seat0", "opening_seat1", "opening_prefix"),
+        ("opening_seat0", "opening_seat1", "opening_prefix",
+         "opening_roundtrip_mode", "opening_roundtrip_quantity"),
         ("herd_policy", "herd_profile", "adaptive_day", "herd_deadband", "opponent_weight",
          "placement_policy", "placement_radius", "service_policy", "service_day"),
         ("extension_policy", "extension_wool_min", "extension_wheat_max",
-         "extension_min_shops", "extension_min_yarn", "extension_stop_day", "wheat_pressure",
-         "pressure_start_day", "pressure_end_day", "pressure_hour",
-         "wool_policy", "wool_start_day", "wool_end_day", "wool_sell_hour",
+         "extension_min_shops", "extension_min_yarn", "extension_stop_day"),
+        ("wheat_pressure", "pressure_start_day", "pressure_end_day", "pressure_hour"),
+        ("wool_policy", "wool_start_day", "wool_end_day", "wool_sell_hour",
          "wool_keep", "wool_min_price", "wool_sell_interval",
-         "wool_sell_offset", "wool_sell_cap", "secondary_item",
-         "secondary_start_day", "secondary_end_day", "secondary_sell_hour",
-         "secondary_keep", "secondary_min_price", "secondary_sell_cap",
-         "tertiary_item", "tertiary_start_day", "tertiary_end_day",
+         "wool_sell_offset", "wool_sell_cap"),
+        ("secondary_item", "secondary_start_day", "secondary_end_day",
+         "secondary_sell_hour", "secondary_keep", "secondary_min_price",
+         "secondary_sell_cap"),
+        ("tertiary_item", "tertiary_start_day", "tertiary_end_day",
          "tertiary_sell_hour", "tertiary_keep", "tertiary_min_price",
          "tertiary_sell_cap"),
         ("stop_hiring_day", "terminal_mode", "terminal_day"),
     )
+    # Parameters behind a disabled gate cannot change behavior.  Do not spend
+    # expensive full episodes evaluating those neutral mutations.
+    if values["opening_roundtrip_mode"] == "inherit":
+        fields.pop("opening_roundtrip_quantity")
+    if values["opening_prefix"] == 0:
+        fields.pop("opening_seat0")
+        fields.pop("opening_seat1")
+    if values["herd_policy"] == "inherit":
+        for name in ("herd_profile", "adaptive_day", "herd_deadband", "opponent_weight"):
+            fields.pop(name)
+    if values["placement_policy"] == "inherit":
+        fields.pop("placement_radius")
+    if values["service_policy"] == "inherit":
+        fields.pop("service_day")
+    if values["extension_policy"] in ("inherit", "off"):
+        for name in ("extension_wool_min", "extension_wheat_max",
+                     "extension_min_shops", "extension_min_yarn"):
+            fields.pop(name)
+    if values["wheat_pressure"] == 0:
+        for name in ("pressure_start_day", "pressure_end_day", "pressure_hour"):
+            fields.pop(name)
+    if values["wool_policy"] == "inherit":
+        for name in tuple(fields):
+            if name.startswith("wool_") and name != "wool_policy":
+                fields.pop(name)
+    for slot in ("secondary", "tertiary"):
+        if values[f"{slot}_item"] == "inherit":
+            for name in tuple(fields):
+                if name.startswith(f"{slot}_") and name != f"{slot}_item":
+                    fields.pop(name)
+    if values["terminal_mode"] == "inherit":
+        fields.pop("terminal_day")
     for _ in range(max(1, changes)):
         group = rng.choice(groups)
-        name = rng.choice(group)
+        name = rng.choice([name for name in group if name in fields])
         choices = [value for value in fields[name] if value != values[name]]
         values[name] = rng.choice(choices)
     return CurrentGenome(**values).normalized()
@@ -873,18 +920,20 @@ def crossover(first: CurrentGenome, second: CurrentGenome, rng: random.Random):
     a, b = first.to_dict(), second.to_dict()
     values = dict(a)
     for group in (
-        ("opening_seat0", "opening_seat1", "opening_prefix"),
+        ("opening_seat0", "opening_seat1", "opening_prefix",
+         "opening_roundtrip_mode", "opening_roundtrip_quantity"),
         ("herd_policy", "herd_profile", "adaptive_day", "herd_deadband", "opponent_weight",
          "placement_policy", "placement_radius", "service_policy", "service_day"),
         ("extension_policy", "extension_wool_min", "extension_wheat_max",
-         "extension_min_shops", "extension_min_yarn", "extension_stop_day", "wheat_pressure",
-         "pressure_start_day", "pressure_end_day", "pressure_hour",
-         "wool_policy", "wool_start_day", "wool_end_day", "wool_sell_hour",
+         "extension_min_shops", "extension_min_yarn", "extension_stop_day"),
+        ("wheat_pressure", "pressure_start_day", "pressure_end_day", "pressure_hour"),
+        ("wool_policy", "wool_start_day", "wool_end_day", "wool_sell_hour",
          "wool_keep", "wool_min_price", "wool_sell_interval",
-         "wool_sell_offset", "wool_sell_cap", "secondary_item",
-         "secondary_start_day", "secondary_end_day", "secondary_sell_hour",
-         "secondary_keep", "secondary_min_price", "secondary_sell_cap",
-         "tertiary_item", "tertiary_start_day", "tertiary_end_day",
+         "wool_sell_offset", "wool_sell_cap"),
+        ("secondary_item", "secondary_start_day", "secondary_end_day",
+         "secondary_sell_hour", "secondary_keep", "secondary_min_price",
+         "secondary_sell_cap"),
+        ("tertiary_item", "tertiary_start_day", "tertiary_end_day",
          "tertiary_sell_hour", "tertiary_keep", "tertiary_min_price",
          "tertiary_sell_cap"),
         ("stop_hiring_day", "terminal_mode", "terminal_day"),
