@@ -180,7 +180,8 @@ def main() -> None:
     )
     parser.add_argument(
         "--optimize-agent-runtime", action=argparse.BooleanOptionalAction,
-        default=True, help="use runtime-only Python/C++ hot-path accelerators",
+        default=False,
+        help="opt in to runtime accelerators only after trajectory parity is verified",
     )
     parser.add_argument("--output", type=Path, default=ROOT / "reports/test_models.json")
     args = parser.parse_args()

@@ -13,6 +13,7 @@ TEST_MODEL ?=
 TEST_MODELS ?=
 TEST_CANDIDATE ?= main.py
 TEST_SEEDS ?= 100
+TEST_SEED_START ?= 9700000
 TEST_WORKERS ?= 20
 TEST_OUTPUT ?= reports/test_models.json
 TEST_MATRIX_MODELS ?=
@@ -194,7 +195,7 @@ test-list:
 
 # Evaluate main.py against all test models, or TEST_MODELS="name1 name2".
 test-models:
-	PYTHONPATH=training $(VENV)/bin/python scripts/evaluate_test_models.py --candidate "$(TEST_CANDIDATE)" --models-dir "$(TEST_DIR)" $(if $(strip $(TEST_MODELS)),--models $(TEST_MODELS),) --seeds "$(TEST_SEEDS)" --workers "$(TEST_WORKERS)" --output "$(TEST_OUTPUT)"
+	PYTHONPATH=training $(VENV)/bin/python scripts/evaluate_test_models.py --candidate "$(TEST_CANDIDATE)" --models-dir "$(TEST_DIR)" $(if $(strip $(TEST_MODELS)),--models $(TEST_MODELS),) --seed-start "$(TEST_SEED_START)" --seeds "$(TEST_SEEDS)" --workers "$(TEST_WORKERS)" --output "$(TEST_OUTPUT)"
 
 # Round-robin all test models. Outputs JSON, Markdown, and CSV matrices.
 test-matrix:
@@ -232,7 +233,7 @@ server-test-models: server-sync-fast-runner
 	rsync -az "$(TEST_CANDIDATE)" $(SERVER_HOST):$(SERVER_REPO)/candidate_under_test.py
 	rsync -az scripts/evaluate_test_models.py $(SERVER_HOST):$(SERVER_REPO)/scripts/
 	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
-	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(SERVER_DATA)/runs/manual"; PYTHONPATH=training .venv/bin/python scripts/evaluate_test_models.py --candidate candidate_under_test.py --models-dir test $(if $(strip $(TEST_MODELS)),--models $(TEST_MODELS),) --seeds "$(TEST_SEEDS)" --workers "$(TEST_WORKERS)" --output "$(SERVER_DATA)/runs/manual/test_models.json"'
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(SERVER_DATA)/runs/manual"; PYTHONPATH=training .venv/bin/python scripts/evaluate_test_models.py --candidate candidate_under_test.py --models-dir test $(if $(strip $(TEST_MODELS)),--models $(TEST_MODELS),) --seed-start "$(TEST_SEED_START)" --seeds "$(TEST_SEEDS)" --workers "$(TEST_WORKERS)" --output "$(SERVER_DATA)/runs/manual/test_models.json"'
 	mkdir -p "$(dir $(TEST_OUTPUT))"
 	rsync -az $(SERVER_HOST):$(SERVER_DATA)/runs/manual/test_models.json "$(TEST_OUTPUT)"
 

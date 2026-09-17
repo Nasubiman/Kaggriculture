@@ -256,7 +256,8 @@ def main() -> None:
     )
     parser.add_argument(
         "--optimize-agent-runtime", action=argparse.BooleanOptionalAction,
-        default=True, help="use a fast deepcopy for exact dict/list agent data",
+        default=False,
+        help="opt in to runtime accelerators only after trajectory parity is verified",
     )
     parser.add_argument(
         "--output-dir", type=Path, default=ROOT / "reports/test_matrix"

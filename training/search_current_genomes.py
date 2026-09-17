@@ -32,6 +32,7 @@ _BASE = ""
 _OPPONENT_PATHS: dict[str, str] = {}
 _AGENTS: dict[str, Any] = {}
 _OPPONENTS: dict[str, Any] = {}
+_OPTIMIZE_RUNTIME = False
 
 # Permit only an immaterial per-opponent reward trade-off.  Episode rewards are
 # about 100k, so an absolute zero-tolerance gate overreacts to tiny changes.
@@ -44,7 +45,7 @@ def load_module(path: Path, name: str):
         raise RuntimeError(f"cannot load {path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return optimize_agent_module(module)
+    return optimize_agent_module(module) if _OPTIMIZE_RUNTIME else module
 
 
 def load_reference_module(path: Path, name: str, model_name: str):
@@ -53,7 +54,8 @@ def load_reference_module(path: Path, name: str, model_name: str):
         raise RuntimeError(f"cannot load {path}")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return optimize_reference_agent_module(module, model_name)
+    return (optimize_reference_agent_module(module, model_name)
+            if _OPTIMIZE_RUNTIME else module)
 
 
 def read_incumbent(path: Path) -> CurrentGenome:
@@ -65,10 +67,11 @@ def read_incumbent(path: Path) -> CurrentGenome:
     return CurrentGenome()
 
 
-def worker_init(base: str, opponents: dict[str, str]):
-    global _BASE, _OPPONENT_PATHS, _AGENTS, _OPPONENTS
+def worker_init(base: str, opponents: dict[str, str], optimize_runtime: bool = False):
+    global _BASE, _OPPONENT_PATHS, _AGENTS, _OPPONENTS, _OPTIMIZE_RUNTIME
     _BASE, _OPPONENT_PATHS = base, opponents
     _AGENTS, _OPPONENTS = {}, {}
+    _OPTIMIZE_RUNTIME = optimize_runtime
 
 
 def play(task: tuple[dict[str, Any], str, str, int, int]):
@@ -305,6 +308,8 @@ def main():
     parser.add_argument("--elite-count", type=int, default=6)
     parser.add_argument("--finalists", type=int, default=4)
     parser.add_argument("--task-mode", choices=("batch", "game"), default="batch")
+    parser.add_argument("--optimize-runtime", action="store_true",
+                        help="opt in only after trajectory parity is verified for these agents")
     parser.add_argument("--seed", type=int, default=20260913)
     parser.add_argument("--seed-start", type=int, default=19_130_000)
     parser.add_argument("--output-dir", type=Path, required=True)
@@ -317,12 +322,15 @@ def main():
     rng = random.Random(args.seed)
     metadata = {"method": "incumbent-centered paired multi-opponent genome v3",
                 "base": str(args.base.resolve()), "opponents": args.opponents,
+                "optimize_runtime": args.optimize_runtime,
                 "incumbent": base.to_dict(), "anchors": [g.to_dict() for g in anchor_genomes(base)]}
     (output / "metadata.json").write_text(json.dumps(metadata, indent=2)+"\n")
     context = mp.get_context("spawn")
     workers = max(1, min(args.workers, os.cpu_count() or args.workers))
     with context.Pool(workers, initializer=worker_init,
-                      initargs=(str(args.base.resolve()), {k: str(v.resolve()) for k,v in paths.items()})) as pool:
+                      initargs=(str(args.base.resolve()),
+                                {k: str(v.resolve()) for k,v in paths.items()},
+                                args.optimize_runtime)) as pool:
         seeds0 = [args.seed_start + 31*i for i in range(args.screen_seeds)]
         stage0 = evaluate(pool, initial_pool(base, rng, args.population), args.opponents,
                           seeds0, base, batched=args.task_mode == "batch")
