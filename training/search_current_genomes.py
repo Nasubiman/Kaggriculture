@@ -80,7 +80,18 @@ def play(task: tuple[dict[str, Any], str, str, int, int]):
         candidate = _AGENTS.get(key)
         if candidate is None:
             module = load_module(Path(_BASE), f"cg_{os.getpid()}_{abs(hash(key))}")
-            candidate = configure_module(module, CurrentGenome(**values))
+            if hasattr(module, "_SALE_PARENT") and hasattr(module, "_current_genome_runtime"):
+                # The late sale wrapper must remain outside the frozen genome.
+                # Rebuild its parent, then reattach the wrapper; stacking a
+                # second genome around the final agent changes action order.
+                configured = module._current_genome_runtime.configure_module(
+                    module._CurrentGenomeModuleProxy(),
+                    module._CurrentGenome(**values),
+                )
+                module._SALE_PARENT = configured
+                candidate = module.kaggle_agent
+            else:
+                candidate = configure_module(module, CurrentGenome(**values))
             _AGENTS[key] = candidate
         rival = _OPPONENTS.get(opponent)
         if rival is None:

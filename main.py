@@ -3532,7 +3532,7 @@ _FROZEN_CURRENT_GENOME = {'opening_seat0': 'inherit',
  'wool_policy': 'liquidate',
  'wool_start_day': 8,
  'wool_end_day': 29,
- 'wool_sell_hour': 5,
+ 'wool_sell_hour': 22,
  'wool_keep': 0,
  'wool_min_price': 0,
  'wool_sell_interval': 1,
@@ -3548,7 +3548,7 @@ _FROZEN_CURRENT_GENOME = {'opening_seat0': 'inherit',
  'tertiary_item': 'WHEAT',
  'tertiary_start_day': 14,
  'tertiary_end_day': 29,
- 'tertiary_sell_hour': 20,
+ 'tertiary_sell_hour': 15,
  'tertiary_keep': 0,
  'tertiary_min_price': 5,
  'tertiary_sell_cap': 6,
@@ -3584,3 +3584,133 @@ def kaggle_agent(obs, config=None):
 
 agent = kaggle_agent
 # --- END FROZEN CURRENT GENOME ---
+
+
+# Advance sales that the route already plans for the next few turns when the
+# goods are in the shed now.  This preserves the planner's production/route
+# decisions while avoiding a price race against an agent following that route.
+_SALE_PARENT = agent
+_SALE_ITEMS = ('STRAWBERRY', 'WOOL', 'EGG', 'MILK', 'MELON', 'CARROT', 'TOMATO')
+_SALE_LOOKAHEAD = 3
+_SALE_START = 144
+_SALE_STOP = 718
+_SALE_REPORT = {'advanced_turns': 0, 'advanced_units': 0,
+                'frontloaded_turns': 0, 'errors': 0}
+
+
+def _sale_planned_sales(observation):
+    step = int(observation['step'])
+    player = int(observation['player'])
+    native = _IMPL.chassis.players[player]
+    routes = _IMPL.chassis.routes
+    sales = []
+    first = None
+    for turn in range(step + 1, min(step + _SALE_LOOKAHEAD + 1, _SALE_STOP + 1)):
+        tape = routes[2 if turn >= 648 else native['route']][turn]
+        for order in tape.get('market', ()):
+            if not order or len(order) < 3:
+                continue
+            if first is None:
+                first = order
+            if order[0] == 'SELL' and order[1] in _SALE_ITEMS:
+                quantity = max(0, int(order[2]))
+                if quantity:
+                    sales.append((order[1], quantity))
+    protected = first[1] if first and first[0] == 'SELL' else None
+    return [sale for sale in sales if sale[0] != protected]
+
+
+def _sale_advance(observation, action):
+    step = int(observation['step'])
+    if not _SALE_START <= step < _SALE_STOP or step % 24 == 23:
+        return action
+    market = [list(order) for order in (action.get('market') or [])]
+    if any(order and order[0] == 'BUY_PRODUCT' for order in market):
+        return action
+    planned = _sale_planned_sales(observation)
+    if not planned:
+        return action
+    stock = projected_shed(action, FarmView(observation))
+    already = {}
+    for order in market:
+        if len(order) >= 3 and order[0] == 'SELL':
+            already[order[1]] = already.get(order[1], 0) + max(0, int(order[2]))
+    commands = [action.get('farmer') or ['PASS'], *(action.get('hands') or [])]
+    pickups = {command[1] for command in commands
+               if len(command) > 1 and command[0] == 'PICKUP'}
+    prices = observation['market']['prices']
+    added = []
+    units = 0
+    for item in sorted({item for item, _ in planned},
+                       key=lambda item: -int(prices.get(item, 0))):
+        if item in pickups or int(prices.get(item, 0)) < 2:
+            continue
+        available = int(stock.get(item, 0)) - already.get(item, 0)
+        if available < 1:
+            continue
+        existing = next((order for order in market
+                         if len(order) >= 3 and order[0] == 'SELL'
+                         and order[1] == item), None)
+        if existing is None and len(market) + len(added) >= 10:
+            continue
+        amount = min(available, sum(q for name, q in planned if name == item))
+        if amount < 1:
+            continue
+        if existing is None:
+            added.append(['SELL', item, amount])
+        else:
+            existing[2] = int(existing[2]) + amount
+        units += amount
+    if not units:
+        return action
+    _SALE_REPORT['advanced_turns'] += 1
+    _SALE_REPORT['advanced_units'] += units
+    return dict(action, market=added + market)
+
+
+def _sale_frontload(observation, action):
+    if int(observation['step']) < _SALE_START:
+        return action
+    market = [list(order) for order in (action.get('market') or [])]
+    if len(market) < 2:
+        return action
+    bought = {order[1] for order in market
+              if len(order) > 1 and order[0] == 'BUY_PRODUCT'}
+    front, middle, rest = [], [], []
+    for order in market:
+        if len(order) >= 3 and order[0] == 'SELL' and order[1] not in bought:
+            front.append(order)
+        elif len(order) >= 3 and (order[0] == 'BUY_PRODUCT'
+                                  or (order[0] == 'SELL' and order[1] in bought)):
+            middle.append(order)
+        else:
+            rest.append(order)
+    changed = front + middle + rest
+    if changed == market:
+        return action
+    _SALE_REPORT['frontloaded_turns'] += 1
+    return dict(action, market=changed)
+
+
+del kaggle_agent
+
+
+def kaggle_agent(observation, configuration=None):
+    action = _SALE_PARENT(observation, configuration)
+    try:
+        step = int(observation['step'])
+        if step == 0:
+            _SALE_REPORT.update(advanced_turns=0, advanced_units=0,
+                                frontloaded_turns=0, errors=0)
+        standard = configuration is None or all(configuration.get(key, value) == value
+            for key, value in (('boardSize', 10), ('turnsPerDay', 24),
+                               ('shedCapacity', 100), ('maxMarketOrdersPerTurn', 10)))
+        if standard:
+            action = _sale_frontload(observation, _sale_advance(observation, action))
+    except Exception:
+        _SALE_REPORT['errors'] += 1
+    return action
+
+
+kaggle_agent.telemetry = _SALE_REPORT
+agent = kaggle_agent
