@@ -137,7 +137,7 @@ def main() -> None:
     parser.add_argument("--opponents", nargs="*", default=list(DEFAULT_OPPONENTS))
     parser.add_argument("--seeds", type=int, default=20)
     parser.add_argument("--seed-start", type=int, default=9_810_000)
-    parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--variants", nargs="*", default=[])
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()

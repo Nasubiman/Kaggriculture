@@ -1,0 +1,310 @@
+[
+  {
+    "opponent": "results20_20260923",
+    "seed": 118000255,
+    "seat": 0,
+    "flip": "down",
+    "base_margin": 712.0,
+    "new_margin": -143.0,
+    "step": 150,
+    "day": 6,
+    "shops": [
+      "PIZZA_SHOP",
+      "SMOOTHIE_SHOP"
+    ],
+    "prices": {
+      "WHEAT": 31.0,
+      "CARROT": 36.0,
+      "TOMATO": 63.0
+    },
+    "market_inventory": {
+      "WHEAT": 9963,
+      "CARROT": 9993,
+      "TOMATO": 9973
+    },
+    "own_crops": {
+      "WHEAT": 3,
+      "STRAWBERRY": 4,
+      "MELON": 12
+    },
+    "their_crops": {
+      "WHEAT": 3,
+      "STRAWBERRY": 4,
+      "MELON": 12
+    },
+    "own_animals": {
+      "COW": 4,
+      "SHEEP": 2
+    },
+    "their_animals": {
+      "COW": 4,
+      "SHEEP": 2
+    },
+    "own_money": 2276.0,
+    "their_money": 2276.0,
+    "original_action": {
+      "farmer": [
+        "EAST"
+      ],
+      "hands": [
+        [
+          "PLACE",
+          "WOOL",
+          6
+        ],
+        [
+          "NORTH"
+        ],
+        [
+          "CARE"
+        ],
+        [
+          "WATER"
+        ],
+        [
+          "COLLECT_FERTILIZER"
+        ],
+        [
+          "CARE"
+        ],
+        [
+          "SOUTH"
+        ]
+      ],
+      "market": [
+        [
+          "SELL",
+          "WOOL",
+          4
+        ],
+        [
+          "BUY_PRODUCT",
+          "WHEAT",
+          2
+        ],
+        [
+          "BUY_PRODUCT",
+          "FERTILIZER",
+          1
+        ],
+        [
+          "BUY_LAND"
+        ],
+        [
+          "BUY_ANIMAL",
+          "COW",
+          2
+        ]
+      ]
+    },
+    "altered_action": {
+      "farmer": [
+        "EAST"
+      ],
+      "hands": [
+        [
+          "PLACE",
+          "WOOL",
+          6
+        ],
+        [
+          "NORTH"
+        ],
+        [
+          "CARE"
+        ],
+        [
+          "WATER"
+        ],
+        [
+          "COLLECT_FERTILIZER"
+        ],
+        [
+          "CARE"
+        ],
+        [
+          "SOUTH"
+        ]
+      ],
+      "market": [
+        [
+          "SELL",
+          "WOOL",
+          4
+        ],
+        [
+          "BUY_PRODUCT",
+          "WHEAT",
+          2
+        ],
+        [
+          "BUY_LAND"
+        ],
+        [
+          "BUY_ANIMAL",
+          "COW",
+          2
+        ],
+        [
+          "BUY_PRODUCT",
+          "FERTILIZER",
+          1
+        ]
+      ]
+    }
+  },
+  {
+    "opponent": "results20_20260923",
+    "seed": 118000255,
+    "seat": 1,
+    "flip": "down",
+    "base_margin": 474.0,
+    "new_margin": -381.0,
+    "step": 150,
+    "day": 6,
+    "shops": [
+      "PIZZA_SHOP",
+      "SMOOTHIE_SHOP"
+    ],
+    "prices": {
+      "WHEAT": 31.0,
+      "CARROT": 36.0,
+      "TOMATO": 63.0
+    },
+    "market_inventory": {
+      "WHEAT": 9963,
+      "CARROT": 9993,
+      "TOMATO": 9973
+    },
+    "own_crops": {
+      "WHEAT": 3,
+      "STRAWBERRY": 4,
+      "MELON": 12
+    },
+    "their_crops": {
+      "WHEAT": 3,
+      "STRAWBERRY": 4,
+      "MELON": 12
+    },
+    "own_animals": {
+      "COW": 4,
+      "SHEEP": 2
+    },
+    "their_animals": {
+      "COW": 4,
+      "SHEEP": 2
+    },
+    "own_money": 2276.0,
+    "their_money": 2276.0,
+    "original_action": {
+      "farmer": [
+        "EAST"
+      ],
+      "hands": [
+        [
+          "PLACE",
+          "WOOL",
+          6
+        ],
+        [
+          "NORTH"
+        ],
+        [
+          "CARE"
+        ],
+        [
+          "WATER"
+        ],
+        [
+          "COLLECT_FERTILIZER"
+        ],
+        [
+          "CARE"
+        ],
+        [
+          "SOUTH"
+        ]
+      ],
+      "market": [
+        [
+          "SELL",
+          "WOOL",
+          4
+        ],
+        [
+          "BUY_PRODUCT",
+          "WHEAT",
+          2
+        ],
+        [
+          "BUY_PRODUCT",
+          "FERTILIZER",
+          1
+        ],
+        [
+          "BUY_LAND"
+        ],
+        [
+          "BUY_ANIMAL",
+          "COW",
+          2
+        ]
+      ]
+    },
+    "altered_action": {
+      "farmer": [
+        "EAST"
+      ],
+      "hands": [
+        [
+          "PLACE",
+          "WOOL",
+          6
+        ],
+        [
+          "NORTH"
+        ],
+        [
+          "CARE"
+        ],
+        [
+          "WATER"
+        ],
+        [
+          "COLLECT_FERTILIZER"
+        ],
+        [
+          "CARE"
+        ],
+        [
+          "SOUTH"
+        ]
+      ],
+      "market": [
+        [
+          "SELL",
+          "WOOL",
+          4
+        ],
+        [
+          "BUY_PRODUCT",
+          "WHEAT",
+          2
+        ],
+        [
+          "BUY_LAND"
+        ],
+        [
+          "BUY_ANIMAL",
+          "COW",
+          2
+        ],
+        [
+          "BUY_PRODUCT",
+          "FERTILIZER",
+          1
+        ]
+      ]
+    }
+  }
+]

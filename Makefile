@@ -8,23 +8,24 @@ SERVER_DATA ?= /media/deepstation/storage/nakamura_y/kaggriculture
 SERVER_REFERENCE ?= $(SERVER_DATA)/datasets/reference/score800_reference.txt
 SERVER_STRONG_REFERENCE ?= $(SERVER_DATA)/datasets/reference/submission_tar_main.py
 SERVER_RESULTS ?= server-results
+SIMULATION_WORKERS ?= 20
 TEST_DIR ?= test
 TEST_MODEL ?=
 TEST_MODELS ?=
 TEST_CANDIDATE ?= main.py
 TEST_SEEDS ?= 100
 TEST_SEED_START ?= 9700000
-TEST_WORKERS ?= 20
+TEST_WORKERS ?= $(SIMULATION_WORKERS)
 TEST_OUTPUT ?= reports/test_models.json
 TEST_MATRIX_MODELS ?=
 TEST_MATRIX_SEEDS ?= 50
 TEST_MATRIX_SEED_START ?= 9850000
-TEST_MATRIX_WORKERS ?= 20
+TEST_MATRIX_WORKERS ?= $(SIMULATION_WORKERS)
 TEST_MATRIX_OUTPUT ?= reports/test_matrix
 HYBRID_RUN ?= $(SERVER_DATA)/runs/hybrid_ppo_manual
 HYBRID_ITERATIONS ?= 20
 HYBRID_GAMES ?= 60
-HYBRID_WORKERS ?= 20
+HYBRID_WORKERS ?= $(SIMULATION_WORKERS)
 CF_DATA ?= $(SERVER_DATA)/datasets/counterfactual/branched_multiday_manual.json
 CF_RUN ?= $(SERVER_DATA)/runs/counterfactual_value_manual
 CF_SEEDS ?= 200
@@ -35,7 +36,7 @@ STRUCTURED_RUN ?= $(SERVER_DATA)/runs/$(STRUCTURED_NAME)
 STRUCTURED_LOCAL_RUN ?= $(SERVER_RESULTS)/$(STRUCTURED_NAME)
 STRUCTURED_MINUTES ?= 90
 STRUCTURED_POPULATION ?= 48
-STRUCTURED_WORKERS ?= 20
+STRUCTURED_WORKERS ?= $(SIMULATION_WORKERS)
 STRUCTURED_HELDOUT_SEEDS ?= 200
 STRUCTURED_PARITY_SEEDS ?= 20
 STRUCTURED_GATE_SEEDS ?= 200
@@ -46,7 +47,7 @@ EV2_SEARCH_RUN ?= $(SERVER_DATA)/runs/$(EV2_SEARCH_NAME)
 EV2_SEARCH_LOCAL_RUN ?= $(SERVER_RESULTS)/$(EV2_SEARCH_NAME)
 EV2_SEARCH_MINUTES ?= 5
 EV2_SEARCH_POPULATION ?= 32
-EV2_SEARCH_WORKERS ?= 20
+EV2_SEARCH_WORKERS ?= $(SIMULATION_WORKERS)
 EV2_START_GENOME ?=
 LAST_EV2_SEARCH_RUN := $(SERVER_RESULTS)/LATEST_EV2_SEARCH_RUN
 EV2_RESULT ?= $(shell test -f "$(LAST_EV2_SEARCH_RUN)" && cat "$(LAST_EV2_SEARCH_RUN)")
@@ -65,7 +66,7 @@ PAIRED_SEARCH_NAME ?= paired_coordinates_$(shell date +%Y%m%d_%H%M%S)
 PAIRED_SEARCH_RUN ?= $(SERVER_DATA)/runs/$(PAIRED_SEARCH_NAME)
 PAIRED_SEARCH_LOCAL_RUN ?= $(SERVER_RESULTS)/$(PAIRED_SEARCH_NAME)
 PAIRED_SEARCH_OPPONENTS ?= public_v31 public_v35 public_v36 public_v37
-PAIRED_SEARCH_WORKERS ?= 20
+PAIRED_SEARCH_WORKERS ?= $(SIMULATION_WORKERS)
 PAIRED_STAGE0_SEEDS ?= 4
 PAIRED_STAGE1_SEEDS ?= 16
 PAIRED_STAGE2_SEEDS ?= 24
@@ -78,7 +79,7 @@ SCHEDULE_SEARCH_NAME ?= schedule_$(shell date +%Y%m%d_%H%M%S)
 SCHEDULE_SEARCH_RUN ?= $(SERVER_DATA)/runs/$(SCHEDULE_SEARCH_NAME)
 SCHEDULE_SEARCH_LOCAL_RUN ?= $(SERVER_RESULTS)/$(SCHEDULE_SEARCH_NAME)
 SCHEDULE_SEARCH_OPPONENTS ?= public_v31 public_v35 public_v36 public_v37
-SCHEDULE_SEARCH_WORKERS ?= 20
+SCHEDULE_SEARCH_WORKERS ?= $(SIMULATION_WORKERS)
 SCHEDULE_SEARCH_POPULATION ?= 64
 SCHEDULE_STAGE0_SEEDS ?= 4
 SCHEDULE_STAGE1_SEEDS ?= 16
@@ -93,7 +94,7 @@ TRAJECTORY_SEARCH_NAME ?= trajectory_$(shell date +%Y%m%d_%H%M%S)
 TRAJECTORY_SEARCH_RUN ?= $(SERVER_DATA)/runs/$(TRAJECTORY_SEARCH_NAME)
 TRAJECTORY_SEARCH_LOCAL_RUN ?= $(SERVER_RESULTS)/$(TRAJECTORY_SEARCH_NAME)
 TRAJECTORY_SEARCH_OPPONENTS ?= public_v31 public_v35 public_v36 public_v37
-TRAJECTORY_SEARCH_WORKERS ?= 20
+TRAJECTORY_SEARCH_WORKERS ?= $(SIMULATION_WORKERS)
 TRAJECTORY_SEARCH_POPULATION ?= 72
 TRAJECTORY_STAGE0_SEEDS ?= 4
 TRAJECTORY_STAGE1_SEEDS ?= 16
@@ -108,7 +109,7 @@ CURRENT_GENOME_NAME ?= current_genome_$(shell date +%Y%m%d_%H%M%S)
 CURRENT_GENOME_RUN ?= $(SERVER_DATA)/runs/$(CURRENT_GENOME_NAME)
 CURRENT_GENOME_LOCAL_RUN ?= $(SERVER_RESULTS)/$(CURRENT_GENOME_NAME)
 CURRENT_GENOME_OPPONENTS ?= public_v45_competitive_20260916 public_v43_competitive_20260915 public_v41_competitive_20260914 public_v38_low_pressure_20260914 results5_20260913
-CURRENT_GENOME_WORKERS ?= 20
+CURRENT_GENOME_WORKERS ?= $(SIMULATION_WORKERS)
 CURRENT_GENOME_POPULATION ?= 48
 CURRENT_GENOME_SCREEN_SEEDS ?= 8
 CURRENT_GENOME_RACE_SEEDS ?= 24
@@ -123,7 +124,8 @@ CURRENT_GENOME_RESULT ?= $(shell test -f "$(LAST_CURRENT_GENOME_RUN)" && cat "$(
 MECHANISM_ABLATION_BASE ?= main.py
 MECHANISM_ABLATION_OPPONENTS ?= public_v43_competitive_20260915 public_v38_low_pressure_20260914 public_v41_competitive_20260914 public_v41_survival_20260914
 MECHANISM_ABLATION_SEEDS ?= 20
-MECHANISM_ABLATION_WORKERS ?= 20
+MECHANISM_ABLATION_WORKERS ?= $(SIMULATION_WORKERS)
+CF_WORKERS ?= $(SIMULATION_WORKERS)
 MECHANISM_ABLATION_OUTPUT ?= reports/mechanism_ablations.json
 
 .PHONY: setup simulator-update simulator-check native-speedups-build server-native-speedups-build server-simulator-update server-simulator-check kaggle-check kaggle-download history-collect history-analyze cow-analyze cow-diagnose cow-search evaluate head-to-head submission-build test-import test-list test-models test-matrix server-sync-fast-runner server-test-models server-test-matrix server-mechanism-ablation server-rank1-ablation server-rank2-ablation server-ev45-ablation paired-search schedule-search schedule-status schedule-candidate schedule-use trajectory-search trajectory-status trajectory-candidate trajectory-use current-genome-search current-genome-status current-genome-candidate current-genome-use genome-train genome-status genome-candidate genome-use ev2-search ev2-candidate ev2-use server-check server-gpu-check server-update-code server-evaluate server-head-to-head server-hybrid-train server-structured-search server-structured-gate server-counterfactual-generate server-counterfactual-train server-counterfactual-evaluate server-push-replays server-push-datasets server-pull-results
@@ -233,7 +235,7 @@ server-test-models: server-sync-fast-runner
 	rsync -az "$(TEST_CANDIDATE)" $(SERVER_HOST):$(SERVER_REPO)/candidate_under_test.py
 	rsync -az scripts/evaluate_test_models.py $(SERVER_HOST):$(SERVER_REPO)/scripts/
 	rsync -az --delete "$(TEST_DIR)/" $(SERVER_HOST):$(SERVER_REPO)/test/
-	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(SERVER_DATA)/runs/manual"; PYTHONPATH=training .venv/bin/python scripts/evaluate_test_models.py --candidate candidate_under_test.py --models-dir test $(if $(strip $(TEST_MODELS)),--models $(TEST_MODELS),) --seed-start "$(TEST_SEED_START)" --seeds "$(TEST_SEEDS)" --workers "$(TEST_WORKERS)" --output "$(SERVER_DATA)/runs/manual/test_models.json"'
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(SERVER_DATA)/runs/manual"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=training .venv/bin/python scripts/evaluate_test_models.py --candidate candidate_under_test.py --models-dir test $(if $(strip $(TEST_MODELS)),--models $(TEST_MODELS),) --seed-start "$(TEST_SEED_START)" --seeds "$(TEST_SEEDS)" --workers "$(TEST_WORKERS)" --output "$(SERVER_DATA)/runs/manual/test_models.json"'
 	mkdir -p "$(dir $(TEST_OUTPUT))"
 	rsync -az $(SERVER_HOST):$(SERVER_DATA)/runs/manual/test_models.json "$(TEST_OUTPUT)"
 
@@ -418,7 +420,7 @@ ev2-candidate:
 	test -f "$(EV2_RESULT)/best_genome.json"
 	$(VENV)/bin/python training/promote_ev2_genome.py --genome "$(EV2_RESULT)/best_genome.json" --base test/0801_ev2/main.py --output candidate_main.py
 	python3 -I -m py_compile candidate_main.py
-	PYTHONPATH=training $(VENV)/bin/python scripts/evaluate_test_models.py --candidate candidate_main.py --models-dir test --models 0801_ev1 0801_ev2 0801_ev3 0801_v1 --seeds 10 --workers 10 --output "$(EV2_RESULT)/candidate_screen.json"
+	PYTHONPATH=training $(VENV)/bin/python scripts/evaluate_test_models.py --candidate candidate_main.py --models-dir test --models 0801_ev1 0801_ev2 0801_ev3 0801_v1 --seeds 10 --workers "$(SIMULATION_WORKERS)" --output "$(EV2_RESULT)/candidate_screen.json"
 
 ev2-use: ev2-candidate
 	test -f "$(EV2_RESULT)/main_before_promotion.py" || cp main.py "$(EV2_RESULT)/main_before_promotion.py"
@@ -472,13 +474,13 @@ genome-use: genome-candidate
 	@printf '\nPromoted %s/best_genome.json to main.py\n' "$(RUN)"
 
 server-counterfactual-generate: server-sync-fast-runner
-	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$$(dirname "$(CF_DATA)")"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python training/generate_branched_counterfactuals.py --agent main.py --opponent main.py --decision-days 8 12 16 20 24 --seed-start 1100000 --seeds "$(CF_SEEDS)" --workers 20 --profiles $(CF_PROFILES) --output "$(CF_DATA)"'
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$$(dirname "$(CF_DATA)")"; OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python training/generate_branched_counterfactuals.py --agent main.py --opponent main.py --decision-days 8 12 16 20 24 --seed-start 1100000 --seeds "$(CF_SEEDS)" --workers "$(CF_WORKERS)" --profiles $(CF_PROFILES) --output "$(CF_DATA)"'
 
 server-counterfactual-train:
 	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; mkdir -p "$(CF_RUN)"; CUDA_VISIBLE_DEVICES=0 .venv/bin/python training/train_counterfactual_value.py --input "$(CF_DATA)" --profiles $(CF_PROFILES) --output-dir "$(CF_RUN)" --epochs 400 --patience 80 --hidden-size 1024 --hidden-layers 6 --batch-size 1024 --device cuda --amp'
 
 server-counterfactual-evaluate: server-sync-fast-runner
-	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python training/evaluate_counterfactual_value.py --checkpoint "$(CF_RUN)/best.pt" --agent main.py --opponent main.py --decision-day "$(CF_DECISION_DAY)" --seed-start 1200000 --seeds 200 --workers 20 --fast-runner --output "$(CF_RUN)/arena_heldout.json"'
+	ssh $(SERVER_HOST) 'set -eu; cd "$(SERVER_REPO)"; OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python training/evaluate_counterfactual_value.py --checkpoint "$(CF_RUN)/best.pt" --agent main.py --opponent main.py --decision-day "$(CF_DECISION_DAY)" --seed-start 1200000 --seeds 200 --workers "$(CF_WORKERS)" --fast-runner --output "$(CF_RUN)/arena_heldout.json"'
 
 server-push-replays:
 	test -d replays

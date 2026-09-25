@@ -1,0 +1,108 @@
+{
+ "base": {},
+ "V9_RACE_DEFAULT_36": {
+  "V9_RACE_DEFAULT": "36"
+ },
+ "V9_RACE_DEFAULT_40": {
+  "V9_RACE_DEFAULT": "40"
+ },
+ "V9_RACE_DEFAULT_48": {
+  "V9_RACE_DEFAULT": "48"
+ },
+ "V9_RACE_MARGIN_8": {
+  "V9_RACE_MARGIN": "8"
+ },
+ "V9_RACE_MARGIN_16": {
+  "V9_RACE_MARGIN": "16"
+ },
+ "V9_COURIER_FROM_HOUR_8": {
+  "V9_COURIER_FROM_HOUR": "8"
+ },
+ "V9_COURIER_FROM_HOUR_16": {
+  "V9_COURIER_FROM_HOUR": "16"
+ },
+ "V9_CARROT_RATIO_1.6": {
+  "V9_CARROT_RATIO": "1.6"
+ },
+ "V9_CARROT_RATIO_2.5": {
+  "V9_CARROT_RATIO": "2.5"
+ },
+ "V9_CARROT_WHEAT_RESERVE_25": {
+  "V9_CARROT_WHEAT_RESERVE": "25"
+ },
+ "V9_CARROT_WHEAT_RESERVE_55": {
+  "V9_CARROT_WHEAT_RESERVE": "55"
+ },
+ "V9_HERD_MIN_WOOL_120": {
+  "V9_HERD_MIN_WOOL": "120"
+ },
+ "V9_HERD_MIN_WOOL_180": {
+  "V9_HERD_MIN_WOOL": "180"
+ },
+ "V9_HERD_MIN_MILK_120": {
+  "V9_HERD_MIN_MILK": "120"
+ },
+ "V9_HERD_MIN_MILK_180": {
+  "V9_HERD_MIN_MILK": "180"
+ },
+ "V9_FERT_FIRST_DAY_10": {
+  "V9_FERT_FIRST_DAY": "10"
+ },
+ "V9_FERT_FIRST_DAY_18": {
+  "V9_FERT_FIRST_DAY": "18"
+ },
+ "FX_FLOW_MIN_6": {
+  "_FX_FLOW_MIN": "6"
+ },
+ "FX_FLOW_MIN_12": {
+  "_FX_FLOW_MIN": "12"
+ },
+ "EV_H_6": {
+  "_EV_H": "6"
+ },
+ "EV_H_12": {
+  "_EV_H": "12"
+ },
+ "DP_H_6": {
+  "_DP_H": "6"
+ },
+ "DP_H_12": {
+  "_DP_H": "12"
+ },
+ "MP_H_6": {
+  "_MP_H": "6"
+ },
+ "MP_H_12": {
+  "_MP_H": "12"
+ },
+ "BD_MIN_4": {
+  "_BD_MIN": "4"
+ },
+ "BD_MIN_12": {
+  "_BD_MIN": "12"
+ },
+ "BD_CAP_32": {
+  "_BD_CAP": "32"
+ },
+ "BD_CAP_96": {
+  "_BD_CAP": "96"
+ },
+ "CXD_BUDGET_400": {
+  "_CXD_BUDGET": "400"
+ },
+ "CXD_BUDGET_1600": {
+  "_CXD_BUDGET": "1600"
+ },
+ "CROP_MIN_PRICE_60": {
+  "CROP_MIN_PRICE": "60"
+ },
+ "CROP_MIN_PRICE_85": {
+  "CROP_MIN_PRICE": "85"
+ },
+ "V13V_SKIP_DAYS_empty": {
+  "V13V_SKIP_DAYS": "()"
+ },
+ "V13V_SKIP_DAYS_19_21_23_25": {
+  "V13V_SKIP_DAYS": "(19, 21, 23, 25)"
+ }
+}

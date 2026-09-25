@@ -370,7 +370,7 @@ def main() -> None:
     parser.add_argument("--engine", type=Path, default=ROOT / "test/0801_ev4/main.py")
     parser.add_argument("--models-dir", type=Path, default=ROOT / "test")
     parser.add_argument("--opponents", nargs="*", default=list(DEFAULT_OPPONENTS))
-    parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--seed-start", type=int, default=10_100_000)
     parser.add_argument("--stage0-seeds", type=int, default=4)
     parser.add_argument("--stage1-seeds", type=int, default=16)

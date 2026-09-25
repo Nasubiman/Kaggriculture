@@ -1,0 +1,22 @@
+[
+  {
+    "model": "fourth_quadrant_knn_20260925",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/test/fourth_quadrant_knn_20260925/main.py",
+    "turns": 15099,
+    "errors": 0,
+    "exact_turn": 0.07570037750844427,
+    "market_exact": 0.13477713755877874,
+    "actor_command": 0.21109489431572362,
+    "opening_exact": 0.5198412698412699
+  },
+  {
+    "model": "current_main",
+    "path": "/Users/nakamuray/code_test/Kaggriculture/main.py",
+    "turns": 15099,
+    "errors": 7190,
+    "exact_turn": 0.00026491820650374195,
+    "market_exact": 0.14484402940592092,
+    "actor_command": 0.05409966379108134,
+    "opening_exact": 0.0
+  }
+]

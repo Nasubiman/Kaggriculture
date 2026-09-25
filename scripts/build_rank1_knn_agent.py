@@ -45,6 +45,7 @@ def feature_weights(size: int) -> np.ndarray:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--replay-dir", type=Path, required=True)
+    parser.add_argument("--manifest-name", default="manifest.json")
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--switch-interval", type=int, default=1)
     parser.add_argument("--switch-penalty", type=int, default=0)
@@ -56,7 +57,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    manifest = json.loads((args.replay_dir / "manifest.json").read_text())
+    manifest = json.loads((args.replay_dir / args.manifest_name).read_text())
     team = manifest["teams"][0]["team_name"]
     episodes = manifest["teams"][0]["episodes"]
     encoded_games: list[np.ndarray] = []

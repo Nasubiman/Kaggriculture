@@ -1,0 +1,90 @@
+{
+  "source_episode": 111847040,
+  "candidate": "main.py",
+  "seeds": [
+    1800036439
+  ],
+  "workers": 2,
+  "min_cash": 10000,
+  "elapsed_seconds": 3.476204791048076,
+  "summaries": {
+    "baseline": {
+      "wins": 0,
+      "games": 2,
+      "mean_margin": -8.0,
+      "mean_reward": 150580.0,
+      "activations": 0,
+      "errors": 0,
+      "worker_mismatches": 0,
+      "market_overflows": 0
+    },
+    "ice_smoothie": {
+      "wins": 2,
+      "games": 2,
+      "mean_margin": 13395.0,
+      "mean_reward": 163916.0,
+      "activations": 2,
+      "errors": 0,
+      "worker_mismatches": 0,
+      "market_overflows": 0
+    }
+  },
+  "games": [
+    {
+      "variant": "baseline",
+      "opponent": "results29_20260924",
+      "seed": 1800036439,
+      "seat": 0,
+      "reward": 150580.0,
+      "opponent_reward": 150588.0,
+      "margin": -8.0,
+      "win": false,
+      "se_plants": 0,
+      "quadrants": 3,
+      "error": null,
+      "activated": 0
+    },
+    {
+      "variant": "baseline",
+      "opponent": "results29_20260924",
+      "seed": 1800036439,
+      "seat": 1,
+      "reward": 150580.0,
+      "opponent_reward": 150588.0,
+      "margin": -8.0,
+      "win": false,
+      "se_plants": 0,
+      "quadrants": 3,
+      "error": null,
+      "activated": 0
+    },
+    {
+      "variant": "ice_smoothie",
+      "opponent": "results29_20260924",
+      "seed": 1800036439,
+      "seat": 0,
+      "reward": 163916.0,
+      "opponent_reward": 150521.0,
+      "margin": 13395.0,
+      "win": true,
+      "se_plants": 0,
+      "quadrants": 4,
+      "error": null,
+      "activated": 1
+    },
+    {
+      "variant": "ice_smoothie",
+      "opponent": "results29_20260924",
+      "seed": 1800036439,
+      "seat": 1,
+      "reward": 163916.0,
+      "opponent_reward": 150521.0,
+      "margin": 13395.0,
+      "win": true,
+      "se_plants": 0,
+      "quadrants": 4,
+      "error": null,
+      "activated": 1
+    }
+  ]
+}

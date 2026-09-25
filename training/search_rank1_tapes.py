@@ -72,7 +72,7 @@ def main():
     parser.add_argument("--stage0-opponents", nargs="+", default=["attack_roundtrip_first25","incumbent_v37_opening","results5_20260913"])
     parser.add_argument("--stage1-opponents", nargs="+", default=["attack_roundtrip_first25","attack_roundtrip_q90","incumbent_roundtrip_first35","incumbent_v37_opening","public_v31","public_v35","public_v36","public_v37","results4_20260913","results5_20260913"])
     parser.add_argument("--stage0-seeds", type=int, default=2); parser.add_argument("--stage1-seeds", type=int, default=10)
-    parser.add_argument("--finalists", type=int, default=20); parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument("--finalists", type=int, default=20); parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--seed-start", type=int, default=13000000); parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args()
     candidates = {path.parent.name:str(path.resolve()) for path in args.candidates_dir.glob("*/main.py")}

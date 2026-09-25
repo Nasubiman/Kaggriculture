@@ -1,0 +1,2189 @@
+{
+  "seed_start": 123000000,
+  "count": 1000,
+  "elapsed_seconds": 14.27076380100334,
+  "shop_pairs": {
+    "BRUNCH_SPOT + BRUNCH_SPOT": 18,
+    "BAKERY + BRUNCH_SPOT": 15,
+    "BRUNCH_SPOT + ICE_CREAM_SHOP": 9,
+    "FARMERS_MARKET + PET_CAFE": 18,
+    "BAKERY + PET_CAFE": 23,
+    "YARN_STORE + PIZZA_SHOP": 16,
+    "BAKERY + SMOOTHIE_SHOP": 14,
+    "ICE_CREAM_SHOP + YARN_STORE": 21,
+    "BAKERY + ICE_CREAM_SHOP": 17,
+    "BRUNCH_SPOT + PIZZA_SHOP": 17,
+    "BAKERY + YARN_STORE": 11,
+    "FARMERS_MARKET + YARN_STORE": 17,
+    "SMOOTHIE_SHOP + PET_CAFE": 11,
+    "PET_CAFE + ICE_CREAM_SHOP": 20,
+    "FARMERS_MARKET + ICE_CREAM_SHOP": 10,
+    "YARN_STORE + SMOOTHIE_SHOP": 13,
+    "YARN_STORE + FARMERS_MARKET": 16,
+    "YARN_STORE + YARN_STORE": 19,
+    "FARMERS_MARKET + BAKERY": 12,
+    "PIZZA_SHOP + SMOOTHIE_SHOP": 16,
+    "PIZZA_SHOP + BRUNCH_SPOT": 15,
+    "PIZZA_SHOP + FARMERS_MARKET": 18,
+    "BRUNCH_SPOT + FARMERS_MARKET": 20,
+    "PIZZA_SHOP + PET_CAFE": 19,
+    "PET_CAFE + YARN_STORE": 19,
+    "BAKERY + FARMERS_MARKET": 13,
+    "SMOOTHIE_SHOP + YARN_STORE": 14,
+    "PET_CAFE + PET_CAFE": 19,
+    "SMOOTHIE_SHOP + BRUNCH_SPOT": 13,
+    "PIZZA_SHOP + BAKERY": 15,
+    "ICE_CREAM_SHOP + PET_CAFE": 18,
+    "PET_CAFE + SMOOTHIE_SHOP": 15,
+    "FARMERS_MARKET + PIZZA_SHOP": 17,
+    "YARN_STORE + ICE_CREAM_SHOP": 17,
+    "PET_CAFE + FARMERS_MARKET": 19,
+    "YARN_STORE + BRUNCH_SPOT": 15,
+    "SMOOTHIE_SHOP + ICE_CREAM_SHOP": 15,
+    "ICE_CREAM_SHOP + BRUNCH_SPOT": 13,
+    "PIZZA_SHOP + ICE_CREAM_SHOP": 16,
+    "PET_CAFE + PIZZA_SHOP": 7,
+    "FARMERS_MARKET + FARMERS_MARKET": 20,
+    "FARMERS_MARKET + BRUNCH_SPOT": 16,
+    "SMOOTHIE_SHOP + BAKERY": 8,
+    "BAKERY + BAKERY": 14,
+    "ICE_CREAM_SHOP + PIZZA_SHOP": 17,
+    "BRUNCH_SPOT + PET_CAFE": 22,
+    "YARN_STORE + PET_CAFE": 13,
+    "YARN_STORE + BAKERY": 21,
+    "ICE_CREAM_SHOP + ICE_CREAM_SHOP": 19,
+    "ICE_CREAM_SHOP + BAKERY": 10,
+    "ICE_CREAM_SHOP + FARMERS_MARKET": 22,
+    "BRUNCH_SPOT + BAKERY": 12,
+    "SMOOTHIE_SHOP + SMOOTHIE_SHOP": 10,
+    "BAKERY + PIZZA_SHOP": 16,
+    "PET_CAFE + BAKERY": 19,
+    "PIZZA_SHOP + PIZZA_SHOP": 14,
+    "SMOOTHIE_SHOP + FARMERS_MARKET": 16,
+    "FARMERS_MARKET + SMOOTHIE_SHOP": 15,
+    "ICE_CREAM_SHOP + SMOOTHIE_SHOP": 16,
+    "SMOOTHIE_SHOP + PIZZA_SHOP": 12,
+    "PIZZA_SHOP + YARN_STORE": 16,
+    "BRUNCH_SPOT + SMOOTHIE_SHOP": 13,
+    "PET_CAFE + BRUNCH_SPOT": 17,
+    "BRUNCH_SPOT + YARN_STORE": 12
+  },
+  "eligible": [
+    {
+      "seed": 123000068,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17126.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123000255,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17196.0,
+      "prices": {
+        "WHEAT": 38.0,
+        "CARROT": 39.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123000357,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17243.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 179.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 164.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123000901,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17297.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123000969,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 16625.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 189.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 221.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123000986,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17187.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 38.0,
+        "TOMATO": 64.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123001360,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17187.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 38.0,
+        "TOMATO": 64.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123001938,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17254.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 39.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 180.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123002040,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 180.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123002193,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 38.0,
+        "TOMATO": 70.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123002227,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 189.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 164.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123002397,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 198.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123002482,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 179.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123002499,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17016.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123002652,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17305.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 39.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123002686,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17126.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 70.0,
+        "STRAWBERRY": 179.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123002737,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17016.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 189.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123003145,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17083.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 199.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123003213,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 16676.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 179.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 223.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123003315,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17126.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123003536,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17297.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123004046,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 16625.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 179.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 223.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123004080,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17016.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 64.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123004114,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17297.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 37.0,
+        "TOMATO": 70.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123004148,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123004165,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 180.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123004216,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17016.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 189.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123004505,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 199.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123004556,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 180.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123004590,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 179.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123004692,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17025.0,
+      "prices": {
+        "WHEAT": 38.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123005661,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17297.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 179.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123005695,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17187.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 37.0,
+        "TOMATO": 64.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123005780,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17126.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 70.0,
+        "STRAWBERRY": 179.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123006154,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17187.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123006222,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17073.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 199.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123006460,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17126.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 164.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123006562,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 16676.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 180.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 221.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123006647,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17073.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 198.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123006698,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17016.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 198.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123006851,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 16676.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 180.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 219.0,
+        "WOOL": 221.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123007038,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17134.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123007395,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17126.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123007429,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 16625.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 189.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 221.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123007735,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17187.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123007803,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17297.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123007837,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17056.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123008415,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17073.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 70.0,
+        "STRAWBERRY": 180.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123008568,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17134.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123009129,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17305.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 39.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 179.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123009316,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17126.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123009435,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17073.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 70.0,
+        "STRAWBERRY": 179.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123009588,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17297.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 37.0,
+        "TOMATO": 70.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123009758,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17083.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 198.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 164.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123009775,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17025.0,
+      "prices": {
+        "WHEAT": 38.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123009792,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17297.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123009945,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 16567.0,
+      "prices": {
+        "WHEAT": 38.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 221.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123010183,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17297.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 37.0,
+        "TOMATO": 70.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123010251,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17134.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123010285,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17073.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 189.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123010574,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17134.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 164.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123010744,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17187.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 37.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 199.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123011016,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 16625.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 219.0,
+        "WOOL": 221.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123011135,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 16567.0,
+      "prices": {
+        "WHEAT": 38.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 189.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 221.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123011288,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17126.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 64.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123011934,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17016.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 189.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123012240,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123012393,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17305.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 39.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123012665,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17196.0,
+      "prices": {
+        "WHEAT": 38.0,
+        "CARROT": 39.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123012852,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17196.0,
+      "prices": {
+        "WHEAT": 38.0,
+        "CARROT": 39.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 189.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123012937,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17126.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 164.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123013141,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17254.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 39.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 180.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123013192,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17025.0,
+      "prices": {
+        "WHEAT": 38.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 198.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123013243,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123013855,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17254.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 39.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123014025,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17305.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 39.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123014178,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17196.0,
+      "prices": {
+        "WHEAT": 38.0,
+        "CARROT": 39.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123014314,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17254.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 39.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 180.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123014892,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 180.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123014926,
+      "shops": [
+        "PIZZA_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17305.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 39.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 180.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123014977,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17187.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 189.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123014994,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17016.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123015096,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17126.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123015334,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17244.0,
+      "prices": {
+        "WHEAT": 41.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 199.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123015589,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17254.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 39.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123015623,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "SMOOTHIE_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17297.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123015742,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17025.0,
+      "prices": {
+        "WHEAT": 38.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123015861,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17109.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 214.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123015895,
+      "shops": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17083.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 66.0,
+        "STRAWBERRY": 198.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 164.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123016235,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17187.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 37.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 199.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 219.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123016779,
+      "shops": [
+        "PIZZA_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": false,
+      "cash": 17083.0,
+      "prices": {
+        "WHEAT": 40.0,
+        "CARROT": 36.0,
+        "TOMATO": 68.0,
+        "STRAWBERRY": 190.0,
+        "MELON": 78.0,
+        "EGG": 51.0,
+        "MILK": 230.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    },
+    {
+      "seed": 123016898,
+      "shops": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "milk_two": true,
+      "ice_smoothie": true,
+      "cash": 17187.0,
+      "prices": {
+        "WHEAT": 39.0,
+        "CARROT": 36.0,
+        "TOMATO": 62.0,
+        "STRAWBERRY": 206.0,
+        "MELON": 78.0,
+        "EGG": 52.0,
+        "MILK": 218.0,
+        "WOOL": 158.0,
+        "FERTILIZER": 64.0
+      },
+      "quadrants": 3,
+      "eligible": true
+    }
+  ]
+}

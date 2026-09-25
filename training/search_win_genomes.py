@@ -57,7 +57,7 @@ def main() -> None:
     parser.add_argument("--models-dir", type=Path, default=Path("test"))
     parser.add_argument("--targets", nargs="+", required=True)
     parser.add_argument("--guards", nargs="+", required=True)
-    parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--population", type=int, default=48)
     parser.add_argument("--screen-seeds", type=int, default=8)
     parser.add_argument("--race-seeds", type=int, default=24)

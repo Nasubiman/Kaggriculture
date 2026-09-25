@@ -1,0 +1,48 @@
+{
+  "candidate": "/Users/nakamuray/code_test/Kaggriculture/test/experimental_fourq_shop_cap_valid_20260925/main.py",
+  "models_dir": "/Users/nakamuray/code_test/Kaggriculture/test",
+  "fast_runner": false,
+  "reuse_agents": true,
+  "optimize_agent_runtime": false,
+  "models": {
+    "results29_20260924": "/Users/nakamuray/code_test/Kaggriculture/test/results29_20260924/main.py"
+  },
+  "summaries": {
+    "results29_20260924": {
+      "games": 2,
+      "wins": 2,
+      "ties": 0,
+      "win_rate": 1.0,
+      "mean_reward": 132247.0,
+      "mean_opponent_reward": 121677.0,
+      "mean_margin": 10570.0,
+      "errors": 0
+    }
+  },
+  "games": [
+    {
+      "model": "results29_20260924",
+      "seed": 13095065,
+      "seat": 0,
+      "reward": 132247.0,
+      "opponent_reward": 121677.0,
+      "margin": 10570.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results29_20260924",
+      "seed": 13095065,
+      "seat": 1,
+      "reward": 132247.0,
+      "opponent_reward": 121677.0,
+      "margin": 10570.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    }
+  ]
+}

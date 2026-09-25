@@ -1,0 +1,49 @@
+{
+  "candidate": "/Users/nakamuray/code_test/Kaggriculture/test/fourth_quadrant_chassis_20260925/main.py",
+  "models_dir": "/Users/nakamuray/code_test/Kaggriculture/test",
+  "fast_runner": true,
+  "reuse_agents": false,
+  "optimize_agent_runtime": false,
+  "module_candidate": true,
+  "models": {
+    "results29_20260924": "/Users/nakamuray/code_test/Kaggriculture/test/results29_20260924/main.py"
+  },
+  "summaries": {
+    "results29_20260924": {
+      "games": 2,
+      "wins": 0,
+      "ties": 0,
+      "win_rate": 0.0,
+      "mean_reward": 56348.0,
+      "mean_opponent_reward": 65065.0,
+      "mean_margin": -8717.0,
+      "errors": 0
+    }
+  },
+  "games": [
+    {
+      "model": "results29_20260924",
+      "seed": 13095456,
+      "seat": 0,
+      "reward": 50013.0,
+      "opponent_reward": 52024.0,
+      "margin": -2011.0,
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results29_20260924",
+      "seed": 13095456,
+      "seat": 1,
+      "reward": 62683.0,
+      "opponent_reward": 78106.0,
+      "margin": -15423.0,
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    }
+  ]
+}

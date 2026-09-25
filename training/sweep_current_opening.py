@@ -28,7 +28,7 @@ def main() -> None:
                         help="also test q35 with uncapped wheat and earlier strawberry")
     parser.add_argument("--seeds", type=int, default=30)
     parser.add_argument("--seed-start", type=int, default=25_000_000)
-    parser.add_argument("--workers", type=int, default=10)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 

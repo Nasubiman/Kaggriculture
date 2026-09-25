@@ -14,6 +14,7 @@ from pathlib import Path
 from statistics import mean
 from typing import Any
 
+from kaggle_environments.agent import get_last_callable
 from production_fast_kaggriculture import run_fast_episode
 from reference_runtime import optimize_reference_agent_module
 
@@ -27,6 +28,9 @@ _MODEL_AGENTS: dict[str, Any] = {}
 
 
 def load_agent(path: Path, name: str, model_name: str) -> Any:
+    selected = get_last_callable(path.read_text(encoding="utf-8"), path=str(path))
+    if not callable(selected):
+        raise RuntimeError(f"{path} does not define a callable entry point")
     spec = importlib.util.spec_from_file_location(name, path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"cannot load {path}")
@@ -34,7 +38,7 @@ def load_agent(path: Path, name: str, model_name: str) -> Any:
     spec.loader.exec_module(module)
     if _OPTIMIZE_AGENT_RUNTIME:
         optimize_reference_agent_module(module, model_name)
-    agent = getattr(module, "agent", None)
+    agent = getattr(module, selected.__name__, None)
     if not callable(agent):
         raise RuntimeError(f"{path} does not define a callable agent")
     return agent
@@ -246,7 +250,7 @@ def main() -> None:
     parser.add_argument("--models", nargs="*", default=[])
     parser.add_argument("--seeds", type=int, default=20)
     parser.add_argument("--seed-start", type=int, default=9_850_000)
-    parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument(
         "--fast-runner", action=argparse.BooleanOptionalAction, default=True
     )

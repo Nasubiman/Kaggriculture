@@ -318,7 +318,7 @@ def main() -> None:
     parser.add_argument("--proposal-multiplier", type=int, default=64)
     parser.add_argument("--stage1", type=int, default=12)
     parser.add_argument("--stage2", type=int, default=4)
-    parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--seed", type=int, default=20260731)
     parser.add_argument("--device", default="auto")
     parser.add_argument("--opponent", type=Path, default=ROOT / "main.py")

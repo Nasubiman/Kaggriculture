@@ -407,7 +407,7 @@ def available_schedule(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--minutes", type=float, default=90.0)
-    parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 4) - 2))
+    parser.add_argument("--workers", type=int, default=min(16, os.cpu_count() or 4))
     parser.add_argument("--population", type=int, default=20)
     parser.add_argument("--shortlist", type=int, default=4)
     parser.add_argument("--seed", type=int, default=20260731)

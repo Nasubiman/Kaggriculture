@@ -183,7 +183,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seed-start", type=int, default=1_500_000)
     parser.add_argument("--seeds", type=int, default=20)
-    parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--variants", nargs="+", choices=sorted(VARIANTS), default=sorted(VARIANTS))
     parser.add_argument("--fast-runner", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--output", type=Path, required=True)

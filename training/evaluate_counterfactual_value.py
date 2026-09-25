@@ -162,7 +162,7 @@ def main() -> None:
     parser.add_argument("--force-profile", choices=sorted(PROFILES))
     parser.add_argument("--seed-start", type=int, default=900_000)
     parser.add_argument("--seeds", type=int, default=100)
-    parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument(
         "--fast-runner",
         action=argparse.BooleanOptionalAction,

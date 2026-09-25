@@ -1,0 +1,5 @@
+{
+  "switch_interval": 1,
+  "switch_penalty": 0,
+  "actor_repair": true
+}

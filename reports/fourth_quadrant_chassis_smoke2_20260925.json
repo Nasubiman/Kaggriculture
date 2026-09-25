@@ -1,0 +1,73 @@
+{
+  "candidate": "/Users/nakamuray/code_test/Kaggriculture/test/fourth_quadrant_chassis_20260925/main.py",
+  "models_dir": "/Users/nakamuray/code_test/Kaggriculture/test",
+  "fast_runner": true,
+  "reuse_agents": true,
+  "optimize_agent_runtime": false,
+  "module_candidate": true,
+  "models": {
+    "results29_20260924": "/Users/nakamuray/code_test/Kaggriculture/test/results29_20260924/main.py"
+  },
+  "summaries": {
+    "results29_20260924": {
+      "games": 4,
+      "wins": 3,
+      "ties": 0,
+      "win_rate": 0.75,
+      "mean_reward": 86321.0,
+      "mean_opponent_reward": 89762.25,
+      "mean_margin": -3441.25,
+      "errors": 0
+    }
+  },
+  "games": [
+    {
+      "model": "results29_20260924",
+      "seed": 13095065,
+      "seat": 0,
+      "reward": 102677.0,
+      "opponent_reward": 90874.0,
+      "margin": 11803.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results29_20260924",
+      "seed": 13095065,
+      "seat": 1,
+      "reward": 120820.0,
+      "opponent_reward": 107108.0,
+      "margin": 13712.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results29_20260924",
+      "seed": 13095082,
+      "seat": 0,
+      "reward": 50888.0,
+      "opponent_reward": 101405.0,
+      "margin": -50517.0,
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results29_20260924",
+      "seed": 13095082,
+      "seat": 1,
+      "reward": 70899.0,
+      "opponent_reward": 59662.0,
+      "margin": 11237.0,
+      "win": true,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    }
+  ]
+}

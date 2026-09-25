@@ -18,7 +18,9 @@ def load_agent(path: Path, name: str):
     spec = importlib.util.spec_from_file_location(name, path)
     if spec is None or spec.loader is None: raise RuntimeError(path)
     module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
-    return module.agent
+    selected = getattr(module, "kaggle_agent", None) or getattr(module, "agent", None)
+    if not callable(selected): raise RuntimeError(f"no agent in {path}")
+    return selected
 
 
 def command_accuracy(predicted: dict[str, Any], actual: dict[str, Any]) -> tuple[int, int]:
@@ -31,11 +33,12 @@ def command_accuracy(predicted: dict[str, Any], actual: dict[str, Any]) -> tuple
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--replay-dir", type=Path, required=True)
+    parser.add_argument("--manifest-name", default="manifest.json")
     parser.add_argument("--games", type=int, default=5)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--models", nargs="*")
     args = parser.parse_args()
-    manifest = json.loads((args.replay_dir/"manifest.json").read_text()); teacher = manifest["teams"][0]["team_name"]
+    manifest = json.loads((args.replay_dir/args.manifest_name).read_text()); teacher = manifest["teams"][0]["team_name"]
     paths = {"current_main": ROOT/"main.py"}
     for path in sorted((ROOT/"test").glob("*/main.py")): paths[path.parent.name] = path
     if args.models: paths = {name: paths[name] for name in args.models}

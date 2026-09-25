@@ -1,0 +1,24 @@
+{
+  "baseline": "test/incumbent_ca_margin15_20260923/main.py",
+  "candidate": "main.py",
+  "opponent": "test/results25_20260923/main.py",
+  "seeds": 6,
+  "seed_start": 95000000,
+  "repeats": 2,
+  "games_per_variant": 24,
+  "source_sha256": {
+    "test/incumbent_ca_margin15_20260923/main.py": "c07d73708482d4d183779c993a7b29989efb6044143e4062bdd2141e5008c934",
+    "main.py": "c91e3dc6a7f798bf145130c1b67b4c1ccccdf3baf175c70730ae8674667834ed",
+    "test/results25_20260923/main.py": "3890f10357980de4a9dce13d4cda171b5f577d6fb8f576be1ba1cc759e181f52"
+  },
+  "seconds": {
+    "baseline": 40.033958039828576,
+    "candidate": 38.412301806907635
+  },
+  "median_seconds": {
+    "baseline": 1.6913483050011564,
+    "candidate": 1.6201462894969154
+  },
+  "speedup": 1.0422171064122308,
+  "reward_parity": true
+}

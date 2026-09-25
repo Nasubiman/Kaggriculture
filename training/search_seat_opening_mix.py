@@ -141,7 +141,7 @@ def main() -> None:
     parser.add_argument("--opponents", nargs="+", type=Path, required=True)
     parser.add_argument("--seed-start", type=int, default=10_100_000)
     parser.add_argument("--seeds", type=int, default=6)
-    parser.add_argument("--workers", type=int, default=32)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--output", type=Path, default=ROOT / "reports/seat_opening_mix.json")
     parser.add_argument("--winner", type=Path, default=ROOT / "candidates/seat_opening_mix/main.py")
     args = parser.parse_args()

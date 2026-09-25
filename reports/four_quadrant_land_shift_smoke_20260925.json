@@ -1,0 +1,808 @@
+{
+  "summary": {
+    "baseline": {
+      "games": 8,
+      "wins": 8,
+      "mean_reward": 96823.75,
+      "mean_margin": 1122.25,
+      "four_quadrant_games": 0,
+      "attempted_orders": 0,
+      "errors": []
+    },
+    "third249": {
+      "games": 8,
+      "wins": 0,
+      "mean_reward": 100442.5,
+      "mean_margin": -2794.75,
+      "four_quadrant_games": 8,
+      "attempted_orders": 8,
+      "errors": []
+    }
+  },
+  "rows": [
+    {
+      "variant": "baseline",
+      "opponent": "results25_20260923",
+      "seed": 13095065,
+      "seat": 0,
+      "reward": 113456.0,
+      "opponent_reward": 113213.0,
+      "margin": 243.0,
+      "win": true,
+      "quadrants": 3,
+      "error": null,
+      "attempted": 0,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1916,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 2,
+        "cash": 12125,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 2,
+        "cash": 19015,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 3,
+        "cash": 16355,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 3,
+        "cash": 26578,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 3,
+        "cash": 44716,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "baseline",
+      "opponent": "results25_20260923",
+      "seed": 13095065,
+      "seat": 1,
+      "reward": 113456.0,
+      "opponent_reward": 113213.0,
+      "margin": 243.0,
+      "win": true,
+      "quadrants": 3,
+      "error": null,
+      "attempted": 0,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1916,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 2,
+        "cash": 12125,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 2,
+        "cash": 19015,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 3,
+        "cash": 16355,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 3,
+        "cash": 26578,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 3,
+        "cash": 44716,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "baseline",
+      "opponent": "results25_20260923",
+      "seed": 13095082,
+      "seat": 0,
+      "reward": 80201.0,
+      "opponent_reward": 78214.0,
+      "margin": 1987.0,
+      "win": true,
+      "quadrants": 3,
+      "error": null,
+      "attempted": 0,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1702,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 2,
+        "cash": 11911,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 2,
+        "cash": 18546,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 3,
+        "cash": 15705,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 3,
+        "cash": 24776,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 3,
+        "cash": 39698,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "baseline",
+      "opponent": "results25_20260923",
+      "seed": 13095082,
+      "seat": 1,
+      "reward": 80201.0,
+      "opponent_reward": 78214.0,
+      "margin": 1987.0,
+      "win": true,
+      "quadrants": 3,
+      "error": null,
+      "attempted": 0,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1702,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 2,
+        "cash": 11911,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 2,
+        "cash": 18546,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 3,
+        "cash": 15705,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 3,
+        "cash": 24776,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 3,
+        "cash": 39698,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "baseline",
+      "opponent": "results29_20260924",
+      "seed": 13095065,
+      "seat": 0,
+      "reward": 113452.0,
+      "opponent_reward": 113217.0,
+      "margin": 235.0,
+      "win": true,
+      "quadrants": 3,
+      "error": null,
+      "attempted": 0,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1912,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 2,
+        "cash": 12121,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 2,
+        "cash": 19011,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 3,
+        "cash": 16351,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 3,
+        "cash": 26574,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 3,
+        "cash": 44712,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "baseline",
+      "opponent": "results29_20260924",
+      "seed": 13095065,
+      "seat": 1,
+      "reward": 113452.0,
+      "opponent_reward": 113217.0,
+      "margin": 235.0,
+      "win": true,
+      "quadrants": 3,
+      "error": null,
+      "attempted": 0,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1912,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 2,
+        "cash": 12121,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 2,
+        "cash": 19011,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 3,
+        "cash": 16351,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 3,
+        "cash": 26574,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 3,
+        "cash": 44712,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "baseline",
+      "opponent": "results29_20260924",
+      "seed": 13095082,
+      "seat": 0,
+      "reward": 80186.0,
+      "opponent_reward": 78162.0,
+      "margin": 2024.0,
+      "win": true,
+      "quadrants": 3,
+      "error": null,
+      "attempted": 0,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1698,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 2,
+        "cash": 11907,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 2,
+        "cash": 18542,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 3,
+        "cash": 15701,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 3,
+        "cash": 24772,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 3,
+        "cash": 39694,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "baseline",
+      "opponent": "results29_20260924",
+      "seed": 13095082,
+      "seat": 1,
+      "reward": 80186.0,
+      "opponent_reward": 78162.0,
+      "margin": 2024.0,
+      "win": true,
+      "quadrants": 3,
+      "error": null,
+      "attempted": 0,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1698,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 2,
+        "cash": 11907,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 2,
+        "cash": 18542,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 3,
+        "cash": 15701,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 3,
+        "cash": 24772,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 3,
+        "cash": 39694,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "third249",
+      "opponent": "results25_20260923",
+      "seed": 13095065,
+      "seat": 0,
+      "reward": 128480.0,
+      "opponent_reward": 131276.0,
+      "margin": -2796.0,
+      "win": false,
+      "quadrants": 4,
+      "error": null,
+      "attempted": 1,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1916,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 3,
+        "cash": 10125,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 3,
+        "cash": 17015,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 4,
+        "cash": 12355,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 4,
+        "cash": 22578,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 4,
+        "cash": 41428,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "third249",
+      "opponent": "results25_20260923",
+      "seed": 13095065,
+      "seat": 1,
+      "reward": 128480.0,
+      "opponent_reward": 131276.0,
+      "margin": -2796.0,
+      "win": false,
+      "quadrants": 4,
+      "error": null,
+      "attempted": 1,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1916,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 3,
+        "cash": 10125,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 3,
+        "cash": 17015,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 4,
+        "cash": 12355,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 4,
+        "cash": 22578,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 4,
+        "cash": 41428,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "third249",
+      "opponent": "results25_20260923",
+      "seed": 13095082,
+      "seat": 0,
+      "reward": 72411.0,
+      "opponent_reward": 75212.0,
+      "margin": -2801.0,
+      "win": false,
+      "quadrants": 4,
+      "error": null,
+      "attempted": 1,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1702,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 3,
+        "cash": 9911,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 3,
+        "cash": 16546,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 4,
+        "cash": 11705,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 4,
+        "cash": 20776,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 4,
+        "cash": 34783,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "third249",
+      "opponent": "results25_20260923",
+      "seed": 13095082,
+      "seat": 1,
+      "reward": 72411.0,
+      "opponent_reward": 75212.0,
+      "margin": -2801.0,
+      "win": false,
+      "quadrants": 4,
+      "error": null,
+      "attempted": 1,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1702,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 3,
+        "cash": 9911,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 3,
+        "cash": 16546,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 4,
+        "cash": 11705,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 4,
+        "cash": 20776,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 4,
+        "cash": 34783,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "third249",
+      "opponent": "results29_20260924",
+      "seed": 13095065,
+      "seat": 0,
+      "reward": 128476.0,
+      "opponent_reward": 131280.0,
+      "margin": -2804.0,
+      "win": false,
+      "quadrants": 4,
+      "error": null,
+      "attempted": 1,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1912,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 3,
+        "cash": 10121,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 3,
+        "cash": 17011,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 4,
+        "cash": 12351,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 4,
+        "cash": 22574,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 4,
+        "cash": 41424,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "third249",
+      "opponent": "results29_20260924",
+      "seed": 13095065,
+      "seat": 1,
+      "reward": 128476.0,
+      "opponent_reward": 131280.0,
+      "margin": -2804.0,
+      "win": false,
+      "quadrants": 4,
+      "error": null,
+      "attempted": 1,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1912,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 3,
+        "cash": 10121,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 3,
+        "cash": 17011,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 4,
+        "cash": 12351,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 4,
+        "cash": 22574,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 4,
+        "cash": 41424,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "third249",
+      "opponent": "results29_20260924",
+      "seed": 13095082,
+      "seat": 0,
+      "reward": 72403.0,
+      "opponent_reward": 75181.0,
+      "margin": -2778.0,
+      "win": false,
+      "quadrants": 4,
+      "error": null,
+      "attempted": 1,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1698,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 3,
+        "cash": 9907,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 3,
+        "cash": 16542,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 4,
+        "cash": 11701,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 4,
+        "cash": 20772,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 4,
+        "cash": 34779,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    },
+    {
+      "variant": "third249",
+      "opponent": "results29_20260924",
+      "seed": 13095082,
+      "seat": 1,
+      "reward": 72403.0,
+      "opponent_reward": 75181.0,
+      "margin": -2778.0,
+      "win": false,
+      "quadrants": 4,
+      "error": null,
+      "attempted": 1,
+      "step249": {
+        "quadrants": 2,
+        "cash": 1698,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step253": {
+        "quadrants": 3,
+        "cash": 9907,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step265": {
+        "quadrants": 3,
+        "cash": 16542,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step288": {
+        "quadrants": 4,
+        "cash": 11701,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step360": {
+        "quadrants": 4,
+        "cash": 20772,
+        "se_plants": 0,
+        "se_pastures": 0
+      },
+      "step432": {
+        "quadrants": 4,
+        "cash": 34779,
+        "se_plants": 0,
+        "se_pastures": 0
+      }
+    }
+  ]
+}

@@ -280,7 +280,7 @@ def main() -> None:
     parser.add_argument("--base", type=Path, default=ROOT / "main.py")
     parser.add_argument("--models-dir", type=Path, default=ROOT / "test")
     parser.add_argument("--opponents", nargs="*", default=list(DEFAULT_OPPONENTS))
-    parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--population", type=int, default=72)
     parser.add_argument("--stage0-seeds", type=int, default=4)
     parser.add_argument("--stage1-seeds", type=int, default=16)

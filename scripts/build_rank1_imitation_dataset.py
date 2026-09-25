@@ -12,10 +12,11 @@ from pathlib import Path
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--replay-dir", type=Path, required=True)
+    parser.add_argument("--manifest-name", default="manifest.json")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 
-    manifest = json.loads((args.replay_dir / "manifest.json").read_text())
+    manifest = json.loads((args.replay_dir / args.manifest_name).read_text())
     team_info = manifest["teams"][0]
     team = team_info["team_name"]
     episodes = team_info["episodes"]

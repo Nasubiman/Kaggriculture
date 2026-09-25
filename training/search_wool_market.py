@@ -93,7 +93,7 @@ def main() -> None:
     parser.add_argument("--base", type=Path, default=ROOT / "main.py")
     parser.add_argument("--models-dir", type=Path, default=ROOT / "test")
     parser.add_argument("--opponent", default="public_v43_competitive_20260915")
-    parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--population", type=int, default=256)
     parser.add_argument("--screen-seeds", type=int, default=8)
     parser.add_argument("--race-seeds", type=int, default=40)

@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 from statistics import mean
 from typing import Any
+from kaggle_environments.agent import get_last_callable
 
 # v3 specializes the exact default two-player evaluation path and falls back to
 # the stable runner automatically for unsupported configurations.
@@ -25,11 +26,33 @@ _OPPONENT_PATHS: dict[str, str] = {}
 _FAST_RUNNER = True
 _REUSE_AGENTS = True
 _OPTIMIZE_AGENT_RUNTIME = True
+_MODULE_CANDIDATE = False
 _CANDIDATE_AGENT: Any = None
 _OPPONENT_AGENTS: dict[str, Any] = {}
 
 
-def load_agent(path: Path, name: str, reference_model: str | None = None) -> Any:
+def load_agent(path: Path, name: str, reference_model: str | None = None,
+               module_candidate: bool = False) -> Any:
+    # Kaggle's raw-file loader selects the last callable, which is not always
+    # named ``agent`` in public submissions. Match that entry point here.
+    selected = None if module_candidate else get_last_callable(
+        path.read_text(encoding="utf-8"), path=str(path))
+    if module_candidate:
+        # Explicit research-only mode for a policy with sibling model files.
+        # Such a candidate is not a valid single-file Kaggle submission.
+        spec = importlib.util.spec_from_file_location(name, path)
+        if spec is None or spec.loader is None:
+            raise RuntimeError(f"cannot load {path}")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        agent = getattr(module, "agent", None) or getattr(module, "kaggle_agent", None)
+        if not callable(agent):
+            raise RuntimeError(f"{path} does not define a callable agent")
+        return agent
+    if not callable(selected):
+        raise RuntimeError(f"{path} does not define a callable entry point")
+    if not _OPTIMIZE_AGENT_RUNTIME:
+        return selected
     spec = importlib.util.spec_from_file_location(name, path)
     if spec is None or spec.loader is None:
         raise RuntimeError(f"cannot load {path}")
@@ -40,7 +63,7 @@ def load_agent(path: Path, name: str, reference_model: str | None = None) -> Any
             optimize_agent_module(module)
         else:
             optimize_reference_agent_module(module, reference_model)
-    agent = getattr(module, "agent", None)
+    agent = getattr(module, selected.__name__, None)
     if not callable(agent):
         raise RuntimeError(f"{path} does not define a callable agent")
     return agent
@@ -63,14 +86,17 @@ def discover(models_dir: Path, selected: list[str]) -> dict[str, Path]:
 
 
 def worker_init(candidate: str, opponents: dict[str, str], fast_runner: bool,
-                reuse_agents: bool, optimize_agent_runtime: bool) -> None:
+                reuse_agents: bool, optimize_agent_runtime: bool,
+                module_candidate: bool) -> None:
     global _CANDIDATE_PATH, _OPPONENT_PATHS, _FAST_RUNNER, _REUSE_AGENTS
     global _CANDIDATE_AGENT, _OPPONENT_AGENTS, _OPTIMIZE_AGENT_RUNTIME
+    global _MODULE_CANDIDATE
     _CANDIDATE_PATH = candidate
     _OPPONENT_PATHS = opponents
     _FAST_RUNNER = fast_runner
     _REUSE_AGENTS = reuse_agents
     _OPTIMIZE_AGENT_RUNTIME = optimize_agent_runtime
+    _MODULE_CANDIDATE = module_candidate
     _CANDIDATE_AGENT = None
     _OPPONENT_AGENTS = {}
 
@@ -79,7 +105,8 @@ def game_agents(name: str, suffix: str) -> tuple[Any, Any]:
     global _CANDIDATE_AGENT
     if not _REUSE_AGENTS:
         return (
-            load_agent(Path(_CANDIDATE_PATH), f"test_candidate_{suffix}"),
+            load_agent(Path(_CANDIDATE_PATH), f"test_candidate_{suffix}",
+                       module_candidate=_MODULE_CANDIDATE),
             load_agent(
                 Path(_OPPONENT_PATHS[name]),
                 f"test_opponent_{suffix}",
@@ -91,7 +118,8 @@ def game_agents(name: str, suffix: str) -> tuple[Any, Any]:
     # module per worker avoids recompiling large public agents every episode.
     if _CANDIDATE_AGENT is None:
         _CANDIDATE_AGENT = load_agent(
-            Path(_CANDIDATE_PATH), f"test_candidate_{os.getpid()}"
+            Path(_CANDIDATE_PATH), f"test_candidate_{os.getpid()}",
+            module_candidate=_MODULE_CANDIDATE,
         )
     opponent = _OPPONENT_AGENTS.get(name)
     if opponent is None:
@@ -170,21 +198,25 @@ def main() -> None:
     parser.add_argument("--models", nargs="*", default=[])
     parser.add_argument("--seed-start", type=int, default=9_700_000)
     parser.add_argument("--seeds", type=int, default=100)
-    parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument(
         "--fast-runner", action=argparse.BooleanOptionalAction, default=True
     )
     parser.add_argument(
-        "--reuse-agents", action=argparse.BooleanOptionalAction, default=True,
-        help="reuse loaded modules within each worker; agents reset at step zero",
+        "--reuse-agents", action=argparse.BooleanOptionalAction, default=None,
+        help="reuse loaded modules within each worker; unsafe for some stateful research policies",
     )
     parser.add_argument(
         "--optimize-agent-runtime", action=argparse.BooleanOptionalAction,
         default=False,
         help="opt in to runtime accelerators only after trajectory parity is verified",
     )
+    parser.add_argument("--module-candidate", action="store_true",
+                        help="research-only: load candidate as a module with sibling files")
     parser.add_argument("--output", type=Path, default=ROOT / "reports/test_models.json")
     args = parser.parse_args()
+    if args.reuse_agents is None:
+        args.reuse_agents = not args.module_candidate
 
     opponents = discover(args.models_dir.resolve(), args.models)
     seeds = [args.seed_start + index * 17 for index in range(args.seeds)]
@@ -205,6 +237,7 @@ def main() -> None:
             args.fast_runner,
             args.reuse_agents,
             args.optimize_agent_runtime,
+            args.module_candidate,
         ),
     ) as pool:
         games = list(pool.imap_unordered(play, tasks, chunksize=1))
@@ -220,6 +253,7 @@ def main() -> None:
         "fast_runner": args.fast_runner,
         "reuse_agents": args.reuse_agents,
         "optimize_agent_runtime": args.optimize_agent_runtime,
+        "module_candidate": args.module_candidate,
         "models": {name: str(path) for name, path in opponents.items()},
         "summaries": summaries,
         "games": games,

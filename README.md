@@ -172,6 +172,10 @@ make test-models                      # local evaluation against all opponents
 make server-test-models               # the same evaluation on kag-server
 ```
 
+Server evaluation and search commands default to 20 CPU workers. Override the
+shared setting with `SIMULATION_WORKERS=8`, or set a command-specific value
+such as `TEST_WORKERS=8`.
+
 These commands use the parity-gated v4 runner by default. Native extensions are
 built only when their sources or Python ABI change:
 

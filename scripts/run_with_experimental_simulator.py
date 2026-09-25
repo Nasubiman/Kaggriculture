@@ -3,7 +3,7 @@
 
 Example:
   .venv/bin/python scripts/run_with_experimental_simulator.py \
-    scripts/evaluate_test_models.py --candidate main.py --seeds 100 --workers 20
+    scripts/evaluate_test_models.py --candidate main.py --seeds 100 --workers 16
 
 The target script can continue importing ``fast_kaggriculture`` normally.  This
 wrapper imports the v3 experimental module first, aliases it under that module

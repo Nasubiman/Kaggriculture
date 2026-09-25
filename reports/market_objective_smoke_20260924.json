@@ -1,0 +1,170 @@
+{
+  "candidate": "main.py",
+  "seed_start": 97000000,
+  "seeds": 1,
+  "seed_values": [
+    113000000
+  ],
+  "workers": 1,
+  "variants": {
+    "baseline": {},
+    "market_self": {
+      "_MARKET_OPPONENT_WEIGHT": 0.0
+    },
+    "market_half": {
+      "_MARKET_OPPONENT_WEIGHT": 0.5
+    },
+    "market_double": {
+      "_MARKET_OPPONENT_WEIGHT": 2.0
+    }
+  },
+  "elapsed_seconds": 11.911590165982489,
+  "summaries": {
+    "baseline": {
+      "wins": 0,
+      "games": 2,
+      "mean_margin": -1153.0,
+      "errors": 0,
+      "per_opponent": {
+        "results29_20260924": {
+          "wins": 0,
+          "games": 2,
+          "mean_margin": -1153.0,
+          "errors": 0
+        }
+      }
+    },
+    "market_self": {
+      "wins": 0,
+      "games": 2,
+      "mean_margin": -1097.0,
+      "errors": 0,
+      "per_opponent": {
+        "results29_20260924": {
+          "wins": 0,
+          "games": 2,
+          "mean_margin": -1097.0,
+          "errors": 0
+        }
+      }
+    },
+    "market_half": {
+      "wins": 0,
+      "games": 2,
+      "mean_margin": -1097.0,
+      "errors": 0,
+      "per_opponent": {
+        "results29_20260924": {
+          "wins": 0,
+          "games": 2,
+          "mean_margin": -1097.0,
+          "errors": 0
+        }
+      }
+    },
+    "market_double": {
+      "wins": 0,
+      "games": 2,
+      "mean_margin": -1153.0,
+      "errors": 0,
+      "per_opponent": {
+        "results29_20260924": {
+          "wins": 0,
+          "games": 2,
+          "mean_margin": -1153.0,
+          "errors": 0
+        }
+      }
+    }
+  },
+  "games": [
+    {
+      "variant": "baseline",
+      "opponent": "results29_20260924",
+      "seed": 113000000,
+      "seat": 0,
+      "reward": 78983.0,
+      "opponent_reward": 80136.0,
+      "margin": -1153.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "variant": "baseline",
+      "opponent": "results29_20260924",
+      "seed": 113000000,
+      "seat": 1,
+      "reward": 78983.0,
+      "opponent_reward": 80136.0,
+      "margin": -1153.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "variant": "market_double",
+      "opponent": "results29_20260924",
+      "seed": 113000000,
+      "seat": 0,
+      "reward": 78982.0,
+      "opponent_reward": 80135.0,
+      "margin": -1153.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "variant": "market_double",
+      "opponent": "results29_20260924",
+      "seed": 113000000,
+      "seat": 1,
+      "reward": 78982.0,
+      "opponent_reward": 80135.0,
+      "margin": -1153.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "variant": "market_half",
+      "opponent": "results29_20260924",
+      "seed": 113000000,
+      "seat": 0,
+      "reward": 79014.0,
+      "opponent_reward": 80111.0,
+      "margin": -1097.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "variant": "market_half",
+      "opponent": "results29_20260924",
+      "seed": 113000000,
+      "seat": 1,
+      "reward": 79014.0,
+      "opponent_reward": 80111.0,
+      "margin": -1097.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "variant": "market_self",
+      "opponent": "results29_20260924",
+      "seed": 113000000,
+      "seat": 0,
+      "reward": 79014.0,
+      "opponent_reward": 80111.0,
+      "margin": -1097.0,
+      "win": false,
+      "error": null
+    },
+    {
+      "variant": "market_self",
+      "opponent": "results29_20260924",
+      "seed": 113000000,
+      "seat": 1,
+      "reward": 79014.0,
+      "opponent_reward": 80111.0,
+      "margin": -1097.0,
+      "win": false,
+      "error": null
+    }
+  ]
+}

@@ -310,7 +310,7 @@ def main():
     parser.add_argument("--base", type=Path, default=ROOT / "main.py")
     parser.add_argument("--models-dir", type=Path, default=ROOT / "test")
     parser.add_argument("--opponents", nargs="*", default=list(DEFAULT_OPPONENTS))
-    parser.add_argument("--workers", type=int, default=24)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--population", type=int, default=48)
     parser.add_argument("--screen-seeds", type=int, default=8)
     parser.add_argument("--race-seeds", type=int, default=24)

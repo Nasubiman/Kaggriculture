@@ -1,0 +1,143 @@
+{
+  "candidate": "main.py",
+  "opponent": "test/results18_20260923/main.py",
+  "aggregate": {
+    "games": 8,
+    "total_seconds": 13.362483136006631,
+    "candidate_seconds": 6.437918100506067,
+    "opponent_seconds": 6.577296911273152,
+    "runner_and_wrapper_seconds": 0.34726812422741205,
+    "runner_fraction": 0.02598829279654327,
+    "max_speedup_from_runner_only": 1.0266817047519479
+  },
+  "games": [
+    {
+      "seed": 115000017,
+      "seat": 1,
+      "total_seconds": 1.7886519099702127,
+      "candidate_seconds": 0.887010621605441,
+      "opponent_seconds": 0.8586944417329505,
+      "runner_and_wrapper_seconds": 0.042946846631821245,
+      "calls": [
+        719,
+        719
+      ],
+      "rewards": [
+        53617.0,
+        54998.0
+      ]
+    },
+    {
+      "seed": 115000034,
+      "seat": 0,
+      "total_seconds": 1.7350077020237222,
+      "candidate_seconds": 0.8692914168350399,
+      "opponent_seconds": 0.8223950330866501,
+      "runner_and_wrapper_seconds": 0.043321252102032304,
+      "calls": [
+        719,
+        719
+      ],
+      "rewards": [
+        115792.0,
+        114893.0
+      ]
+    },
+    {
+      "seed": 115000051,
+      "seat": 1,
+      "total_seconds": 1.6269630389870144,
+      "candidate_seconds": 0.7915824274532497,
+      "opponent_seconds": 0.7917869234224781,
+      "runner_and_wrapper_seconds": 0.04359368811128661,
+      "calls": [
+        719,
+        719
+      ],
+      "rewards": [
+        111685.0,
+        112582.0
+      ]
+    },
+    {
+      "seed": 115000068,
+      "seat": 0,
+      "total_seconds": 1.5790039240382612,
+      "candidate_seconds": 0.7788601300562732,
+      "opponent_seconds": 0.7562285112217069,
+      "runner_and_wrapper_seconds": 0.043915282760281116,
+      "calls": [
+        719,
+        719
+      ],
+      "rewards": [
+        120433.0,
+        119656.0
+      ]
+    },
+    {
+      "seed": 115000085,
+      "seat": 1,
+      "total_seconds": 1.6039348160265945,
+      "candidate_seconds": 0.7636607551248744,
+      "opponent_seconds": 0.797157546505332,
+      "runner_and_wrapper_seconds": 0.043116514396388084,
+      "calls": [
+        719,
+        719
+      ],
+      "rewards": [
+        138033.0,
+        138343.0
+      ]
+    },
+    {
+      "seed": 115000102,
+      "seat": 0,
+      "total_seconds": 1.6629217279842123,
+      "candidate_seconds": 0.7940039057284594,
+      "opponent_seconds": 0.8255650955252349,
+      "runner_and_wrapper_seconds": 0.04335272673051804,
+      "calls": [
+        719,
+        719
+      ],
+      "rewards": [
+        95084.0,
+        95669.0
+      ]
+    },
+    {
+      "seed": 115000119,
+      "seat": 1,
+      "total_seconds": 1.7447011080221273,
+      "candidate_seconds": 0.7889036173000932,
+      "opponent_seconds": 0.9120078834239393,
+      "runner_and_wrapper_seconds": 0.04378960729809478,
+      "calls": [
+        719,
+        719
+      ],
+      "rewards": [
+        111252.0,
+        112767.0
+      ]
+    },
+    {
+      "seed": 115000136,
+      "seat": 0,
+      "total_seconds": 1.6212989089544863,
+      "candidate_seconds": 0.7646052264026366,
+      "opponent_seconds": 0.8134614763548598,
+      "runner_and_wrapper_seconds": 0.043232206196989864,
+      "calls": [
+        719,
+        719
+      ],
+      "rewards": [
+        79574.0,
+        79161.0
+      ]
+    }
+  ]
+}

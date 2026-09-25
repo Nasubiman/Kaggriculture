@@ -148,7 +148,7 @@ def main() -> None:
     parser.add_argument("--candidate-count", type=int, default=0)
     parser.add_argument("--seed-start", type=int, default=9_300_000)
     parser.add_argument("--seeds", type=int, default=8)
-    parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--keep", type=int, default=6)
     parser.add_argument("--output", type=Path, default=ROOT / "reports/public_v37_opening_search.json")
     parser.add_argument("--winner", type=Path, default=ROOT / "candidates/public_v37_opening_stage2/main.py")

@@ -254,7 +254,7 @@ def main() -> None:
     parser.add_argument("--stage1-seeds", type=int, default=3)
     parser.add_argument("--anchor-seeds", type=int, default=4)
     parser.add_argument("--validation-seeds", type=int, default=8)
-    parser.add_argument("--workers", type=int, default=20)
+    parser.add_argument("--workers", type=int, default=16)
     parser.add_argument("--seed", type=int, default=20260801)
     parser.add_argument(
         "--engine", type=Path, default=ROOT / "test/0801_ev2/main.py"

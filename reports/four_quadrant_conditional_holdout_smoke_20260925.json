@@ -1,0 +1,258 @@
+{
+  "random_seed": 20260930,
+  "seeds": [
+    36244817
+  ],
+  "opponents": [
+    "results23_20260923",
+    "results29_20260924"
+  ],
+  "variants": [
+    "early_strawberry_14",
+    "early_shop_demand4_cap11_14"
+  ],
+  "workers": 2,
+  "elapsed_seconds": 9.1332800830005,
+  "overall": {
+    "early_strawberry_14": {
+      "games": 4,
+      "potential": 4,
+      "completed_paired_games": 4,
+      "audits": 0,
+      "activated": 4,
+      "delta_wins": -2,
+      "delta_mean_margin": -8458.0,
+      "delta_mean_reward": -31508.0
+    },
+    "early_shop_demand4_cap11_14": {
+      "games": 4,
+      "potential": 4,
+      "completed_paired_games": 4,
+      "audits": 0,
+      "activated": 4,
+      "delta_wins": 2,
+      "delta_mean_margin": 1459.0,
+      "delta_mean_reward": -8046.5
+    }
+  },
+  "by_opponent": {
+    "results29_20260924": {
+      "early_strawberry_14": {
+        "games": 2,
+        "potential": 2,
+        "completed_paired_games": 2,
+        "audits": 0,
+        "activated": 2,
+        "delta_wins": -1,
+        "delta_mean_margin": -8458.5,
+        "delta_mean_reward": -31507.0
+      },
+      "early_shop_demand4_cap11_14": {
+        "games": 2,
+        "potential": 2,
+        "completed_paired_games": 2,
+        "audits": 0,
+        "activated": 2,
+        "delta_wins": 1,
+        "delta_mean_margin": 1424.5,
+        "delta_mean_reward": -8050.5
+      }
+    },
+    "results23_20260923": {
+      "early_strawberry_14": {
+        "games": 2,
+        "potential": 2,
+        "completed_paired_games": 2,
+        "audits": 0,
+        "activated": 2,
+        "delta_wins": -1,
+        "delta_mean_margin": -8457.5,
+        "delta_mean_reward": -31509.0
+      },
+      "early_shop_demand4_cap11_14": {
+        "games": 2,
+        "potential": 2,
+        "completed_paired_games": 2,
+        "audits": 0,
+        "activated": 2,
+        "delta_wins": 1,
+        "delta_mean_margin": 1493.5,
+        "delta_mean_reward": -8042.5
+      }
+    }
+  },
+  "games": [
+    {
+      "seed": 36244817,
+      "opponent": "results23_20260923",
+      "seat": 0,
+      "potential_steps": [
+        253
+      ],
+      "audit": false,
+      "screened_only": false,
+      "baseline_reward": 127885.0,
+      "baseline_opponent_reward": 126778.0,
+      "baseline_win": true,
+      "baseline_margin": 1107.0,
+      "candidates": {
+        "early_strawberry_14": {
+          "reward": 96406.0,
+          "opponent_reward": 103713.0,
+          "win": false,
+          "margin": -7307.0,
+          "activated": 1,
+          "selected_strawberry_cap": null,
+          "strawberry_price_at_activation": null,
+          "cash_at_activation": null,
+          "shops_at_activation": null
+        },
+        "early_shop_demand4_cap11_14": {
+          "reward": 119929.0,
+          "opponent_reward": 117168.0,
+          "win": true,
+          "margin": 2761.0,
+          "activated": 1,
+          "selected_strawberry_cap": 11,
+          "strawberry_price_at_activation": 214.0,
+          "cash_at_activation": 13286.0,
+          "shops_at_activation": [
+            "ICE_CREAM_SHOP",
+            "SMOOTHIE_SHOP",
+            "FARMERS_MARKET",
+            "BAKERY"
+          ]
+        }
+      }
+    },
+    {
+      "seed": 36244817,
+      "opponent": "results23_20260923",
+      "seat": 1,
+      "potential_steps": [
+        253
+      ],
+      "audit": false,
+      "screened_only": false,
+      "baseline_reward": 126832.0,
+      "baseline_opponent_reward": 127871.0,
+      "baseline_win": false,
+      "baseline_margin": -1039.0,
+      "candidates": {
+        "early_strawberry_14": {
+          "reward": 95293.0,
+          "opponent_reward": 104833.0,
+          "win": false,
+          "margin": -9540.0,
+          "activated": 1,
+          "selected_strawberry_cap": null,
+          "strawberry_price_at_activation": null,
+          "cash_at_activation": null,
+          "shops_at_activation": null
+        },
+        "early_shop_demand4_cap11_14": {
+          "reward": 118703.0,
+          "opponent_reward": 118409.0,
+          "win": true,
+          "margin": 294.0,
+          "activated": 1,
+          "selected_strawberry_cap": 11,
+          "strawberry_price_at_activation": 214.0,
+          "cash_at_activation": 13286.0,
+          "shops_at_activation": [
+            "ICE_CREAM_SHOP",
+            "SMOOTHIE_SHOP",
+            "FARMERS_MARKET",
+            "BAKERY"
+          ]
+        }
+      }
+    },
+    {
+      "seed": 36244817,
+      "opponent": "results29_20260924",
+      "seat": 0,
+      "potential_steps": [
+        253
+      ],
+      "audit": false,
+      "screened_only": false,
+      "baseline_reward": 127883.0,
+      "baseline_opponent_reward": 126777.0,
+      "baseline_win": true,
+      "baseline_margin": 1106.0,
+      "candidates": {
+        "early_strawberry_14": {
+          "reward": 96406.0,
+          "opponent_reward": 103715.0,
+          "win": false,
+          "margin": -7309.0,
+          "activated": 1,
+          "selected_strawberry_cap": null,
+          "strawberry_price_at_activation": null,
+          "cash_at_activation": null,
+          "shops_at_activation": null
+        },
+        "early_shop_demand4_cap11_14": {
+          "reward": 119919.0,
+          "opponent_reward": 117228.0,
+          "win": true,
+          "margin": 2691.0,
+          "activated": 1,
+          "selected_strawberry_cap": 11,
+          "strawberry_price_at_activation": 214.0,
+          "cash_at_activation": 13286.0,
+          "shops_at_activation": [
+            "ICE_CREAM_SHOP",
+            "SMOOTHIE_SHOP",
+            "FARMERS_MARKET",
+            "BAKERY"
+          ]
+        }
+      }
+    },
+    {
+      "seed": 36244817,
+      "opponent": "results29_20260924",
+      "seat": 1,
+      "potential_steps": [
+        253
+      ],
+      "audit": false,
+      "screened_only": false,
+      "baseline_reward": 126830.0,
+      "baseline_opponent_reward": 127870.0,
+      "baseline_win": false,
+      "baseline_margin": -1040.0,
+      "candidates": {
+        "early_strawberry_14": {
+          "reward": 95293.0,
+          "opponent_reward": 104835.0,
+          "win": false,
+          "margin": -9542.0,
+          "activated": 1,
+          "selected_strawberry_cap": null,
+          "strawberry_price_at_activation": null,
+          "cash_at_activation": null,
+          "shops_at_activation": null
+        },
+        "early_shop_demand4_cap11_14": {
+          "reward": 118693.0,
+          "opponent_reward": 118469.0,
+          "win": true,
+          "margin": 224.0,
+          "activated": 1,
+          "selected_strawberry_cap": 11,
+          "strawberry_price_at_activation": 214.0,
+          "cash_at_activation": 13286.0,
+          "shops_at_activation": [
+            "ICE_CREAM_SHOP",
+            "SMOOTHIE_SHOP",
+            "FARMERS_MARKET",
+            "BAKERY"
+          ]
+        }
+      }
+    }
+  ]
+}
