@@ -1,0 +1,30 @@
+[{"stream_name":"stderr","time":9.415039119,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":9.415117069,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":9.415155502,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":9.415161481,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":10.243588146,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":10.243640953,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":10.243647544,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":10.243656034,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":11.792045926,"data":"Agent source a5362d138ed3933a8204d467ffa0d2fd8fe121fc8eb42a8648c53ade91c1fbe3\n"}
+,{"stream_name":"stdout","time":12.523193188,"data":"PASS: byte-exact submission archive and preserved upstream files\n"}
+,{"stream_name":"stdout","time":12.523241428,"data":"archive SHA-256: cf9b4e5b1fb07903944ff873335fa29f43c09a830292b3eb514c26b29deaeb6c\n"}
+,{"stream_name":"stdout","time":12.52324849,"data":"main.py SHA-256: a5362d138ed3933a8204d467ffa0d2fd8fe121fc8eb42a8648c53ade91c1fbe3\n"}
+,{"stream_name":"stdout","time":12.523252968,"data":"NOTICE.txt SHA-256: 270ff857369a532a954d29e37434195b1a5e2b110b901fa105b8f6830f44c43b\n"}
+,{"stream_name":"stdout","time":12.709917504,"data":"Observed Kaggle host core before engine import: 1.29.3\n"}
+,{"stream_name":"stdout","time":55.843585968,"data":"Installed byte-verified Kaggle seed-helper compatibility shim: 15feb82a21849d8bb07d0bad806dc287992af24bc8d0370031f40c4b1b856a54\n"}
+,{"stream_name":"stdout","time":55.843641205,"data":"Registered exact Kaggriculture engine SHA-256: bc8a54879ef02c7ea64b8b333d6a976f0ea65c4949149d01f463f23bccee653e\n"}
+,{"stream_name":"stdout","time":55.843649439000004,"data":"Registered exact schema SHA-256: a82c89c1a2315b93f39775d8e025471a01b738647c9772658368ee6b1b6f4867\n"}
+,{"stream_name":"stdout","time":68.284319102,"data":"PASS: host core 1.29.3 used the exact pinned Kaggriculture source/schema.\n"}
+,{"stream_name":"stdout","time":68.284394696,"data":"PASS: 720 states; DONE/DONE; 719 callbacks per seat.\n"}
+,{"stream_name":"stdout","time":68.284402063,"data":"PASS: action SHA-256 ['6489e148c3329dd025192c4573bdb72db61b9867ba4c8297c71a8d61c7b70f38', '6489e148c3329dd025192c4573bdb72db61b9867ba4c8297c71a8d61c7b70f38'] rewards [85099.0, 85099.0]\n"}
+,{"stream_name":"stdout","time":68.284408552,"data":"PASS: temporary policy, game source, schema and license removed; submission archive remains.\n"}
+,{"stream_name":"stderr","time":73.065772342,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":73.065857506,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":73.285868017,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":73.285925113,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":74.227446757,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":74.694684295,"data":"[NbConvertApp] Writing 936828 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":78.130115352,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":79.326742683,"data":"[NbConvertApp] Writing 1238071 bytes to __results__.html\n"}
+]

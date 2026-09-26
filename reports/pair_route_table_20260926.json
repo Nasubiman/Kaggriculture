@@ -1,0 +1,450 @@
+{
+ "PET_CAFE|BAKERY": {
+  "route": 103,
+  "status": "weak",
+  "win_rate": 0.724,
+  "mean_margin": 3282,
+  "games": 384
+ },
+ "PIZZA_SHOP|PIZZA_SHOP": {
+  "route": 123,
+  "status": "weak",
+  "win_rate": 0.771,
+  "mean_margin": 2711,
+  "games": 384
+ },
+ "BRUNCH_SPOT|FARMERS_MARKET": {
+  "route": 110,
+  "status": "weak",
+  "win_rate": 0.776,
+  "mean_margin": 1857,
+  "games": 384
+ },
+ "SMOOTHIE_SHOP|SMOOTHIE_SHOP": {
+  "route": 107,
+  "status": "weak",
+  "win_rate": 0.776,
+  "mean_margin": 2575,
+  "games": 384
+ },
+ "ICE_CREAM_SHOP|ICE_CREAM_SHOP": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.786,
+  "mean_margin": 2773,
+  "games": 384
+ },
+ "FARMERS_MARKET|BRUNCH_SPOT": {
+  "route": 112,
+  "status": "weak",
+  "win_rate": 0.81,
+  "mean_margin": 2178,
+  "games": 384
+ },
+ "ICE_CREAM_SHOP|SMOOTHIE_SHOP": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.812,
+  "mean_margin": 2028,
+  "games": 384
+ },
+ "SMOOTHIE_SHOP|ICE_CREAM_SHOP": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.813,
+  "mean_margin": 1815,
+  "games": 380
+ },
+ "YARN_STORE|YARN_STORE": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.822,
+  "mean_margin": 4072,
+  "games": 376
+ },
+ "PIZZA_SHOP|SMOOTHIE_SHOP": {
+  "route": 124,
+  "status": "weak",
+  "win_rate": 0.836,
+  "mean_margin": 2243,
+  "games": 384
+ },
+ "SMOOTHIE_SHOP|PIZZA_SHOP": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.843,
+  "mean_margin": 2722,
+  "games": 364
+ },
+ "FARMERS_MARKET|FARMERS_MARKET": {
+  "route": 104,
+  "status": "weak",
+  "win_rate": 0.853,
+  "mean_margin": 2496,
+  "games": 380
+ },
+ "BRUNCH_SPOT|ICE_CREAM_SHOP": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.857,
+  "mean_margin": 1508,
+  "games": 384
+ },
+ "PIZZA_SHOP|BRUNCH_SPOT": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.868,
+  "mean_margin": 1964,
+  "games": 380
+ },
+ "PET_CAFE|FARMERS_MARKET": {
+  "route": 117,
+  "status": "weak",
+  "win_rate": 0.88,
+  "mean_margin": 4466,
+  "games": 384
+ },
+ "BAKERY|YARN_STORE": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.888,
+  "mean_margin": 2827,
+  "games": 376
+ },
+ "FARMERS_MARKET|PIZZA_SHOP": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.888,
+  "mean_margin": 1765,
+  "games": 376
+ },
+ "SMOOTHIE_SHOP|BAKERY": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.896,
+  "mean_margin": 1873,
+  "games": 364
+ },
+ "PIZZA_SHOP|FARMERS_MARKET": {
+  "route": 121,
+  "status": "weak",
+  "win_rate": 0.896,
+  "mean_margin": 2435,
+  "games": 384
+ },
+ "FARMERS_MARKET|SMOOTHIE_SHOP": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.898,
+  "mean_margin": 1938,
+  "games": 372
+ },
+ "YARN_STORE|PIZZA_SHOP": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.898,
+  "mean_margin": 2702,
+  "games": 372
+ },
+ "YARN_STORE|ICE_CREAM_SHOP": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.906,
+  "mean_margin": 3397,
+  "games": 384
+ },
+ "YARN_STORE|PET_CAFE": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.906,
+  "mean_margin": 3480,
+  "games": 384
+ },
+ "BRUNCH_SPOT|PIZZA_SHOP": {
+  "route": 107,
+  "status": "weak",
+  "win_rate": 0.911,
+  "mean_margin": 2045,
+  "games": 384
+ },
+ "ICE_CREAM_SHOP|PET_CAFE": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.911,
+  "mean_margin": 2734,
+  "games": 384
+ },
+ "FARMERS_MARKET|BAKERY": {
+  "route": 111,
+  "status": "weak",
+  "win_rate": 0.912,
+  "mean_margin": 3350,
+  "games": 376
+ },
+ "BRUNCH_SPOT|SMOOTHIE_SHOP": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.919,
+  "mean_margin": 1700,
+  "games": 372
+ },
+ "ICE_CREAM_SHOP|BRUNCH_SPOT": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.922,
+  "mean_margin": 1608,
+  "games": 384
+ },
+ "PET_CAFE|ICE_CREAM_SHOP": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.922,
+  "mean_margin": 2812,
+  "games": 384
+ },
+ "PIZZA_SHOP|PET_CAFE": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.922,
+  "mean_margin": 2268,
+  "games": 384
+ },
+ "YARN_STORE|BRUNCH_SPOT": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.922,
+  "mean_margin": 3452,
+  "games": 384
+ },
+ "ICE_CREAM_SHOP|FARMERS_MARKET": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.924,
+  "mean_margin": 2097,
+  "games": 384
+ },
+ "PET_CAFE|YARN_STORE": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.927,
+  "mean_margin": 4920,
+  "games": 384
+ },
+ "SMOOTHIE_SHOP|YARN_STORE": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.927,
+  "mean_margin": 2249,
+  "games": 384
+ },
+ "BAKERY|ICE_CREAM_SHOP": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.929,
+  "mean_margin": 1558,
+  "games": 380
+ },
+ "ICE_CREAM_SHOP|PIZZA_SHOP": {
+  "route": 108,
+  "status": "weak",
+  "win_rate": 0.93,
+  "mean_margin": 3151,
+  "games": 384
+ },
+ "PIZZA_SHOP|ICE_CREAM_SHOP": {
+  "route": 122,
+  "status": "weak",
+  "win_rate": 0.932,
+  "mean_margin": 2997,
+  "games": 384
+ },
+ "YARN_STORE|SMOOTHIE_SHOP": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.935,
+  "mean_margin": 2487,
+  "games": 384
+ },
+ "YARN_STORE|FARMERS_MARKET": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.938,
+  "mean_margin": 5037,
+  "games": 384
+ },
+ "PIZZA_SHOP|YARN_STORE": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.94,
+  "mean_margin": 2687,
+  "games": 384
+ },
+ "SMOOTHIE_SHOP|PET_CAFE": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.94,
+  "mean_margin": 2674,
+  "games": 368
+ },
+ "SMOOTHIE_SHOP|FARMERS_MARKET": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.941,
+  "mean_margin": 1816,
+  "games": 372
+ },
+ "BAKERY|SMOOTHIE_SHOP": {
+  "route": 108,
+  "status": "weak",
+  "win_rate": 0.943,
+  "mean_margin": 1689,
+  "games": 384
+ },
+ "FARMERS_MARKET|ICE_CREAM_SHOP": {
+  "route": 107,
+  "status": "weak",
+  "win_rate": 0.945,
+  "mean_margin": 1907,
+  "games": 384
+ },
+ "ICE_CREAM_SHOP|BAKERY": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.946,
+  "mean_margin": 2012,
+  "games": 372
+ },
+ "BRUNCH_SPOT|YARN_STORE": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.948,
+  "mean_margin": 4289,
+  "games": 384
+ },
+ "YARN_STORE|BAKERY": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.948,
+  "mean_margin": 3210,
+  "games": 384
+ },
+ "PIZZA_SHOP|BAKERY": {
+  "route": 120,
+  "status": "weak",
+  "win_rate": 0.952,
+  "mean_margin": 1592,
+  "games": 376
+ },
+ "ICE_CREAM_SHOP|YARN_STORE": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.953,
+  "mean_margin": 3173,
+  "games": 384
+ },
+ "FARMERS_MARKET|YARN_STORE": {
+  "route": 9,
+  "status": "weak",
+  "win_rate": 0.961,
+  "mean_margin": 4879,
+  "games": 384
+ },
+ "PET_CAFE|SMOOTHIE_SHOP": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.964,
+  "mean_margin": 3111,
+  "games": 384
+ },
+ "BAKERY|PET_CAFE": {
+  "route": 106,
+  "status": "weak",
+  "win_rate": 0.966,
+  "mean_margin": 3819,
+  "games": 384
+ },
+ "PET_CAFE|BRUNCH_SPOT": {
+  "route": 116,
+  "status": "weak",
+  "win_rate": 0.974,
+  "mean_margin": 4467,
+  "games": 380
+ },
+ "SMOOTHIE_SHOP|BRUNCH_SPOT": {
+  "route": 121,
+  "status": "weak",
+  "win_rate": 0.974,
+  "mean_margin": 2186,
+  "games": 384
+ },
+ "BAKERY|PIZZA_SHOP": {
+  "route": 107,
+  "status": "weak",
+  "win_rate": 0.979,
+  "mean_margin": 1764,
+  "games": 380
+ },
+ "BRUNCH_SPOT|BRUNCH_SPOT": {
+  "route": 103,
+  "status": "weak",
+  "win_rate": 0.979,
+  "mean_margin": 3795,
+  "games": 384
+ },
+ "BRUNCH_SPOT|BAKERY": {
+  "route": 105,
+  "status": "weak",
+  "win_rate": 0.984,
+  "mean_margin": 3102,
+  "games": 376
+ },
+ "BRUNCH_SPOT|PET_CAFE": {
+  "route": 101,
+  "status": "weak",
+  "win_rate": 0.984,
+  "mean_margin": 3014,
+  "games": 384
+ },
+ "PET_CAFE|PET_CAFE": {
+  "route": 118,
+  "status": "weak",
+  "win_rate": 0.984,
+  "mean_margin": 5806,
+  "games": 384
+ },
+ "PET_CAFE|PIZZA_SHOP": {
+  "route": 107,
+  "status": "weak",
+  "win_rate": 0.984,
+  "mean_margin": 3375,
+  "games": 384
+ },
+ "BAKERY|BRUNCH_SPOT": {
+  "route": 103,
+  "status": "weak",
+  "win_rate": 0.99,
+  "mean_margin": 4492,
+  "games": 384
+ },
+ "FARMERS_MARKET|PET_CAFE": {
+  "route": 113,
+  "status": "weak",
+  "win_rate": 0.99,
+  "mean_margin": 4699,
+  "games": 384
+ },
+ "BAKERY|FARMERS_MARKET": {
+  "route": 104,
+  "status": "weak",
+  "win_rate": 0.995,
+  "mean_margin": 3376,
+  "games": 376
+ },
+ "BAKERY|BAKERY": {
+  "route": 101,
+  "status": "strong",
+  "win_rate": 1.0,
+  "mean_margin": 2427,
+  "games": 384
+ }
+}

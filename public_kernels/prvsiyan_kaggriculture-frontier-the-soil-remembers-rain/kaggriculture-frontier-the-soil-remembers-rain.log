@@ -1,0 +1,72 @@
+[{"stream_name":"stderr","time":10.363474474,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":10.363565719,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":10.363571268,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":10.363574716,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":11.408211663,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":11.408273278,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":11.408280389,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":11.408285376,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":71.11358936,"data":"Engine: 1.32.7\n"}
+,{"stream_name":"stdout","time":71.73141666,"data":"Source verified: 178ae0f727641cf4b618ebb98ade7aa1a1bed7517281aab9849de82a59d8ed3a 1046403 bytes\n"}
+,{"stream_name":"stdout","time":71.983613554,"data":"Compiled public source: 1046403 bytes\n"}
+,{"stream_name":"stdout","time":71.98365479,"data":"Callable exports: 243\n"}
+,{"stream_name":"stdout","time":72.191966404,"data":"Source bytes: 1046403 SHA256: 178ae0f727641cf4b618ebb98ade7aa1a1bed7517281aab9849de82a59d8ed3a\n"}
+,{"stream_name":"stdout","time":72.296694852,"data":"Historical diagnostic section retained; rerun the pinned local audit for raw fixtures.\n"}
+,{"stream_name":"stdout","time":72.3970775,"data":"Historical diagnostic section retained; rerun the pinned local audit for raw fixtures.\n"}
+,{"stream_name":"stdout","time":72.542800025,"data":"Historical diagnostic section retained; rerun the pinned local audit for raw fixtures.\n"}
+,{"stream_name":"stdout","time":89.373897091,"data":"Exact-source smoke: [{'tested_source_sha256': '178ae0f727641cf4b618ebb98ade7aa1a1bed7517281aab9849de82a59d8ed3a', 'candidate_calls': 719, 'opponent_calls': 719, 'runtime_errors': 0}] peak milliseconds: [88.69831700002351, 84.87208200000396]\n"}
+,{"stream_name":"stdout","time":89.57852714,"data":"Exact source SHA256: 178ae0f727641cf4b618ebb98ade7aa1a1bed7517281aab9849de82a59d8ed3a\n"}
+,{"stream_name":"stdout","time":89.578574179,"data":"Deterministic bundle SHA256: ebf731c1a7e8bf8b7988a0d6fb27773db85ccbbafdd46ae26235fc8430894100\n"}
+,{"stream_name":"stdout","time":89.682530001,"data":"Historical diagnostic section retained; rerun the pinned local audit for raw fixtures.\n"}
+,{"stream_name":"stdout","time":89.837718937,"data":"Historical diagnostic section retained; rerun the pinned local audit for raw fixtures.\n"}
+,{"stream_name":"stdout","time":89.937975531,"data":"Historical diagnostic section retained; rerun the pinned local audit for raw fixtures.\n"}
+,{"stream_name":"stdout","time":90.04085867,"data":"Historical diagnostic section retained; rerun the pinned local audit for raw fixtures.\n"}
+,{"stream_name":"stdout","time":90.559049705,"data":"A/B panels valid: 96/96, 192/192\n"}
+,{"stream_name":"stdout","time":90.880111555,"data":"A/B panels valid: 96/96, 192/192\n"}
+,{"stream_name":"stdout","time":91.185574471,"data":"valid games: 128/128; local mean delta: +27.5625\n"}
+,{"stream_name":"stdout","time":91.510344574,"data":"All sweep panels valid: 32/32, 32/32, 32/32, 32/32, 32/32\n"}
+,{"stream_name":"stdout","time":92.411490689,"data":"Guard31 receipt valid: 360/360; official score pending a completed Kaggle row.\n"}
+,{"stream_name":"stdout","time":92.701257399,"data":"Fresh frontier v2 receipt: all listed rows valid; official score pending server submission.\n"}
+,{"stream_name":"stdout","time":92.966813388,"data":"96/96 valid; 62 wins, 34 ties, 0 losses; official score pending server row.\n"}
+,{"stream_name":"stdout","time":93.624082797,"data":"384/384 valid; 96 wins, 0 ties, 0 losses; official score pending server row.\n"}
+,{"stream_name":"stdout","time":93.898223544,"data":"120/120 valid; 96 wins, 22 ties, 2 losses; official score pending server row.\n"}
+,{"stream_name":"stdout","time":94.174387575,"data":"192 valid games across two windows; official score pending server row.\n"}
+,{"stream_name":"stdout","time":94.567929016,"data":"192/192 valid; 176 wins, 0 ties, 16 losses; official score pending server row.\n"}
+,{"stream_name":"stdout","time":95.364956678,"data":"Recomputed from 224 matched games. No official score is implied.\n"}
+,{"stream_name":"stdout","time":96.073242771,"data":"Model relative change: 17.0\n"}
+,{"stream_name":"stdout","time":96.073308042,"data":"These are modeled trade receipts. The unchanged seed purchase is excluded from these totals; its cost and affordability must be checked separately. No counterfactual game or official rating is claimed.\n"}
+,{"stream_name":"stdout","time":96.492766444,"data":"Final ordering versus bc80\n"}
+,{"stream_name":"stdout","time":97.721858743,"data":"Paired net winpoints: 26.0 mean margin change: 330.07142857142856\n"}
+,{"stream_name":"stdout","time":97.721938258,"data":"95% seed-block bootstrap intervals: mean margin [248.20818452380954, 422.22678571428565] ; mean winpoint change [0.0, 0.17261904761904762]\n"}
+,{"stream_name":"stdout","time":98.178183329,"data":"Final ordering versus baseline\n"}
+,{"stream_name":"stdout","time":99.618444198,"data":"Paired net winpoints: 84.0 mean margin change: 744.4672619047619\n"}
+,{"stream_name":"stdout","time":99.61850002,"data":"95% seed-block bootstrap intervals: mean margin [548.0446428571429, 947.3571428571429] ; mean winpoint change [0.15476190476190477, 0.35714285714285715]\n"}
+,{"stream_name":"stdout","time":100.095044107,"data":"The 95% interval for mean winpoint change versus bc80 touches zero: this panel does not exclude no average winpoint improvement.\n"}
+,{"stream_name":"stdout","time":100.095089982,"data":"Seed blocks are the uncertainty unit; public opponents share ancestry. These results are not a leaderboard score or a top-ten guarantee.\n"}
+,{"stream_name":"stderr","time":106.845455527,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":106.845508496,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":107.046401606,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":107.046438379,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":107.946747161,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":108.46023417,"data":"[NbConvertApp] Writing 1970321 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":111.745102788,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":113.375126122,"data":"[NbConvertApp] Support files will be in __results___files/\n"}
+,{"stream_name":"stderr","time":113.375162716,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.375420689,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.375667518,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.375888313,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.376169812,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.376307422,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.37654479,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.376750485,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.376956618,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.377237876,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.377497928,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.377742252,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.377923596,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.378203856,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.378351516,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.378561005,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.378822486,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":113.379170813,"data":"[NbConvertApp] Writing 1734777 bytes to __results__.html\n"}
+]

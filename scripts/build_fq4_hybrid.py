@@ -20,7 +20,7 @@ _FQ4_MODULE = _fq4_types.ModuleType("fq4_embedded")
 exec(compile(_FQ4_SOURCE, "fq4_embedded", "exec"), _FQ4_MODULE.__dict__)
 _FQ4_CONFIG = {config!r}
 _FQ4_HANDOVER_STEP = {handover}
-_FQ4_INCUMBENT = agent
+_FQ4_INCUMBENT = [_v for _v in list(globals().values()) if callable(_v)][-1]  # the entry Kaggle would select
 _FQ4_BOTS = {{}}
 
 

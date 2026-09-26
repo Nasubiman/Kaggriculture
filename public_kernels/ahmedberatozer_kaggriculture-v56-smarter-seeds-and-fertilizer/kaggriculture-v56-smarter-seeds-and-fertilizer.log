@@ -1,0 +1,22 @@
+[{"stream_name":"stderr","time":7.862815314,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.862914566,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.862923621,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.862928588,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.584710188,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.584777334,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.584784149,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.584788184,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":9.823143355,"data":"Agent directory: /kaggle/working/v56_agent\n"}
+,{"stream_name":"stdout","time":10.410329152,"data":"Verified main.py: 1056142 bytes\n"}
+,{"stream_name":"stdout","time":10.68479435,"data":"Ready: /kaggle/working/submission_competitive_v56.tar.gz\n"}
+,{"stream_name":"stdout","time":10.684848704,"data":"main.py SHA256: a1ad0fd1d174477ee2cbdd561a812bcb7029647ce34599e79d6b79e9057eff6c\n"}
+,{"stream_name":"stdout","time":10.684854925,"data":"No competition submission was made.\n"}
+,{"stream_name":"stderr","time":13.91883467,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":13.918892262,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":14.103700586,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":14.103763298,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":14.89478317,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":15.289145813,"data":"[NbConvertApp] Writing 791491 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":18.303267735,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":19.56982212,"data":"[NbConvertApp] Writing 1296928 bytes to __results__.html\n"}
+]

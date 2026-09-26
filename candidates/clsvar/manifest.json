@@ -1,0 +1,72 @@
+{
+ "base": {},
+ "mp24": {
+  "_MP_H": "24"
+ },
+ "mp56": {
+  "_MP_H": "56"
+ },
+ "dp8": {
+  "_DP_H": "8"
+ },
+ "dp16": {
+  "_DP_H": "16"
+ },
+ "ev6": {
+  "_EV_H": "6"
+ },
+ "ev12": {
+  "_EV_H": "12"
+ },
+ "race36": {
+  "V9_RACE_DEFAULT": "36"
+ },
+ "race48": {
+  "V9_RACE_DEFAULT": "48"
+ },
+ "rmargin8": {
+  "V9_RACE_MARGIN": "8"
+ },
+ "rmargin16": {
+  "V9_RACE_MARGIN": "16"
+ },
+ "fert7": {
+  "V9_FERT_FIRST_DAY": "7"
+ },
+ "fert14": {
+  "V9_FERT_FIRST_DAY": "14"
+ },
+ "fx6": {
+  "_FX_FLOW_MIN": "6"
+ },
+ "courier8": {
+  "V9_COURIER_FROM_HOUR": "8"
+ },
+ "courier16": {
+  "V9_COURIER_FROM_HOUR": "16"
+ },
+ "herdwool120": {
+  "V9_HERD_MIN_WOOL": "120"
+ },
+ "herdwool180": {
+  "V9_HERD_MIN_WOOL": "180"
+ },
+ "herdmilk120": {
+  "V9_HERD_MIN_MILK": "120"
+ },
+ "carrot16": {
+  "V9_CARROT_RATIO": "1.6"
+ },
+ "carrot25": {
+  "V9_CARROT_RATIO": "2.5"
+ },
+ "bdmin4": {
+  "_BD_MIN": "4"
+ },
+ "cxd1600": {
+  "_CXD_BUDGET": "1600"
+ },
+ "skip_none": {
+  "V13V_SKIP_DAYS": "()"
+ }
+}

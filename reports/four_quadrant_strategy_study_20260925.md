@@ -40,3 +40,7 @@
 - `scripts/selfplay_on_seeds.py`: 指定seedで候補と相手（既定 `main.py`）を対戦させる。
 - `scripts/build_se_addon.py`, `scripts/build_fq4_hybrid.py`: 単一ファイルの候補を生成する。
 - 圧縮テープ: `datasets/tapes/public_20260925_4q_named.json.gz`（151局×2座席）。
+
+## 訂正（2026-09-25 夜）
+
+`scripts/build_se_addon.py` と `scripts/build_fq4_hybrid.py` は、元モデルを `agent` という名前で呼んでいた。`main.py` の本当の入口は最後に定義される `kaggle_agent` で、`agent` は途中の層だった。上表のうち「南東小麦（作業員2人）」「土地だけ購入」「14日目まで → `fq4`」の数値はこの不具合の影響を受けている（発動しない設定では差 -87 だったため、影響は小さい可能性がある）。「南東羊プロジェクトを常時発動」はソースを直接書き換えた評価なので影響なし。両スクリプトは、Kaggle と同じく最後に定義された呼び出し可能オブジェクトを入口にするよう修正済み。

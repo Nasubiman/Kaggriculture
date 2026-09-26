@@ -1,0 +1,40 @@
+[{"stream_name":"stderr","time":10.464518063,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":10.464601951,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":10.464608872,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":10.464613453,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":11.414496835,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":11.414594051,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":11.414601275,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":11.41460588,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":15.364782268999999,"data":"Wrote main.py: 1,004,288 bytes\n"}
+,{"stream_name":"stdout","time":15.913508977,"data":"main.py   1,004,288 bytes, 6,466 lines, sha256 9d63494603f8…  (submissionv13 c5)\n"}
+,{"stream_name":"stdout","time":15.913566206,"data":"imports   __future__, base64, copy, itertools, json, math, os, zlib  (standard library only)\n"}
+,{"stream_name":"stdout","time":15.913598622,"data":"entry     agent()  = the last callable, which is exactly what Kaggle runs\n"}
+,{"stream_name":"stdout","time":60.53046525,"data":"opponent: demand-preserving-turn-sale-timing\n"}
+,{"stream_name":"stdout","time":65.79626118,"data":"Note: seed 20260919 seat 0 reconciliation delta: $1,000\n"}
+,{"stream_name":"stdout","time":65.796321798,"data":"Note: seed 20260919 seat 1 reconciliation delta: $1,000\n"}
+,{"stream_name":"stdout","time":70.962102472,"data":"Note: seed 20260920 seat 0 reconciliation delta: $1,000\n"}
+,{"stream_name":"stdout","time":70.962151593,"data":"Note: seed 20260920 seat 1 reconciliation delta: $1,000\n"}
+,{"stream_name":"stdout","time":76.225937854,"data":"Note: seed 20260921 seat 0 reconciliation delta: $1,000\n"}
+,{"stream_name":"stdout","time":76.225986505,"data":"Note: seed 20260921 seat 1 reconciliation delta: $1,000\n"}
+,{"stream_name":"stdout","time":81.199423896,"data":"Note: seed 20260922 seat 0 reconciliation delta: $1,000\n"}
+,{"stream_name":"stdout","time":81.199466873,"data":"Note: seed 20260922 seat 1 reconciliation delta: $1,000\n"}
+,{"stream_name":"stdout","time":81.201774302,"data":"4 full seasons in 21s completed.\n"}
+,{"stream_name":"stdout","time":93.355628301,"data":"submission.tar.gz 621,559 bytes sha256 ed15b85c5a96…\n"}
+,{"stream_name":"stdout","time":93.355667186,"data":"outputs: ['__notebook__.ipynb', 'main.py', 'submission.tar.gz']\n"}
+,{"stream_name":"stderr","time":99.986640949,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":99.986689229,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":100.25215791,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":100.252194921,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":101.238620665,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":101.691138366,"data":"[NbConvertApp] Writing 1789520 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":105.370787422,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":106.761040775,"data":"[NbConvertApp] Support files will be in __results___files/\n"}
+,{"stream_name":"stderr","time":106.761082469,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":106.761537118,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":106.761829343,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":106.761966503,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":106.762257537,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":106.762422627,"data":"[NbConvertApp] Making directory __results___files\n"}
+,{"stream_name":"stderr","time":106.762826559,"data":"[NbConvertApp] Writing 1302008 bytes to __results__.html\n"}
+]

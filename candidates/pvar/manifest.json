@@ -1,0 +1,36 @@
+{
+ "base": {},
+ "MAX_ORDERS_6": {
+  "MAX_ORDERS": "6"
+ },
+ "MAX_ORDERS_14": {
+  "MAX_ORDERS": "14"
+ },
+ "MAX_ORDERS_20": {
+  "MAX_ORDERS": "20"
+ },
+ "CROP_MIN_PRICE_40": {
+  "CROP_MIN_PRICE": "40"
+ },
+ "CROP_MIN_PRICE_100": {
+  "CROP_MIN_PRICE": "100"
+ },
+ "CROP_MIN_PRICE_130": {
+  "CROP_MIN_PRICE": "130"
+ },
+ "MP_H_12": {
+  "_MP_H": "12"
+ },
+ "MP_H_20": {
+  "_MP_H": "20"
+ },
+ "MP_H_60": {
+  "_MP_H": "60"
+ },
+ "DP_H_6": {
+  "_DP_H": "6"
+ },
+ "DP_H_20": {
+  "_DP_H": "20"
+ }
+}

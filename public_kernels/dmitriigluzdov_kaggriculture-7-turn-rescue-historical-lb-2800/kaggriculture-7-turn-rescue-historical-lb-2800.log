@@ -1,0 +1,37 @@
+[{"stream_name":"stderr","time":9.500854636,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":9.50098251,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":9.500990544,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":9.500994787,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":10.314074203,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":10.314114427,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":10.314120435,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":10.314124497,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":11.819239587,"data":"Previous Rescue (v2) W/L/T 14 2 0 mean margin 8.0\n"}
+,{"stream_name":"stdout","time":11.819298676,"data":"More Wheat v7 W/L/T 15 1 0 mean margin 98.9\n"}
+,{"stream_name":"stdout","time":11.819303466000001,"data":"Master Hybrid v4 W/L/T 9 7 0 mean margin -84.8\n"}
+,{"stream_name":"stdout","time":11.81930741,"data":"Evgen Dvorkin v23 W/L/T 13 3 0 mean margin 664.7\n"}
+,{"stream_name":"stdout","time":11.819311295,"data":"Fieldcraft v4 W/L/T 14 2 0 mean margin 2688.1\n"}
+,{"stream_name":"stdout","time":11.819314883,"data":"Hacked Stores v3 W/L/T 14 2 0 mean margin 1788.4\n"}
+,{"stream_name":"stdout","time":11.819317472,"data":"Synthetic opening 8/8/5 W/L/T 15 1 0 mean margin 171.2\n"}
+,{"stream_name":"stdout","time":11.81932008,"data":"Synthetic opening 43/20/18 W/L/T 15 1 0 mean margin 189.6\n"}
+,{"stream_name":"stdout","time":12.519170746,"data":"PASS: byte-exact submission archive and preserved upstream files\n"}
+,{"stream_name":"stdout","time":12.519210951,"data":"archive SHA-256: 0ebc24aeca8ab1393ff70a5ed672a6023460c01e9fa51b29f389c9053167d8ba\n"}
+,{"stream_name":"stdout","time":12.519216977,"data":"main.py SHA-256: 4889137f1adf1f9266b2ad5a6ac6700c40e9be6dfe3654e39db375fb55b71341\n"}
+,{"stream_name":"stdout","time":12.519220902,"data":"NOTICE.txt SHA-256: 376a21d522d90aae03386b14d1dea815811ec06378c1cd7ac21450f9f02469a0\n"}
+,{"stream_name":"stdout","time":12.71642537,"data":"Observed Kaggle host core before engine import: 1.29.3\n"}
+,{"stream_name":"stdout","time":23.504086984,"data":"Installed byte-verified Kaggle seed-helper compatibility shim: 15feb82a21849d8bb07d0bad806dc287992af24bc8d0370031f40c4b1b856a54\n"}
+,{"stream_name":"stdout","time":23.504130866,"data":"Registered exact Kaggriculture engine SHA-256: bc8a54879ef02c7ea64b8b333d6a976f0ea65c4949149d01f463f23bccee653e\n"}
+,{"stream_name":"stdout","time":23.504135797,"data":"Registered exact schema SHA-256: a82c89c1a2315b93f39775d8e025471a01b738647c9772658368ee6b1b6f4867\n"}
+,{"stream_name":"stdout","time":37.156073623,"data":"PASS: host core 1.29.3 used the exact pinned Kaggriculture source/schema.\n"}
+,{"stream_name":"stdout","time":37.156123991,"data":"PASS: 720 states; DONE/DONE; 719 callbacks per seat.\n"}
+,{"stream_name":"stdout","time":37.156135873,"data":"PASS: action SHA-256 ['e95796bd0054b6bd83405e1ac7c7851c57bd32ca971e6d60f47126d1fac9bcd8', '30d7dc0e8aacad13c6ab65510539d13e0183066c0988523dc5083b4599ffc44e'] rewards [87467.0, 87459.0]\n"}
+,{"stream_name":"stdout","time":37.156141442,"data":"PASS: temporary policy, game source, schema and license removed; submission archive remains.\n"}
+,{"stream_name":"stderr","time":42.712971015,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":42.713031734,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":42.918534196,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":42.918566887,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":43.711360601,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":44.113691667,"data":"[NbConvertApp] Writing 961103 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":47.176363783,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":48.259335389,"data":"[NbConvertApp] Writing 1266941 bytes to __results__.html\n"}
+]

@@ -44,11 +44,13 @@ def _install_money_pin() -> None:
         return
     original = K._process_market
 
-    def pinned(state, env):
-        cfg = _FORCE.get("cfg")
+    # Defaults bind the state explicitly: fast runners re-home engine functions
+    # into their own globals, where this module's names are not visible.
+    def pinned(state, env, _force=_FORCE, original=original, _get=K.get):
+        cfg = _force.get("cfg")
         if not cfg:
             return original(state, env)
-        step = int(K.get(state[0].observation, "step", 0))
+        step = int(_get(state[0].observation, "step", 0))
         seat = cfg["seat"]
         farm = state[0].observation.farms[seat]
         recorded = cfg["money"][min(step, len(cfg["money"]) - 1)]
@@ -121,10 +123,25 @@ def worker_init(candidate: str, fast: bool, force_money: bool = False) -> None:
         _install_money_pin()
 
 
+_CANDIDATES: dict[str, Any] = {}
+
+
+def play_multi(task):
+    """(candidate_path, tape) task for the single-pool multi-candidate mode."""
+    global _CANDIDATE, _CANDIDATE_PATH
+    path, tape = task
+    if path not in _CANDIDATES:
+        _CANDIDATES[path] = load_candidate(Path(path))
+    _CANDIDATE_PATH, _CANDIDATE = path, _CANDIDATES[path]
+    row = play(tape)
+    row["candidate"] = Path(path).stem
+    return row
+
+
 def play(tape: dict[str, Any]) -> dict[str, Any]:
     global _CANDIDATE
     try:
-        if _CANDIDATE_PATH.endswith("RECORDED"):
+        if str(_CANDIDATE_PATH).endswith("RECORDED"):
             # Validation mode: the recorded opponent replays itself.
             _CANDIDATE = make_tape_agent(tape["opponent_actions"])
         elif _CANDIDATE is None:
@@ -134,7 +151,12 @@ def play(tape: dict[str, Any]) -> dict[str, Any]:
         agents = [_CANDIDATE, tape_agent] if seat == 0 else [tape_agent, _CANDIDATE]
         if _FORCE.get("enabled"):
             _FORCE["cfg"] = {"seat": tape["seat"], "money": tape["money"], "score": 3000.0}
-        if _FAST:
+        if _FORCE.get("enabled"):
+            # Pure-Python fast runner: it calls the official market phase, so the
+            # money pin applies, and it matches the standard runner exactly.
+            from fast_kaggriculture import run_fast_episode as run_python_fast
+            final = run_python_fast(agents, seed=tape["seed"])
+        elif _FAST:
             from production_fast_kaggriculture import run_fast_episode
             final = run_fast_episode(agents, seed=tape["seed"])
         else:
@@ -192,6 +214,12 @@ def main() -> None:
     parser.add_argument("--force-money", action="store_true",
                         help="pin the tape bank to its recording so every recorded purchase succeeds")
     parser.add_argument("--output", type=Path, default=None)
+    parser.add_argument("--candidates", nargs="*", default=[],
+                        help="multi-candidate mode: one pool over every (candidate, tape); writes --output-dir/<stem>.json")
+    parser.add_argument("--output-dir", type=Path, default=None)
+    parser.add_argument("--base-results", type=Path, default=None,
+                        help="keep only tapes this earlier run lost or won by less than --max-abs-margin")
+    parser.add_argument("--max-abs-margin", type=float, default=1500.0)
     args = parser.parse_args()
 
     import gzip
@@ -208,6 +236,25 @@ def main() -> None:
         return
     if args.limit:
         tapes = tapes[: args.limit]
+    if args.base_results:
+        base = json.loads(args.base_results.read_text())["games"]
+        keep = {(g["episode"], g["team"]) for g in base
+                if not g.get("error") and (not g["win"] or abs(g["margin"]) < args.max_abs_margin)}
+        tapes = [t for t in tapes if (t["episode"], t["team"]) in keep]
+        print(f"decisive tapes: {len(tapes)}", flush=True)
+    if args.candidates:
+        ctx = mp.get_context("spawn")
+        tasks = [(str(Path(c).resolve()), t) for c in args.candidates for t in tapes]
+        with ctx.Pool(max(1, min(args.workers, os.cpu_count() or 1)), initializer=worker_init,
+                      initargs=("", args.fast_runner, args.force_money)) as pool:
+            rows = list(pool.imap_unordered(play_multi, tasks, chunksize=1))
+        args.output_dir.mkdir(parents=True, exist_ok=True)
+        for c in args.candidates:
+            stem = Path(c).stem
+            mine = [r for r in rows if r.get("candidate") == stem]
+            (args.output_dir / f"{stem}.json").write_text(json.dumps({"candidate": c, "overall": summarize(mine), "games": mine}))
+            print(stem, summarize(mine), flush=True)
+        return
     ctx = mp.get_context("spawn")
     with ctx.Pool(max(1, min(args.workers, os.cpu_count() or 1)), initializer=worker_init,
                   initargs=(str(args.candidate.resolve()), args.fast_runner, args.force_money)) as pool:

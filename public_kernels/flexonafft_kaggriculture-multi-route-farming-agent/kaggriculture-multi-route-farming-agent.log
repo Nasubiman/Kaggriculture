@@ -1,0 +1,22 @@
+[{"stream_name":"stderr","time":7.60393249,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":7.604012044,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":7.604019776,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":7.604024753,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":8.34133501,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.341374115,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.341378599,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.341382503,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":9.65857726,"data":"Building the embedded cha22 agent in /kaggle/working\n"}
+,{"stream_name":"stdout","time":9.924972133,"data":"Wrote verified main.py and submission.py: 501543 bytes each\n"}
+,{"stream_name":"stdout","time":10.324175934,"data":"Ready: /kaggle/working/submission_cha22.tar.gz\n"}
+,{"stream_name":"stdout","time":10.324227905,"data":"Agent SHA256: 127ed3e62988c0474d386db6527ae8ca9de9bb1fe7004128557ddef67126c652\n"}
+,{"stream_name":"stdout","time":10.32423455,"data":"No competition submission was made.\n"}
+,{"stream_name":"stderr","time":13.53823973,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":13.538282601,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":13.72194881,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":13.721975011,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":14.513635272,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":14.927722932,"data":"[NbConvertApp] Writing 573051 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":18.079990317,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":19.35303277,"data":"[NbConvertApp] Writing 1373816 bytes to __results__.html\n"}
+]

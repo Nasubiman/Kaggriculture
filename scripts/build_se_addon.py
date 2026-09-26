@@ -19,7 +19,7 @@ exec(compile({fq4!r}, "fq4_embedded", "exec"), _SE_FQ4.__dict__)
 _SE_MOD = _se_types.ModuleType("se_addon_embedded")
 exec(compile({addon!r}, "se_addon_embedded", "exec"), _SE_MOD.__dict__)
 _SE_CONFIG = {config!r}
-_SE_INCUMBENT = agent
+_SE_INCUMBENT = [_v for _v in list(globals().values()) if callable(_v)][-1]  # the entry Kaggle would select
 _SE_BOTS = {{}}
 
 
@@ -38,11 +38,12 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--incumbent", default=str(ROOT / "main.py"))
     p.add_argument("--config", default="{}")
+    p.add_argument("--addon", default="se_addon")
     p.add_argument("--output", required=True)
     a = p.parse_args()
     out = Path(a.incumbent).read_text() + WRAPPER.format(
         fq4=(ROOT / "agents/fq4.py").read_text(),
-        addon=(ROOT / "agents/se_addon.py").read_text(),
+        addon=(ROOT / ("agents/" + a.addon + ".py")).read_text(),
         config=json.loads(a.config))
     Path(a.output).parent.mkdir(parents=True, exist_ok=True)
     Path(a.output).write_text(out)

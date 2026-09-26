@@ -1,0 +1,7 @@
+Pipe16-based distribution, September 21, 2026. Apache-2.0.
+Direct source: Nathan Jacob, https://www.kaggle.com/code/nathanjacob/kaggriculture-pipe16-idle-workers
+Metav4 farm controller: Thomas Tschinkel. Productive wheat opening: Dmitrii Gluzdov, adapted by Nathan Jacob.
+All original author and license notices are retained in main.py.
+Upstream credits include Ahmed Berat Ozer, yhay81, prvsiyan, aurax7, tetsutani, Rayk Kretzschmar, degnonguidi, leoprovorov, destbreso, lucifer19, salemali7, and Kaggle environment contributors.
+
+Dmitrii Gluzdov, September 2026: later temporary-wheat harvest and delivery; sequential sales accounting, transactional opening installation and diagnostic maintenance. Original routes and notices retained.

@@ -1,0 +1,35 @@
+[{"stream_name":"stderr","time":8.285639758,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":8.285726014,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":8.285747925,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":8.285751679,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stderr","time":9.086987624,"data":"0.00s - Debugger warning: It seems that frozen modules are being used, which may\n"}
+,{"stream_name":"stderr","time":9.087041611,"data":"0.00s - make the debugger miss breakpoints. Please pass -Xfrozen_modules=off\n"}
+,{"stream_name":"stderr","time":9.087048281,"data":"0.00s - to python to disable frozen modules.\n"}
+,{"stream_name":"stderr","time":9.087053691,"data":"0.00s - Note: Debugging will proceed. Set PYDEVD_DISABLE_FILE_VALIDATION=1 to disable this validation.\n"}
+,{"stream_name":"stdout","time":11.770056511,"data":"archive bytes: PASS\n"}
+,{"stream_name":"stdout","time":11.770138586,"data":"main.py bytes: PASS\n"}
+,{"stream_name":"stdout","time":11.770145273,"data":"archive SHA-256: 63e1554c9330557787462eb875960c8c9c9d52c4830251e657a512881625d86b\n"}
+,{"stream_name":"stdout","time":11.770150239,"data":"main.py SHA-256: 127ed3e62988c0474d386db6527ae8ca9de9bb1fe7004128557ddef67126c652\n"}
+,{"stream_name":"stdout","time":55.341901731,"data":"production entrypoint: ig_agent\n"}
+,{"stream_name":"stdout","time":55.341954498,"data":"source SHA-256: 127ed3e62988c0474d386db6527ae8ca9de9bb1fe7004128557ddef67126c652\n"}
+,{"stream_name":"stdout","time":55.341962867,"data":"projected-stock SELL queue closure + inherited controller chain: PRESENT\n"}
+,{"stream_name":"stdout","time":61.079442327,"data":"production-path 720-turn season: PASS\n"}
+,{"stream_name":"stdout","time":61.079513161,"data":"non-PASS unit actions: 1879\n"}
+,{"stream_name":"stdout","time":61.079520737,"data":"market orders: 2138\n"}
+,{"stream_name":"stdout","time":63.245324009,"data":"variant: cha22_queue_hole_closure\n"}
+,{"stream_name":"stdout","time":63.245375955,"data":"files: main.py\n"}
+,{"stream_name":"stdout","time":63.24538343,"data":"internet required: NO\n"}
+,{"stream_name":"stdout","time":63.2453893,"data":"external Dataset required: NO\n"}
+,{"stream_name":"stdout","time":63.245395261,"data":"archive SHA-256: 63e1554c9330557787462eb875960c8c9c9d52c4830251e657a512881625d86b\n"}
+,{"stream_name":"stdout","time":63.24540212,"data":"archive byte check: PASS\n"}
+,{"stream_name":"stdout","time":63.245406077,"data":"archived production entrypoint: ig_agent\n"}
+,{"stream_name":"stdout","time":63.245409868,"data":"production loader gate: PASS\n"}
+,{"stream_name":"stderr","time":67.99097914,"data":"/usr/local/lib/python3.12/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":67.9910436,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":68.198234162,"data":"/usr/local/lib/python3.12/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":68.198285409,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":69.029656839,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to notebook\n"}
+,{"stream_name":"stderr","time":69.480116993,"data":"[NbConvertApp] Writing 395523 bytes to __notebook__.ipynb\n"}
+,{"stream_name":"stderr","time":72.831292194,"data":"[NbConvertApp] Converting notebook __notebook__.ipynb to html\n"}
+,{"stream_name":"stderr","time":74.069868193,"data":"[NbConvertApp] Writing 755326 bytes to __results__.html\n"}
+]
