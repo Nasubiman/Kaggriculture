@@ -1,0 +1,69 @@
+{
+ "base": {},
+ "V9_RACEPX_MARGIN_6": {
+  "V9_RACEPX_MARGIN": "6"
+ },
+ "V9_RACEPX_MARGIN_12": {
+  "V9_RACEPX_MARGIN": "12"
+ },
+ "V9_RACEGATE_MARGIN_6": {
+  "V9_RACEGATE_MARGIN": "6"
+ },
+ "V9_RACEGATE_MARGIN_12": {
+  "V9_RACEGATE_MARGIN": "12"
+ },
+ "V9_RACE_GAP_1": {
+  "V9_RACE_GAP": "1"
+ },
+ "V9_RACE_GAP_6": {
+  "V9_RACE_GAP": "6"
+ },
+ "Y_MARGIN_0": {
+  "_Y_MARGIN": "0"
+ },
+ "Y_MARGIN_12": {
+  "_Y_MARGIN": "-12"
+ },
+ "CH_SHED_80": {
+  "_CH_SHED": "80"
+ },
+ "CH_SHED_99": {
+  "_CH_SHED": "99"
+ },
+ "OR2_SN_H_12": {
+  "_OR2_SN_H": "12"
+ },
+ "OR2_SN_H_48": {
+  "_OR2_SN_H": "48"
+ },
+ "OR2_SLOT_H_3": {
+  "_OR2_SLOT_H": "3"
+ },
+ "OR2_SLOT_H_12": {
+  "_OR2_SLOT_H": "12"
+ },
+ "HD2_RATIO_1.1": {
+  "_HD2_RATIO": "1.1"
+ },
+ "HD2_RATIO_1.6": {
+  "_HD2_RATIO": "1.6"
+ },
+ "CS_RATIO_1.1": {
+  "_CS_RATIO": "1.1"
+ },
+ "CS_RATIO_1.6": {
+  "_CS_RATIO": "1.6"
+ },
+ "HD2_MIN_GAIN_300.0": {
+  "_HD2_MIN_GAIN": "300.0"
+ },
+ "CS_MIN_GAIN_300.0": {
+  "_CS_MIN_GAIN": "300.0"
+ },
+ "V92_P_TOP_2": {
+  "_V92_P_TOP": "2"
+ },
+ "CA_MARGIN_8.0": {
+  "_CA_MARGIN": "-8.0"
+ }
+}

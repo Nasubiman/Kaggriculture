@@ -1,0 +1,33 @@
+{
+ "base": {},
+ "CROP_MIN_PRICE_40": {
+  "CROP_MIN_PRICE": "40"
+ },
+ "CROP_MIN_PRICE_100": {
+  "CROP_MIN_PRICE": "100"
+ },
+ "V9_FERT_FIRST_DAY_10": {
+  "V9_FERT_FIRST_DAY": "10"
+ },
+ "V9_FERT_FIRST_DAY_18": {
+  "V9_FERT_FIRST_DAY": "18"
+ },
+ "SR_MARGIN_4": {
+  "_SR_MARGIN": "4"
+ },
+ "SR_MARGIN_14": {
+  "_SR_MARGIN": "14"
+ },
+ "OR2_SLOT_MARGIN_4.0": {
+  "_OR2_SLOT_MARGIN": "4.0"
+ },
+ "OR2_SLOT_MARGIN_14.0": {
+  "_OR2_SLOT_MARGIN": "14.0"
+ },
+ "V92_P_H_24": {
+  "_V92_P_H": "24"
+ },
+ "V92_P_H_72": {
+  "_V92_P_H": "72"
+ }
+}

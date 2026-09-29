@@ -1,0 +1,18 @@
+{
+ "base": {},
+ "sr14_ptop2": {
+  "_SR_MARGIN": "14",
+  "_V92_P_TOP": "2"
+ },
+ "sr14_ptop2_shed99": {
+  "_SR_MARGIN": "14",
+  "_V92_P_TOP": "2",
+  "_CH_SHED": "99"
+ },
+ "ptop2": {
+  "_V92_P_TOP": "2"
+ },
+ "sr14": {
+  "_SR_MARGIN": "14"
+ }
+}
