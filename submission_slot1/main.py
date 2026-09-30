@@ -4728,11 +4728,11 @@ agent = globals().pop('agent')
 # Built by tools/claude_build_orderpri2.py (derivation there).
 # ---------------------------------------------------------------------------
 _OR2_CAP = 30
-_OR2_SN_K = 0
+_OR2_SN_K = 5
 _OR2_SN_H = 24
-_OR2_SLOT_H = 6
+_OR2_SLOT_H = 48
 _OR2_SLOT_MARGIN = 8.0
-_OR2_SN_ITEMS = ("MILK", "STRAWBERRY", "WOOL", "MELON", "EGG")
+_OR2_SN_ITEMS = ("MILK", "STRAWBERRY", "WOOL", "MELON", "EGG", "CARROT", "TOMATO")
 _OR2_ITEMS = ("WHEAT", "CARROT", "TOMATO", "STRAWBERRY", "MELON", "EGG", "MILK", "WOOL")
 _OR2_ONGOING = ("TOMATO", "STRAWBERRY")
 _OR2_ANIMAL = {"GOOSE": "EGG", "COW": "MILK", "SHEEP": "WOOL"}
@@ -4975,7 +4975,7 @@ agent = globals().pop('agent')
 # Claude CAPHARV layer: harvest animals that would overflow tonight. Own implementation.
 # Built by tools/claude_build_capharv.py (derivation there).
 # ---------------------------------------------------------------------------
-_CH_SHED = 90
+_CH_SHED = 95
 _CH_SELL = True
 _CH_ANIMALS = {"GOOSE": ("EGG", 4, 4, 1), "COW": ("MILK", 6, 8, 2), "SHEEP": ("WOOL", 6, 6, 3)}
 _CH_MOVES = {"NORTH": (0, -1), "SOUTH": (0, 1), "EAST": (1, 0), "WEST": (-1, 0)}
@@ -5125,8 +5125,8 @@ agent = globals().pop('agent')
 # Claude SHEDROOM layer: sell shed goods before the night drop overflows. Own implementation.
 # Built by tools/claude_build_shedroom.py (derivation there).
 # ---------------------------------------------------------------------------
-_SR_MARGIN = 14
-_SR_HOURS = (21, 22, 23)
+_SR_MARGIN = 24
+_SR_HOURS = tuple(range(12, 24))
 _SR_PRODUCTS = ("WHEAT", "CARROT", "TOMATO", "STRAWBERRY", "MELON", "EGG", "MILK", "WOOL", "FERTILIZER")
 _SR_REPORT = {"sr_turns": 0, "sr_units": 0, "sr_errors": 0}
 
@@ -6708,7 +6708,7 @@ _CXTB_PARENT = [v for v in list(globals().values()) if callable(v)][-1]
 #     rather than stopped after four days.
 # The remaining error is under 25 units over eight days, against a scale (T=200) where 600
 # units is the whole price range.
-_CXTB_MIN_REVENUE = 9000    # coins the 80 units must be worth before committing
+_CXTB_MIN_REVENUE = 8000
 _CXTB_THEIR_UNITS = 0.75    # units a day per rival tomato tile (measured)
 _CXTB_DRAIN_SLACK = 2.4     # units a day the town does not take after all (measured)
 _CXTB_OUR_UNITS = 20        # ten tiles, days 26..29 (measured: 60..80 units in total)
@@ -10135,3 +10135,72 @@ def step1009_step1008_fortyfirst_final_fixedsell_closure_agent(observation,confi
 step1009_step1008_fortyfirst_final_fixedsell_closure_agent.telemetry=_S1009_REPORT
 agent=step1009_step1008_fortyfirst_final_fixedsell_closure_agent
 kaggle_submission_agent=agent
+
+
+# ---- buy-first layer: move BUY_PRODUCT ahead of fixed-price orders (sell slots untouched) ----
+_BF_ITEMS = ('FERTILIZER', 'WHEAT')
+_BF_FROM = 192
+_BF_MIN_MONEY = 3000.0
+_BF_BASE = [_v for _v in list(globals().values()) if callable(_v)][-1]
+
+
+def buy_first_agent(observation, configuration=None):
+    action = _BF_BASE(observation, configuration)
+    try:
+        step = int(_get(observation, 'step', 0) or 0)
+        if step < _BF_FROM or not isinstance(action, dict):
+            return action
+        farm = observation['farms'][int(_get(observation, 'player', 0) or 0)]
+        if float(farm['money']) < _BF_MIN_MONEY:
+            return action
+        market = [list(o) for o in (action.get('market') or []) if o]
+        slots = [i for i, o in enumerate(market) if o[0] != 'SELL']
+        others = [market[i] for i in slots]
+        front = [o for o in others if o[0] == 'BUY_PRODUCT' and len(o) > 1 and o[1] in _BF_ITEMS]
+        if not front:
+            return action
+        reordered = front + [o for o in others if not (o[0] == 'BUY_PRODUCT' and len(o) > 1 and o[1] in _BF_ITEMS)]
+        if reordered == others:
+            return action
+        new = list(market)
+        for i, o in zip(slots, reordered):
+            new[i] = o
+        return dict(action, market=new)
+    except Exception:
+        return action
+
+
+# ---- day-23 end purchase trim (seen in xiongrui666 / すずき / MatiasMG): at step 575 the parent buys
+# 16 wheat + 11 fertilizer for the end game; trim it ----
+_D23_STEP = 575
+_D23_DROP_FERT = True
+_D23_WHEAT_CAP = 5
+_D23_REPORT = {"d23_trims": 0, "d23_errors": 0}
+_D23_BASE = [_v for _v in list(globals().values()) if callable(_v)][-1]
+
+
+def d23_trim_agent(observation, configuration=None):
+    action = _D23_BASE(observation, configuration)
+    try:
+        if int(_get(observation, "step", 0) or 0) != _D23_STEP or not isinstance(action, dict):
+            return action
+        market = []
+        changed = False
+        for o in (action.get("market") or []):
+            if o and len(o) >= 3 and o[0] == "BUY_PRODUCT" and o[1] == "FERTILIZER" and _D23_DROP_FERT:
+                changed = True
+                continue
+            if o and len(o) >= 3 and o[0] == "BUY_PRODUCT" and o[1] == "WHEAT" and _D23_WHEAT_CAP is not None and int(o[2]) > _D23_WHEAT_CAP:
+                market.append(["BUY_PRODUCT", "WHEAT", _D23_WHEAT_CAP]); changed = True
+                continue
+            market.append(o)
+        if changed:
+            _D23_REPORT["d23_trims"] += 1
+            return dict(action, market=market)
+        return action
+    except Exception:
+        _D23_REPORT["d23_errors"] += 1
+        return action
+
+
+d23_trim_agent.telemetry = _D23_REPORT

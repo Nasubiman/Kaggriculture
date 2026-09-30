@@ -205,6 +205,8 @@ def main() -> None:
     parser.add_argument("--candidate", type=Path, default=ROOT / "main.py")
     parser.add_argument("--replays", default=str(ROOT / "replays/public_20260925_4q_named/episode-*-replay.json"))
     parser.add_argument("--teams", nargs="*", default=[])
+    parser.add_argument("--exclude-teams", nargs="*", default=[],
+                        help="omit these teams when extracting or reading tapes")
     parser.add_argument("--tapes-file", type=Path, default=None,
                         help="gzip JSON of extracted tapes (read, or written with --export)")
     parser.add_argument("--export", action="store_true", help="only write --tapes-file and exit")
@@ -229,6 +231,8 @@ def main() -> None:
             tapes = [t for t in tapes if t["team"] in args.teams]
     else:
         tapes = extract_tapes(args.replays, args.teams)
+    if args.exclude_teams:
+        tapes = [t for t in tapes if t["team"] not in args.exclude_teams]
     if args.export:
         args.tapes_file.parent.mkdir(parents=True, exist_ok=True)
         args.tapes_file.write_bytes(gzip.compress(json.dumps(tapes).encode()))

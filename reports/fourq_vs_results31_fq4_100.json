@@ -1,0 +1,3225 @@
+{
+  "candidate": "/home/nakamura_y/agriculture/Kaggriculture/evaluation/fourq_vs_results31_20260930/candidate_fq4.py",
+  "models_dir": "/home/nakamura_y/agriculture/Kaggriculture/evaluation/fourq_vs_results31_20260930/opponents",
+  "fast_runner": true,
+  "reuse_agents": true,
+  "optimize_agent_runtime": false,
+  "module_candidate": false,
+  "models": {
+    "results31": "/home/nakamura_y/agriculture/Kaggriculture/evaluation/fourq_vs_results31_20260930/opponents/results31/main.py"
+  },
+  "summaries": {
+    "results31": {
+      "games": 200,
+      "wins": 0,
+      "ties": 0,
+      "win_rate": 0.0,
+      "mean_reward": 64570.91,
+      "mean_opponent_reward": 117544.27,
+      "mean_margin": -52973.36,
+      "errors": 0
+    }
+  },
+  "games": [
+    {
+      "model": "results31",
+      "seed": 13400000,
+      "seat": 0,
+      "reward": 41624.0,
+      "opponent_reward": 83460.0,
+      "margin": -41836.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400000,
+      "seat": 1,
+      "reward": 41624.0,
+      "opponent_reward": 83460.0,
+      "margin": -41836.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400017,
+      "seat": 0,
+      "reward": 79119.0,
+      "opponent_reward": 140658.0,
+      "margin": -61539.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400017,
+      "seat": 1,
+      "reward": 86524.0,
+      "opponent_reward": 145473.0,
+      "margin": -58949.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400034,
+      "seat": 0,
+      "reward": 35685.0,
+      "opponent_reward": 73128.0,
+      "margin": -37443.0,
+      "pair": [
+        "PET_CAFE",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400034,
+      "seat": 1,
+      "reward": 35685.0,
+      "opponent_reward": 73128.0,
+      "margin": -37443.0,
+      "pair": [
+        "PET_CAFE",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400051,
+      "seat": 0,
+      "reward": 58833.0,
+      "opponent_reward": 124525.0,
+      "margin": -65692.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400051,
+      "seat": 1,
+      "reward": 78758.0,
+      "opponent_reward": 147911.0,
+      "margin": -69153.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400068,
+      "seat": 0,
+      "reward": 90725.0,
+      "opponent_reward": 152618.0,
+      "margin": -61893.0,
+      "pair": [
+        "YARN_STORE",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400068,
+      "seat": 1,
+      "reward": 86086.0,
+      "opponent_reward": 148750.0,
+      "margin": -62664.0,
+      "pair": [
+        "YARN_STORE",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400085,
+      "seat": 0,
+      "reward": 61307.0,
+      "opponent_reward": 126674.0,
+      "margin": -65367.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400085,
+      "seat": 1,
+      "reward": 61307.0,
+      "opponent_reward": 126674.0,
+      "margin": -65367.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400102,
+      "seat": 0,
+      "reward": 58954.0,
+      "opponent_reward": 120710.0,
+      "margin": -61756.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400102,
+      "seat": 1,
+      "reward": 58954.0,
+      "opponent_reward": 120710.0,
+      "margin": -61756.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400119,
+      "seat": 0,
+      "reward": 64545.0,
+      "opponent_reward": 112457.0,
+      "margin": -47912.0,
+      "pair": [
+        "BAKERY",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400119,
+      "seat": 1,
+      "reward": 64545.0,
+      "opponent_reward": 112457.0,
+      "margin": -47912.0,
+      "pair": [
+        "BAKERY",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400136,
+      "seat": 0,
+      "reward": 48201.0,
+      "opponent_reward": 106834.0,
+      "margin": -58633.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400136,
+      "seat": 1,
+      "reward": 46840.0,
+      "opponent_reward": 107128.0,
+      "margin": -60288.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400153,
+      "seat": 0,
+      "reward": 73873.0,
+      "opponent_reward": 120290.0,
+      "margin": -46417.0,
+      "pair": [
+        "PET_CAFE",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400153,
+      "seat": 1,
+      "reward": 73873.0,
+      "opponent_reward": 120290.0,
+      "margin": -46417.0,
+      "pair": [
+        "PET_CAFE",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400170,
+      "seat": 0,
+      "reward": 36285.0,
+      "opponent_reward": 82778.0,
+      "margin": -46493.0,
+      "pair": [
+        "BAKERY",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400170,
+      "seat": 1,
+      "reward": 36285.0,
+      "opponent_reward": 82778.0,
+      "margin": -46493.0,
+      "pair": [
+        "BAKERY",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400187,
+      "seat": 0,
+      "reward": 71341.0,
+      "opponent_reward": 151100.0,
+      "margin": -79759.0,
+      "pair": [
+        "YARN_STORE",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400187,
+      "seat": 1,
+      "reward": 74037.0,
+      "opponent_reward": 152374.0,
+      "margin": -78337.0,
+      "pair": [
+        "YARN_STORE",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400204,
+      "seat": 0,
+      "reward": 99752.0,
+      "opponent_reward": 160745.0,
+      "margin": -60993.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400204,
+      "seat": 1,
+      "reward": 93641.0,
+      "opponent_reward": 152506.0,
+      "margin": -58865.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400221,
+      "seat": 0,
+      "reward": 78085.0,
+      "opponent_reward": 142987.0,
+      "margin": -64902.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400221,
+      "seat": 1,
+      "reward": 78085.0,
+      "opponent_reward": 142987.0,
+      "margin": -64902.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400238,
+      "seat": 0,
+      "reward": 75217.0,
+      "opponent_reward": 116571.0,
+      "margin": -41354.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400238,
+      "seat": 1,
+      "reward": 75217.0,
+      "opponent_reward": 116571.0,
+      "margin": -41354.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400255,
+      "seat": 0,
+      "reward": 90751.0,
+      "opponent_reward": 147784.0,
+      "margin": -57033.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400255,
+      "seat": 1,
+      "reward": 90751.0,
+      "opponent_reward": 147784.0,
+      "margin": -57033.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400272,
+      "seat": 0,
+      "reward": 49098.0,
+      "opponent_reward": 78025.0,
+      "margin": -28927.0,
+      "pair": [
+        "PET_CAFE",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400272,
+      "seat": 1,
+      "reward": 49098.0,
+      "opponent_reward": 78025.0,
+      "margin": -28927.0,
+      "pair": [
+        "PET_CAFE",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400289,
+      "seat": 0,
+      "reward": 33562.0,
+      "opponent_reward": 60151.0,
+      "margin": -26589.0,
+      "pair": [
+        "BAKERY",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400289,
+      "seat": 1,
+      "reward": 33562.0,
+      "opponent_reward": 60151.0,
+      "margin": -26589.0,
+      "pair": [
+        "BAKERY",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400306,
+      "seat": 0,
+      "reward": 66397.0,
+      "opponent_reward": 125397.0,
+      "margin": -59000.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400306,
+      "seat": 1,
+      "reward": 66397.0,
+      "opponent_reward": 125397.0,
+      "margin": -59000.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400323,
+      "seat": 0,
+      "reward": 53649.0,
+      "opponent_reward": 114016.0,
+      "margin": -60367.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400323,
+      "seat": 1,
+      "reward": 54680.0,
+      "opponent_reward": 114186.0,
+      "margin": -59506.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400340,
+      "seat": 0,
+      "reward": 92717.0,
+      "opponent_reward": 139944.0,
+      "margin": -47227.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400340,
+      "seat": 1,
+      "reward": 92595.0,
+      "opponent_reward": 139992.0,
+      "margin": -47397.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400357,
+      "seat": 0,
+      "reward": 52576.0,
+      "opponent_reward": 112826.0,
+      "margin": -60250.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400357,
+      "seat": 1,
+      "reward": 52576.0,
+      "opponent_reward": 112826.0,
+      "margin": -60250.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400374,
+      "seat": 0,
+      "reward": 39712.0,
+      "opponent_reward": 96173.0,
+      "margin": -56461.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400374,
+      "seat": 1,
+      "reward": 39712.0,
+      "opponent_reward": 96173.0,
+      "margin": -56461.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400391,
+      "seat": 0,
+      "reward": 75820.0,
+      "opponent_reward": 142372.0,
+      "margin": -66552.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400391,
+      "seat": 1,
+      "reward": 75820.0,
+      "opponent_reward": 142372.0,
+      "margin": -66552.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400408,
+      "seat": 0,
+      "reward": 60967.0,
+      "opponent_reward": 112672.0,
+      "margin": -51705.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400408,
+      "seat": 1,
+      "reward": 60967.0,
+      "opponent_reward": 112672.0,
+      "margin": -51705.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400425,
+      "seat": 0,
+      "reward": 51182.0,
+      "opponent_reward": 114674.0,
+      "margin": -63492.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400425,
+      "seat": 1,
+      "reward": 50937.0,
+      "opponent_reward": 114596.0,
+      "margin": -63659.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400442,
+      "seat": 0,
+      "reward": 74429.0,
+      "opponent_reward": 136158.0,
+      "margin": -61729.0,
+      "pair": [
+        "YARN_STORE",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400442,
+      "seat": 1,
+      "reward": 74429.0,
+      "opponent_reward": 136158.0,
+      "margin": -61729.0,
+      "pair": [
+        "YARN_STORE",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400459,
+      "seat": 0,
+      "reward": 73028.0,
+      "opponent_reward": 125908.0,
+      "margin": -52880.0,
+      "pair": [
+        "BAKERY",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400459,
+      "seat": 1,
+      "reward": 56168.0,
+      "opponent_reward": 115093.0,
+      "margin": -58925.0,
+      "pair": [
+        "BAKERY",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400476,
+      "seat": 0,
+      "reward": 72598.0,
+      "opponent_reward": 118803.0,
+      "margin": -46205.0,
+      "pair": [
+        "PET_CAFE",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400476,
+      "seat": 1,
+      "reward": 72598.0,
+      "opponent_reward": 118803.0,
+      "margin": -46205.0,
+      "pair": [
+        "PET_CAFE",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400493,
+      "seat": 0,
+      "reward": 55876.0,
+      "opponent_reward": 110209.0,
+      "margin": -54333.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400493,
+      "seat": 1,
+      "reward": 55876.0,
+      "opponent_reward": 110209.0,
+      "margin": -54333.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400510,
+      "seat": 0,
+      "reward": 80990.0,
+      "opponent_reward": 130389.0,
+      "margin": -49399.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400510,
+      "seat": 1,
+      "reward": 80990.0,
+      "opponent_reward": 130389.0,
+      "margin": -49399.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400527,
+      "seat": 0,
+      "reward": 108549.0,
+      "opponent_reward": 156703.0,
+      "margin": -48154.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400527,
+      "seat": 1,
+      "reward": 97976.0,
+      "opponent_reward": 153237.0,
+      "margin": -55261.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400544,
+      "seat": 0,
+      "reward": 62231.0,
+      "opponent_reward": 125283.0,
+      "margin": -63052.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400544,
+      "seat": 1,
+      "reward": 55060.0,
+      "opponent_reward": 96566.0,
+      "margin": -41506.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400561,
+      "seat": 0,
+      "reward": 61793.0,
+      "opponent_reward": 114396.0,
+      "margin": -52603.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400561,
+      "seat": 1,
+      "reward": 61793.0,
+      "opponent_reward": 114396.0,
+      "margin": -52603.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400578,
+      "seat": 0,
+      "reward": 41382.0,
+      "opponent_reward": 80567.0,
+      "margin": -39185.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400578,
+      "seat": 1,
+      "reward": 41382.0,
+      "opponent_reward": 80567.0,
+      "margin": -39185.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400595,
+      "seat": 0,
+      "reward": 77561.0,
+      "opponent_reward": 107991.0,
+      "margin": -30430.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400595,
+      "seat": 1,
+      "reward": 43409.0,
+      "opponent_reward": 88935.0,
+      "margin": -45526.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400612,
+      "seat": 0,
+      "reward": 80545.0,
+      "opponent_reward": 138841.0,
+      "margin": -58296.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400612,
+      "seat": 1,
+      "reward": 80318.0,
+      "opponent_reward": 138625.0,
+      "margin": -58307.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400629,
+      "seat": 0,
+      "reward": 67386.0,
+      "opponent_reward": 125229.0,
+      "margin": -57843.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400629,
+      "seat": 1,
+      "reward": 67386.0,
+      "opponent_reward": 125229.0,
+      "margin": -57843.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400646,
+      "seat": 0,
+      "reward": 77107.0,
+      "opponent_reward": 142112.0,
+      "margin": -65005.0,
+      "pair": [
+        "YARN_STORE",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400646,
+      "seat": 1,
+      "reward": 77107.0,
+      "opponent_reward": 142112.0,
+      "margin": -65005.0,
+      "pair": [
+        "YARN_STORE",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400663,
+      "seat": 0,
+      "reward": 81016.0,
+      "opponent_reward": 147756.0,
+      "margin": -66740.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400663,
+      "seat": 1,
+      "reward": 60036.0,
+      "opponent_reward": 116854.0,
+      "margin": -56818.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400680,
+      "seat": 0,
+      "reward": 66407.0,
+      "opponent_reward": 130499.0,
+      "margin": -64092.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400680,
+      "seat": 1,
+      "reward": 66407.0,
+      "opponent_reward": 130499.0,
+      "margin": -64092.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400697,
+      "seat": 0,
+      "reward": 56561.0,
+      "opponent_reward": 118445.0,
+      "margin": -61884.0,
+      "pair": [
+        "PET_CAFE",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400697,
+      "seat": 1,
+      "reward": 65232.0,
+      "opponent_reward": 124466.0,
+      "margin": -59234.0,
+      "pair": [
+        "PET_CAFE",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400714,
+      "seat": 0,
+      "reward": 74751.0,
+      "opponent_reward": 127124.0,
+      "margin": -52373.0,
+      "pair": [
+        "PET_CAFE",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400714,
+      "seat": 1,
+      "reward": 74751.0,
+      "opponent_reward": 127124.0,
+      "margin": -52373.0,
+      "pair": [
+        "PET_CAFE",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400731,
+      "seat": 0,
+      "reward": 69532.0,
+      "opponent_reward": 124836.0,
+      "margin": -55304.0,
+      "pair": [
+        "YARN_STORE",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400731,
+      "seat": 1,
+      "reward": 73358.0,
+      "opponent_reward": 125057.0,
+      "margin": -51699.0,
+      "pair": [
+        "YARN_STORE",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400748,
+      "seat": 0,
+      "reward": 87255.0,
+      "opponent_reward": 141959.0,
+      "margin": -54704.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400748,
+      "seat": 1,
+      "reward": 87255.0,
+      "opponent_reward": 141959.0,
+      "margin": -54704.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400765,
+      "seat": 0,
+      "reward": 45677.0,
+      "opponent_reward": 102054.0,
+      "margin": -56377.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400765,
+      "seat": 1,
+      "reward": 45677.0,
+      "opponent_reward": 102054.0,
+      "margin": -56377.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400782,
+      "seat": 0,
+      "reward": 62921.0,
+      "opponent_reward": 128155.0,
+      "margin": -65234.0,
+      "pair": [
+        "YARN_STORE",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400782,
+      "seat": 1,
+      "reward": 62923.0,
+      "opponent_reward": 127538.0,
+      "margin": -64615.0,
+      "pair": [
+        "YARN_STORE",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400799,
+      "seat": 0,
+      "reward": 43060.0,
+      "opponent_reward": 97364.0,
+      "margin": -54304.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400799,
+      "seat": 1,
+      "reward": 43060.0,
+      "opponent_reward": 97364.0,
+      "margin": -54304.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400816,
+      "seat": 0,
+      "reward": 79658.0,
+      "opponent_reward": 123091.0,
+      "margin": -43433.0,
+      "pair": [
+        "PET_CAFE",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400816,
+      "seat": 1,
+      "reward": 79658.0,
+      "opponent_reward": 123091.0,
+      "margin": -43433.0,
+      "pair": [
+        "PET_CAFE",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400833,
+      "seat": 0,
+      "reward": 35612.0,
+      "opponent_reward": 93953.0,
+      "margin": -58341.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400833,
+      "seat": 1,
+      "reward": 35612.0,
+      "opponent_reward": 93953.0,
+      "margin": -58341.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400850,
+      "seat": 0,
+      "reward": 65808.0,
+      "opponent_reward": 103587.0,
+      "margin": -37779.0,
+      "pair": [
+        "BAKERY",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400850,
+      "seat": 1,
+      "reward": 65808.0,
+      "opponent_reward": 103587.0,
+      "margin": -37779.0,
+      "pair": [
+        "BAKERY",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400867,
+      "seat": 0,
+      "reward": 58876.0,
+      "opponent_reward": 119640.0,
+      "margin": -60764.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400867,
+      "seat": 1,
+      "reward": 58876.0,
+      "opponent_reward": 119640.0,
+      "margin": -60764.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400884,
+      "seat": 0,
+      "reward": 59568.0,
+      "opponent_reward": 95484.0,
+      "margin": -35916.0,
+      "pair": [
+        "PET_CAFE",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400884,
+      "seat": 1,
+      "reward": 59568.0,
+      "opponent_reward": 95484.0,
+      "margin": -35916.0,
+      "pair": [
+        "PET_CAFE",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400901,
+      "seat": 0,
+      "reward": 42921.0,
+      "opponent_reward": 81389.0,
+      "margin": -38468.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400901,
+      "seat": 1,
+      "reward": 55555.0,
+      "opponent_reward": 104502.0,
+      "margin": -48947.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400918,
+      "seat": 0,
+      "reward": 33595.0,
+      "opponent_reward": 70979.0,
+      "margin": -37384.0,
+      "pair": [
+        "BAKERY",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400918,
+      "seat": 1,
+      "reward": 33595.0,
+      "opponent_reward": 70979.0,
+      "margin": -37384.0,
+      "pair": [
+        "BAKERY",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400935,
+      "seat": 0,
+      "reward": 102045.0,
+      "opponent_reward": 156112.0,
+      "margin": -54067.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400935,
+      "seat": 1,
+      "reward": 102045.0,
+      "opponent_reward": 156112.0,
+      "margin": -54067.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400952,
+      "seat": 0,
+      "reward": 54597.0,
+      "opponent_reward": 108733.0,
+      "margin": -54136.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400952,
+      "seat": 1,
+      "reward": 51607.0,
+      "opponent_reward": 106659.0,
+      "margin": -55052.0,
+      "pair": [
+        "PIZZA_SHOP",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400969,
+      "seat": 0,
+      "reward": 77896.0,
+      "opponent_reward": 125507.0,
+      "margin": -47611.0,
+      "pair": [
+        "PET_CAFE",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400969,
+      "seat": 1,
+      "reward": 68995.0,
+      "opponent_reward": 111881.0,
+      "margin": -42886.0,
+      "pair": [
+        "PET_CAFE",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400986,
+      "seat": 0,
+      "reward": 59253.0,
+      "opponent_reward": 98176.0,
+      "margin": -38923.0,
+      "pair": [
+        "BAKERY",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13400986,
+      "seat": 1,
+      "reward": 56446.0,
+      "opponent_reward": 97146.0,
+      "margin": -40700.0,
+      "pair": [
+        "BAKERY",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401003,
+      "seat": 0,
+      "reward": 46358.0,
+      "opponent_reward": 108092.0,
+      "margin": -61734.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401003,
+      "seat": 1,
+      "reward": 46437.0,
+      "opponent_reward": 111984.0,
+      "margin": -65547.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401020,
+      "seat": 0,
+      "reward": 69204.0,
+      "opponent_reward": 118276.0,
+      "margin": -49072.0,
+      "pair": [
+        "BAKERY",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401020,
+      "seat": 1,
+      "reward": 68162.0,
+      "opponent_reward": 110250.0,
+      "margin": -42088.0,
+      "pair": [
+        "BAKERY",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401037,
+      "seat": 0,
+      "reward": 43424.0,
+      "opponent_reward": 101369.0,
+      "margin": -57945.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401037,
+      "seat": 1,
+      "reward": 43424.0,
+      "opponent_reward": 101369.0,
+      "margin": -57945.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401054,
+      "seat": 0,
+      "reward": 46518.0,
+      "opponent_reward": 114342.0,
+      "margin": -67824.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401054,
+      "seat": 1,
+      "reward": 51915.0,
+      "opponent_reward": 112042.0,
+      "margin": -60127.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401071,
+      "seat": 0,
+      "reward": 105243.0,
+      "opponent_reward": 153638.0,
+      "margin": -48395.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401071,
+      "seat": 1,
+      "reward": 105243.0,
+      "opponent_reward": 153638.0,
+      "margin": -48395.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401088,
+      "seat": 0,
+      "reward": 51260.0,
+      "opponent_reward": 107343.0,
+      "margin": -56083.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401088,
+      "seat": 1,
+      "reward": 51260.0,
+      "opponent_reward": 107343.0,
+      "margin": -56083.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401105,
+      "seat": 0,
+      "reward": 52353.0,
+      "opponent_reward": 121184.0,
+      "margin": -68831.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401105,
+      "seat": 1,
+      "reward": 51685.0,
+      "opponent_reward": 124683.0,
+      "margin": -72998.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401122,
+      "seat": 0,
+      "reward": 56572.0,
+      "opponent_reward": 116516.0,
+      "margin": -59944.0,
+      "pair": [
+        "YARN_STORE",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401122,
+      "seat": 1,
+      "reward": 56572.0,
+      "opponent_reward": 116516.0,
+      "margin": -59944.0,
+      "pair": [
+        "YARN_STORE",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401139,
+      "seat": 0,
+      "reward": 69158.0,
+      "opponent_reward": 113504.0,
+      "margin": -44346.0,
+      "pair": [
+        "PET_CAFE",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401139,
+      "seat": 1,
+      "reward": 69158.0,
+      "opponent_reward": 113504.0,
+      "margin": -44346.0,
+      "pair": [
+        "PET_CAFE",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401156,
+      "seat": 0,
+      "reward": 46079.0,
+      "opponent_reward": 74212.0,
+      "margin": -28133.0,
+      "pair": [
+        "PET_CAFE",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401156,
+      "seat": 1,
+      "reward": 46079.0,
+      "opponent_reward": 74212.0,
+      "margin": -28133.0,
+      "pair": [
+        "PET_CAFE",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401173,
+      "seat": 0,
+      "reward": 52581.0,
+      "opponent_reward": 100554.0,
+      "margin": -47973.0,
+      "pair": [
+        "BAKERY",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401173,
+      "seat": 1,
+      "reward": 41601.0,
+      "opponent_reward": 72803.0,
+      "margin": -31202.0,
+      "pair": [
+        "BAKERY",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401190,
+      "seat": 0,
+      "reward": 89296.0,
+      "opponent_reward": 140415.0,
+      "margin": -51119.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401190,
+      "seat": 1,
+      "reward": 89296.0,
+      "opponent_reward": 140415.0,
+      "margin": -51119.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401207,
+      "seat": 0,
+      "reward": 53150.0,
+      "opponent_reward": 110903.0,
+      "margin": -57753.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401207,
+      "seat": 1,
+      "reward": 53150.0,
+      "opponent_reward": 110903.0,
+      "margin": -57753.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401224,
+      "seat": 0,
+      "reward": 52611.0,
+      "opponent_reward": 104738.0,
+      "margin": -52127.0,
+      "pair": [
+        "YARN_STORE",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401224,
+      "seat": 1,
+      "reward": 52611.0,
+      "opponent_reward": 104738.0,
+      "margin": -52127.0,
+      "pair": [
+        "YARN_STORE",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401241,
+      "seat": 0,
+      "reward": 64910.0,
+      "opponent_reward": 126045.0,
+      "margin": -61135.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401241,
+      "seat": 1,
+      "reward": 63287.0,
+      "opponent_reward": 126084.0,
+      "margin": -62797.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401258,
+      "seat": 0,
+      "reward": 44708.0,
+      "opponent_reward": 91668.0,
+      "margin": -46960.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401258,
+      "seat": 1,
+      "reward": 43341.0,
+      "opponent_reward": 89994.0,
+      "margin": -46653.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401275,
+      "seat": 0,
+      "reward": 43081.0,
+      "opponent_reward": 104555.0,
+      "margin": -61474.0,
+      "pair": [
+        "BAKERY",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401275,
+      "seat": 1,
+      "reward": 43081.0,
+      "opponent_reward": 104555.0,
+      "margin": -61474.0,
+      "pair": [
+        "BAKERY",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401292,
+      "seat": 0,
+      "reward": 61377.0,
+      "opponent_reward": 96878.0,
+      "margin": -35501.0,
+      "pair": [
+        "PET_CAFE",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401292,
+      "seat": 1,
+      "reward": 61377.0,
+      "opponent_reward": 96878.0,
+      "margin": -35501.0,
+      "pair": [
+        "PET_CAFE",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401309,
+      "seat": 0,
+      "reward": 66588.0,
+      "opponent_reward": 130678.0,
+      "margin": -64090.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401309,
+      "seat": 1,
+      "reward": 66588.0,
+      "opponent_reward": 130678.0,
+      "margin": -64090.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401326,
+      "seat": 0,
+      "reward": 70707.0,
+      "opponent_reward": 120925.0,
+      "margin": -50218.0,
+      "pair": [
+        "BAKERY",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401326,
+      "seat": 1,
+      "reward": 70707.0,
+      "opponent_reward": 120925.0,
+      "margin": -50218.0,
+      "pair": [
+        "BAKERY",
+        "SMOOTHIE_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401343,
+      "seat": 0,
+      "reward": 71834.0,
+      "opponent_reward": 124418.0,
+      "margin": -52584.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401343,
+      "seat": 1,
+      "reward": 72753.0,
+      "opponent_reward": 125266.0,
+      "margin": -52513.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401360,
+      "seat": 0,
+      "reward": 92947.0,
+      "opponent_reward": 147692.0,
+      "margin": -54745.0,
+      "pair": [
+        "BAKERY",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401360,
+      "seat": 1,
+      "reward": 92947.0,
+      "opponent_reward": 147692.0,
+      "margin": -54745.0,
+      "pair": [
+        "BAKERY",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401377,
+      "seat": 0,
+      "reward": 106677.0,
+      "opponent_reward": 165558.0,
+      "margin": -58881.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401377,
+      "seat": 1,
+      "reward": 106677.0,
+      "opponent_reward": 165558.0,
+      "margin": -58881.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401394,
+      "seat": 0,
+      "reward": 52740.0,
+      "opponent_reward": 85184.0,
+      "margin": -32444.0,
+      "pair": [
+        "YARN_STORE",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401394,
+      "seat": 1,
+      "reward": 52740.0,
+      "opponent_reward": 85184.0,
+      "margin": -32444.0,
+      "pair": [
+        "YARN_STORE",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401411,
+      "seat": 0,
+      "reward": 48863.0,
+      "opponent_reward": 114506.0,
+      "margin": -65643.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401411,
+      "seat": 1,
+      "reward": 56826.0,
+      "opponent_reward": 119479.0,
+      "margin": -62653.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "FARMERS_MARKET"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401428,
+      "seat": 0,
+      "reward": 69875.0,
+      "opponent_reward": 134445.0,
+      "margin": -64570.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401428,
+      "seat": 1,
+      "reward": 70744.0,
+      "opponent_reward": 134705.0,
+      "margin": -63961.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BRUNCH_SPOT"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401445,
+      "seat": 0,
+      "reward": 102010.0,
+      "opponent_reward": 150966.0,
+      "margin": -48956.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401445,
+      "seat": 1,
+      "reward": 102286.0,
+      "opponent_reward": 150174.0,
+      "margin": -47888.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401462,
+      "seat": 0,
+      "reward": 50585.0,
+      "opponent_reward": 109608.0,
+      "margin": -59023.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401462,
+      "seat": 1,
+      "reward": 50585.0,
+      "opponent_reward": 109608.0,
+      "margin": -59023.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401479,
+      "seat": 0,
+      "reward": 68105.0,
+      "opponent_reward": 120395.0,
+      "margin": -52290.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401479,
+      "seat": 1,
+      "reward": 68105.0,
+      "opponent_reward": 120395.0,
+      "margin": -52290.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401496,
+      "seat": 0,
+      "reward": 75962.0,
+      "opponent_reward": 127938.0,
+      "margin": -51976.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401496,
+      "seat": 1,
+      "reward": 75962.0,
+      "opponent_reward": 127938.0,
+      "margin": -51976.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401513,
+      "seat": 0,
+      "reward": 76298.0,
+      "opponent_reward": 138711.0,
+      "margin": -62413.0,
+      "pair": [
+        "YARN_STORE",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401513,
+      "seat": 1,
+      "reward": 76298.0,
+      "opponent_reward": 138711.0,
+      "margin": -62413.0,
+      "pair": [
+        "YARN_STORE",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401530,
+      "seat": 0,
+      "reward": 45160.0,
+      "opponent_reward": 93091.0,
+      "margin": -47931.0,
+      "pair": [
+        "BAKERY",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401530,
+      "seat": 1,
+      "reward": 48472.0,
+      "opponent_reward": 95525.0,
+      "margin": -47053.0,
+      "pair": [
+        "BAKERY",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401547,
+      "seat": 0,
+      "reward": 64026.0,
+      "opponent_reward": 110377.0,
+      "margin": -46351.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401547,
+      "seat": 1,
+      "reward": 63147.0,
+      "opponent_reward": 110300.0,
+      "margin": -47153.0,
+      "pair": [
+        "FARMERS_MARKET",
+        "BAKERY"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401564,
+      "seat": 0,
+      "reward": 35468.0,
+      "opponent_reward": 62041.0,
+      "margin": -26573.0,
+      "pair": [
+        "BAKERY",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401564,
+      "seat": 1,
+      "reward": 34643.0,
+      "opponent_reward": 62355.0,
+      "margin": -27712.0,
+      "pair": [
+        "BAKERY",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401581,
+      "seat": 0,
+      "reward": 66168.0,
+      "opponent_reward": 134907.0,
+      "margin": -68739.0,
+      "pair": [
+        "YARN_STORE",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401581,
+      "seat": 1,
+      "reward": 66169.0,
+      "opponent_reward": 134814.0,
+      "margin": -68645.0,
+      "pair": [
+        "YARN_STORE",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401598,
+      "seat": 0,
+      "reward": 70785.0,
+      "opponent_reward": 124762.0,
+      "margin": -53977.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401598,
+      "seat": 1,
+      "reward": 70785.0,
+      "opponent_reward": 124762.0,
+      "margin": -53977.0,
+      "pair": [
+        "SMOOTHIE_SHOP",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401615,
+      "seat": 0,
+      "reward": 59615.0,
+      "opponent_reward": 102752.0,
+      "margin": -43137.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401615,
+      "seat": 1,
+      "reward": 59615.0,
+      "opponent_reward": 102752.0,
+      "margin": -43137.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "PET_CAFE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401632,
+      "seat": 0,
+      "reward": 96024.0,
+      "opponent_reward": 139232.0,
+      "margin": -43208.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401632,
+      "seat": 1,
+      "reward": 96024.0,
+      "opponent_reward": 139232.0,
+      "margin": -43208.0,
+      "pair": [
+        "ICE_CREAM_SHOP",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401649,
+      "seat": 0,
+      "reward": 74790.0,
+      "opponent_reward": 146166.0,
+      "margin": -71376.0,
+      "pair": [
+        "YARN_STORE",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401649,
+      "seat": 1,
+      "reward": 74790.0,
+      "opponent_reward": 146166.0,
+      "margin": -71376.0,
+      "pair": [
+        "YARN_STORE",
+        "YARN_STORE"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401666,
+      "seat": 0,
+      "reward": 60484.0,
+      "opponent_reward": 108639.0,
+      "margin": -48155.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401666,
+      "seat": 1,
+      "reward": 60484.0,
+      "opponent_reward": 108639.0,
+      "margin": -48155.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "PIZZA_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401683,
+      "seat": 0,
+      "reward": 70037.0,
+      "opponent_reward": 125415.0,
+      "margin": -55378.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    },
+    {
+      "model": "results31",
+      "seed": 13401683,
+      "seat": 1,
+      "reward": 95552.0,
+      "opponent_reward": 142807.0,
+      "margin": -47255.0,
+      "pair": [
+        "BRUNCH_SPOT",
+        "ICE_CREAM_SHOP"
+      ],
+      "win": false,
+      "tie": false,
+      "status": "DONE",
+      "error": null
+    }
+  ]
+}

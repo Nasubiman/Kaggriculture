@@ -151,6 +151,8 @@ def play(task: tuple[str, int, int]) -> dict[str, Any]:
             final = environment.steps[-1]
         reward = float(final[seat].reward)
         opponent_reward = float(final[1 - seat].reward)
+        town = final[seat].observation.town
+        pair = list(town.unlocked_shops[:2])
         return {
             "model": name,
             "seed": seed,
@@ -158,6 +160,7 @@ def play(task: tuple[str, int, int]) -> dict[str, Any]:
             "reward": reward,
             "opponent_reward": opponent_reward,
             "margin": reward - opponent_reward,
+            "pair": pair,
             "win": reward > opponent_reward,
             "tie": reward == opponent_reward,
             "status": str(final[seat].status),
@@ -198,6 +201,8 @@ def main() -> None:
     parser.add_argument("--models", nargs="*", default=[])
     parser.add_argument("--seed-start", type=int, default=9_700_000)
     parser.add_argument("--seeds", type=int, default=100)
+    parser.add_argument("--seed-list", type=Path,
+                        help="JSON array of explicit seeds; overrides --seed-start/--seeds")
     parser.add_argument("--workers", type=int, default=16)
     parser.add_argument(
         "--fast-runner", action=argparse.BooleanOptionalAction, default=True
@@ -219,7 +224,9 @@ def main() -> None:
         args.reuse_agents = not args.module_candidate
 
     opponents = discover(args.models_dir.resolve(), args.models)
-    seeds = [args.seed_start + index * 17 for index in range(args.seeds)]
+    seeds = (list(map(int, json.loads(args.seed_list.read_text())))
+             if args.seed_list else
+             [args.seed_start + index * 17 for index in range(args.seeds)])
     tasks = [
         (name, seed, seat)
         for name in opponents
