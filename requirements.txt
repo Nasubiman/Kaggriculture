@@ -1,6 +1,0 @@
-# Kaggle CLI 2.x requires Python 3.11 or newer.
-kaggle>=2.0,<3
-# Keep local, server, and Kaggle rule behavior reproducible. 1.32.7 contains
-# the August 2026 Kaggriculture rules (locked-tile movement, hinge pricing,
-# duplicated town shops, and the flat 24-turn town-center demand).
-kaggle-environments==1.32.7
