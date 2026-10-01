@@ -22,7 +22,7 @@ def load(path):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("agents", nargs="+")
-    ap.add_argument("--opponent", default="candidates/results31/main.py")
+    ap.add_argument("--opponent", default="agents/results31.py")
     ap.add_argument("--seed", type=int, default=13400051)
     a = ap.parse_args()
     opponent = load(a.opponent)

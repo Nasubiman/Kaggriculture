@@ -120,7 +120,7 @@ def classify(args):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--replays", required=True)
-    ap.add_argument("--reference", default=str(ROOT / "candidates/results31/main.py"))
+    ap.add_argument("--reference", default=str(ROOT / "agents/results31.py"))
     ap.add_argument("--open-steps", type=int, default=144)
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--output", type=Path, required=True)

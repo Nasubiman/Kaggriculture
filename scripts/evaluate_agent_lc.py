@@ -76,10 +76,10 @@ def evaluate(agent_path: Path, opponents: list[str], seeds: list[int]) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--agent", type=Path, default=ROOT / "main.py")
+    parser.add_argument("--agent", type=Path, default=ROOT / "submissions" / "ahd27s2.py")
     parser.add_argument("--opponents", nargs="+", default=["starter", "random"])
     parser.add_argument("--seeds", nargs="+", type=int, default=[101, 202, 303])
-    parser.add_argument("--output", type=Path, default=ROOT / "reports" / "baseline_evaluation.json")
+    parser.add_argument("--output", type=Path, default=ROOT / "results" / "evaluate_agent_lc.json")
     args = parser.parse_args()
 
     result = evaluate(args.agent.resolve(), args.opponents, args.seeds)

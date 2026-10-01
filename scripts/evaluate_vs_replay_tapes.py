@@ -23,7 +23,7 @@ from typing import Any
 from kaggle_environments.agent import get_last_callable
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "training"))
+sys.path.insert(0, str(ROOT / "sim"))
 
 _CANDIDATE_PATH = ""
 _CANDIDATE: Any = None
@@ -202,8 +202,8 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--candidate", type=Path, default=ROOT / "main.py")
-    parser.add_argument("--replays", default=str(ROOT / "replays/public_20260925_4q_named/episode-*-replay.json"))
+    parser.add_argument("--candidate", type=Path, default=ROOT / "submissions" / "ahd27s2.py")
+    parser.add_argument("--replays", default=str(ROOT / "replays/episode-*-replay.json"))
     parser.add_argument("--teams", nargs="*", default=[])
     parser.add_argument("--exclude-teams", nargs="*", default=[],
                         help="omit these teams when extracting or reading tapes")

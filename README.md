@@ -1,211 +1,121 @@
-# Kaggriculture agent workspace
+# Kaggriculture エージェント（チーム nasubiman）
 
-This workspace contains a reproducible public-history analysis pipeline and a
-self-contained baseline agent for the Kaggriculture simulation competition.
+Kaggle のシミュレーションコンペ **Kaggriculture**（2026 年、10,204 チーム）に出したエージェントと、
+その改良に使った評価ツールです。2 人対戦の農場経営ゲームで、30 日（720 手）の終わりに所持金が多いほうが勝ちです。
+作物と動物を育て、2 人で共有する市場に売ります。売るほど値段が下がるので、相手と同じものを同じ時期に売ると値を下げ合います。
 
-The September 2026 workspace now uses an action-tape agent with reactive market
-and worker controls plus a bounded terminal planner in `main.py`. The July
-baseline and PPO experiments described below are historical context. Current
-simulation profiling, speed measurements, and parity checks are documented in
-[`reports/simulation_speedup_20260913.md`](reports/simulation_speedup_20260913.md).
+## 結果
 
-Run the simulation regression checks and benchmark locally with:
+| 提出 | ファイル | 提出時刻（UTC） | 備考 |
+|---|---|---|---|
+| 56720443 | [`submissions/ahd27s2.py`](submissions/ahd27s2.py) | 2026-09-30 22:40 | 最終版 |
+| 56707260 | [`submissions/d23a.py`](submissions/d23a.py) | 2026-09-30 12:24 | 1974（22:40 時点） |
 
-```bash
-.venv/bin/python scripts/test_simulation_speed.py
-.venv/bin/python scripts/benchmark_simulation.py --verify
+最終順位は、締切後の対戦（10 月中旬まで）でレートが収束してから確定します。
+ahd27s2 は直接対戦で d23a に 62 勝 4 分 14 敗、その前の提出（sh24_bfFW）に 64 勝 16 敗でした。
+
+## 方針
+
+レート 2000 前後の対戦相手の大半は、公開エージェント **results31** とその改造版でした。
+そのため、results31 を土台にして、**ほぼ同じ動きの相手に僅差で勝つ**ことに集中しました。
+
+results31 は、作業手順を事前に計算した 41 本の「台本」（各 719 手）を、状況に応じた修正層で包んだ構成です。
+私たちの変更は次の 3 種類だけで、台本そのものには手を入れていません。
+
+- 定数の調整
+- ファイルの末尾に足した小さな「包み関数」（Kaggle はファイルの最後の関数を呼ぶので、各関数は直前の関数を包みます）
+- results31 に入っていて無効だった層の有効化
+
+改良の候補は、主に次の 3 つの方法で見つけました。
+
+- 実戦で僅差で負けた試合の再現
+- 同じ系統の上位チームの記録から、複数チームに共通する変更を探す
+- ゲームのルール上の無駄を探す
+
+## 改良の系譜
+
+各段階は、直前の版に変更を 1 つずつ加えたものです（[`agents/lineage/`](agents/lineage/)）。
+
+| # | 版 | 変更 |
+|---|---|---|
+| 0 | [results31](agents/results31.py) | 公開エージェント（土台） |
+| 1 | sr24 | 夜の自動収納で小屋が溢れる前に先に売る層の余裕を、8 個から 24 個に（`_SR_MARGIN`） |
+| 2 | h12 | その先売りを、21〜23 時だけでなく 12 時から行う（`_SR_HOURS`） |
+| 3 | ch95 | 動物の生産が上限で無駄になる前に収穫する層の制限（小屋＋持ち物の上限）を、90 から 95 に（`_CH_SHED`） |
+| 4 | cx8000 | トマトを始める見込み収入の基準を 9000 から 8000 に下げ、早めに始める（`_CXTB_MIN_REVENUE`） |
+| 5 | sh24 | 注文枠が満杯のとき、相手とぶつかりやすい品目の売りを最大 24 手先から前倒しする（`_OR2_SLOT_H`、元は 6 手） |
+| 6 | sh24_bfFW | 肥料・小麦の購入を、ほかの注文より先に並べる（同じ手番の相手より安く買える） |
+| 7 | sh48 | 前倒しの範囲を 48 手に |
+| 8 | sh48snk5 | 相手が同じ品目を 5 個以上売れそうなら、24 手以内に売る予定の分を今売る（`_OR2_SN_K`） |
+| 9 | sncar | 「今売る」の対象に人参を追加 |
+| 10 | **d23a** | 23 日目 23 時の肥料と小麦の買いすぎを削る（3 チームが独立に入れていた変更） |
+| 11 | rgds_a | results31 で無効だった層を有効化：`room_guard`（23 時に溢れる分を先に売る）と `dead_stock`（最終日は届いた品物をすぐ売る） |
+| 12 | ahd27 | 23 時に溢れそうなら、翌日に回しても損しない収穫（動物・苺）を見送る |
+| 13 | **ahd27s2** | 店の組み合わせで台本を選ぶ表のうち、一貫して負けていた 6 か所を別の台本に差し替える |
+
+各段階の中身・評価の数字・試してだめだった案は [`docs/final_report.md`](docs/final_report.md) にまとめています。
+
+## 評価の方法
+
+- **ミラー対戦**（[`scripts/evaluate_agent_lc.py`](scripts/evaluate_agent_lc.py)）：results31 や過去の版と、決まったシードで両方の席を入れ替えて対戦させます。
+- **テープ評価**（[`scripts/evaluate_vs_replay_tapes.py`](scripts/evaluate_vs_replay_tapes.py)）：実際の試合の相手の行動記録を再生し、それに対して候補を戦わせます。
+  - 自分たちの試合なら結果を完全に再現できるので、実戦で負けた試合を「この変更で逆転できるか」確かめられます。
+- **系統の判定**（[`scripts/classify_mirror_replays.py`](scripts/classify_mirror_replays.py)）：公開試合の記録に results31 を当てはめて、1 手ずつ比べます。
+  - 同じ系統のプレイヤーかどうかと、どこで動きが分かれたかが分かります。
+  - 分かれ方を集計すると、複数チームに共通する改良が見つかります。
+
+## 構成
+
+```
+submissions/         最終提出の 2 件
+agents/results31.py  土台の公開エージェント
+agents/lineage/      results31 から最終版までの 13 段階
+scripts/             評価・分析・派生版の生成
+sim/                 テープ評価が使う高速なゲーム実行（公式のゲーム処理を直接呼ぶ）
+docs/                経緯と根拠の詳細
 ```
 
-## Setup
+## 使い方
+
+Python 3.11 以上が必要です。公開試合の記録を取得するスクリプトは Kaggle の認証が必要です（`kaggle auth login`、または [`.env.example`](.env.example) を参照）。
 
 ```bash
-make setup
-make kaggle-check
+python -m venv .venv && .venv/bin/pip install -r requirements.txt
 ```
 
-Python 3.11 or newer is required. Kaggle credentials stay outside the repository.
-
-## Public Game History
-
-Collect three recent public episodes for each of the current top five teams:
+最終版と results31 を、シード 1 つ・両方の席で対戦させます（約 20 秒）。
 
 ```bash
-make history-collect
-make history-analyze
+.venv/bin/python scripts/evaluate_agent_lc.py --agent submissions/ahd27s2.py --opponents agents/results31.py --seeds 13700000
 ```
 
-Replay JSON files are stored under `replays/` and ignored by Git. The generated
-strategy summary is written to `reports/public_history_summary.md`.
-
-The current rank-1 adaptation study, including the reproducible day-10
-milk/wool split and non-PPO improvement order, is in
-[`reports/rank1_non_ppo_ideas_20260731.md`](reports/rank1_non_ppo_ideas_20260731.md).
-
-## Current agent
-
-`main.py` is the directly-submittable Rui Bridge v1 agent. It:
-
-- reproduces the current rank-1 agent's exact day-0 public action sequence;
-- opens with 16 melons, 6 carrots, 2 central cows, and 6 workers;
-- harvests the melon capital cycle and converts on zero-indexed day 10;
-- expands northeast and targets 8 cows plus 8 sheep;
-- buys cows before sheep during the conversion;
-- hires 11 workers for daily feed, care, fertilizer, and harvest routing;
-- buys wheat as feed instead of dedicating mature-farm tiles to wheat;
-- rehires workers on day 30 to harvest, return, drop, and sell final output.
-
-The previous crop-only strategy is archived as
-`agents/pulse_breaker_v2.py`, and the original baseline as
-`agents/baseline_v1.py`.
-
-Run the fixed-seed, both-seat evaluation:
+公開試合の記録（`kaggle competitions replay <episode_id> --path replays`）に対して評価します。
 
 ```bash
-make evaluate
-make head-to-head
+.venv/bin/python scripts/evaluate_vs_replay_tapes.py --replays "replays/episode-*-replay.json" --force-money --candidates submissions/ahd27s2.py --output-dir results/tapes
 ```
 
-Submit after reviewing the generated evaluation:
+1 手あたりの計算時間を測ります（平均 2〜4 ms、最大 0.4 秒程度）。
 
 ```bash
-.venv/bin/kaggle competitions submit kaggriculture \
-  -f main.py \
-  -m "Rui Bridge v1: rank-1 staged livestock strategy"
+.venv/bin/python scripts/timing.py submissions/ahd27s2.py
 ```
 
-See
-[`reports/rui_fixed_v1_implementation_20260731.md`](reports/rui_fixed_v1_implementation_20260731.md)
-for the replay evidence, parameter search, and held-out results.
-
-The latest counterfactual macro-policy improvement and its 200-game direct
-incumbent evaluation are documented in
-[`reports/macro_counterfactual_improvement_20260731.md`](reports/macro_counterfactual_improvement_20260731.md).
-
-## Server migration
-
-For moving development to a CPU/GPU server, including the files that are not
-tracked by Git, environment recreation, parity checks, and the proposed
-imitation-learning/self-play workflow, see
-[`SERVER_MIGRATION_RUNBOOK.md`](SERVER_MIGRATION_RUNBOOK.md).
-
-The configured hybrid workflow keeps replay collection and normal development
-on the local Mac and uses `kag-server` only for compute-heavy work:
+系譜の各段階は、`scripts/make_*_variants.py` で直前の版から作り直せます。
+例えば ahd27 は、次のコマンドで rgds_a からバイト単位で同じものが作れます。
 
 ```bash
-make server-check
-make server-update-code
-make server-evaluate
-make server-head-to-head
-make server-push-replays
-make server-push-datasets
-make server-pull-results
+.venv/bin/python scripts/make_harvest_defer_variants.py --base agents/lineage/11_rgds_a.py --out-dir results/variants "ahd27=27:0"
 ```
 
-`make server-update-code` requires a clean local working tree and pushes the
-current commit directly over SSH. The compute server does not need GitHub
-credentials.
+## クレジット
 
-## Hybrid PPO prototype
+土台の results31 は Kaggle で公開されているエージェントです（thomastschinkel, yhay81, destbreso, aurax7, tetsutani,
+prvsiyan, Dmitrii Gluzdov, Ahmed Berat Ozer ほか、Apache License 2.0）。
+各エージェントファイルの冒頭に、ライセンス全文と帰属の表記をそのまま残しています。
+`sim/` は、kaggle-environments 1.32.7 の公式のゲーム処理を直接呼び出し、検証やリプレイ保存などの処理を省いて速くした実行器です（結果は公式と同じです）。
 
-The project includes an Orbit Wars-style hybrid reinforcement-learning
-prototype. A neural policy makes one masked semantic decision per in-game day,
-while `main.py` remains responsible for movement and other low-level legal
-actions. Training uses PPO, a scripted/checkpoint opponent league, and PFSP-like
-opponent sampling.
+## 過去の実験
 
-The compute server uses PyTorch 2.6.0 with CUDA 12.4:
-
-```bash
-make server-gpu-check
-make server-hybrid-train
-```
-
-GPU dependencies are pinned in `requirements-gpu.txt`. Checkpoints and metrics
-are written below the selected server run directory and are not committed.
-Use `training/evaluate_hybrid_policy.py` for fixed-seed, both-seat Arena
-evaluation. A learned checkpoint must beat the current `main.py` in held-out
-Arena games before it is considered for submission.
-
-See `reports/hybrid_ppo_gpu_prototype.md` for the architecture, first training
-runs, and current limitations.
-
-Training rollouts now use persistent workers and a parity-tested fast
-interpreter path. On `kag-server`, the measured steady throughput is about
-33.1 games/second, versus 2.0 before optimization. The fast path also caches
-the official default-market price calculation without modifying the standard
-runner. See
-[`reports/server_training_speedup_20260731.md`](reports/server_training_speedup_20260731.md)
-for benchmarks, fidelity checks, and the recommended 20-worker/60-game setup.
-
-The first GPU counterfactual value-learning trial generated 4,600 profile
-games and produced a held-out selector with a 60.25% direct win rate against
-the current `main.py`. See
-[`reports/counterfactual_gpu_value_trial_20260731.md`](reports/counterfactual_gpu_value_trial_20260731.md)
-for the corrected profile semantics, standard-runner parity check, and the
-remaining promotion gates.
-
-The scaled multi-day, mixed-opponent GPU experiment uses about 66,000
-counterfactual outcomes. Its day-8 policy reached 70% against `main.py` with
-mean margin +613 while also improving KEEP margins against Pulse and score800.
-See
-[`reports/gpu_counterfactual_scaling_20260731.md`](reports/gpu_counterfactual_scaling_20260731.md).
-
-The structured strategy search now covers 53 semantic fields, organized into
-five conditional strategy families and six coherent gene blocks. Inactive
-genes are excluded from mutation, deduplication, and GPU-surrogate learning.
-The search always starts from the promoted `main.py` genome. A five-minute
-hierarchical server run beat that incumbent in 160/200 held-out games and
-passed the strong-reference gate in 200/200 games. See
-[`reports/hierarchical_strategy_search_20260801.md`](reports/hierarchical_strategy_search_20260801.md).
-
-For future promotion checks, Pulse and score800 are treated as obsolete weak
-references. Reusable opponents live at `test/<model-name>/main.py`. Structured
-candidates are compared directly with the current `main.py`, then gated against
-every model below `test/` via `make server-structured-gate`.
-
-Import a newly downloaded archive and test the current agent with:
-
-```bash
-make test-import TEST_MODEL=my_model  # submission.tar.gz -> test/my_model/main.py
-make test-list                        # list registered opponents
-make test-models                      # local evaluation against all opponents
-make server-test-models               # the same evaluation on kag-server
-```
-
-Server evaluation and search commands default to 20 CPU workers. Override the
-shared setting with `SIMULATION_WORKERS=8`, or set a command-specific value
-such as `TEST_WORKERS=8`.
-
-These commands use the parity-gated v4 runner by default. Native extensions are
-built only when their sources or Python ABI change:
-
-```bash
-make native-speedups-build
-make server-native-speedups-build
-```
-
-The production runner falls back to the stable implementation for unsupported
-configurations, and unknown public opponents retain their Python runtime until
-their native policy has passed trajectory parity. See
-[`reports/faster_simulator_v4_promotion_20260915.md`](reports/faster_simulator_v4_promotion_20260915.md)
-for the acceptance matrix and server benchmark.
-
-Use `TEST_MODELS="model_a model_b"` to evaluate only selected folders. Import
-also writes `metadata.json` with archive and source SHA-256 hashes, and refuses
-to overwrite an existing model name. Evaluation workers reuse loaded modules;
-the registered agents reset their per-player state when the step returns to
-zero, and this reuse path is included in the v4 parity gate.
-
-The usual genome workflow is intentionally short:
-
-```bash
-make genome-train      # sync, train, validate, gate, and download
-make genome-status     # show the latest scores
-make genome-candidate  # create standalone candidate_main.py
-make genome-use        # back up and replace main.py explicitly
-```
-
-Runs receive timestamped names automatically. Pass
-`RUN=server-results/<run-name>` to the last three commands to select an older
-run instead of the latest one. The complete Japanese procedure is in
-`memo.txt`.
+この形に整理する前の作業環境は、タグ [`archive-20261001`](https://github.com/Nasubiman/Kaggriculture/tree/archive-20261001) に残しています。
+そこには、強化学習・遺伝的探索・4 区画戦略・独自シミュレーターなどの試行、約 1,200 本の候補、評価結果が含まれます。
